@@ -1,17 +1,26 @@
-import { ajax_call, find_get_parameter } from "/js/utils.js";
+import { find_get_parameter } from "/js/utils.js";
 
-export function load_comic_data() {
-    ajax_call("comics/directory_list", load_directory_list);
+export async function load_comic_data() {
+    let response = await fetch("comics/directory_list");
+    let text = await response.text();
+    let directory_list = new_lines_to_int_array(text);
+    let current_index = get_current_index(directory_list);
+    let directory = "comics/" + directory_list[current_index] + "/";
+    let info_response = await fetch(directory + "info.json");
+    let post_response = await fetch(directory + "post.html");
+    load_navigation_bar(directory_list, current_index);
+
+    let json = await info_response.json();
+    console.log(json);
+    load_title(json["title"]);
+    load_post_date(json["post_date"]);
+    load_comic_tag(directory + json["filename"], json["alt_text"]);
+    load_tags(json["tags"]);
+    load_post_body(await post_response.text());
 }
 
-let current_id;
-
-function load_directory_list(xhttp) {
-    let directory_list = xhttp.responseText.trim().split('\r\n').map(x => parseInt(x.trim()));
-    let current_index = get_current_index(directory_list);
-    document.getElementById("navigation-bar").innerHTML = build_navigation_bar(directory_list, current_index);
-    current_id = directory_list[current_index];
-    ajax_call("comics/" + current_id + "/info.json", load_comic_elements);
+function new_lines_to_int_array(s) {
+    return s.trim().split('\r\n').map(x => parseInt(x.trim()));
 }
 
 function get_current_index(directory_list) {
@@ -19,7 +28,7 @@ function get_current_index(directory_list) {
     return (current_id == null) ? directory_list.length - 1 : directory_list.indexOf(parseInt(current_id));
 }
 
-function build_navigation_bar(directory_list, current_index) {
+function load_navigation_bar(directory_list, current_index) {
     let first_id = directory_list[0];
     let last_id = directory_list[directory_list.length - 1];
     let previous_id = (current_index === 0) ? first_id : directory_list[current_index - 1];
@@ -28,7 +37,7 @@ function build_navigation_bar(directory_list, current_index) {
     console.log(previous_id);
     console.log(next_id);
     console.log(last_id);
-    return `<table class="navigation-buttons">
+    document.getElementById("navigation-bar").innerHTML = `<table class="navigation-buttons">
     <tr>
         <td class="navigation-button-first">
             <a href="index.html?id=` + first_id + `">&lt;&lt;</a>
@@ -46,15 +55,23 @@ function build_navigation_bar(directory_list, current_index) {
 </table>`;
 }
 
-function load_comic_elements(xhttp) {
-    let comic_info = JSON.parse(xhttp.responseText);
-
+function load_title(title) {
+    document.getElementById("comic-title").innerHTML = title;
 }
 
-function build_comic_tag(path, alt_text) {
-    return '<img class="comic-page" src="' + path.toString() + '" alt="' + alt_text.toString() + '"/>';
+function load_post_date(post_date) {
+    document.getElementById("post-date").innerHTML = post_date;
 }
 
-function build_navigation_buttons_tag(path, alt_text) {
-    return '<img class="comic-page" src="' + path.toString() + '" alt="' + alt_text.toString() + '"/>';
+function load_comic_tag(path, alt_text) {
+    document.getElementById("comic-page").innerHTML =
+        '<img class="comic-page" src="' + path + '" alt="' + alt_text + '"/>';
+}
+
+function load_tags(tags) {
+    document.getElementById("tags").innerHTML = "Tags: " + tags.join(", ");
+}
+
+function load_post_body(post_body) {
+    document.getElementById("post-body").innerHTML = post_body;
 }
