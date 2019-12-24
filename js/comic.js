@@ -28,7 +28,7 @@ function new_lines_to_array(s) {
 
 function get_current_index(directory_list) {
     let current_id = find_get_parameter("id");
-    return (current_id == null) ? directory_list.length - 1 : directory_list.indexOf(parseInt(current_id));
+    return (current_id == null) ? directory_list.length - 1 : directory_list.indexOf(current_id);
 }
 
 function load_navigation_bar(directory_list, current_index) {
