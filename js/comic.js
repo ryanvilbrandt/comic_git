@@ -1,17 +1,20 @@
-import { find_get_parameter } from "/js/utils.js";
+import { ajax_call, find_get_parameter } from "./utils.js";
 
 export async function load_comic_data() {
-    let response = await fetch("comics/directory_list");
+    let response = await fetch("/comic_git/comics/directory_list.txt");
+    if (!response.ok) {
+        console.log(response.headers);
+        return
+    }
     let text = await response.text();
-    let directory_list = new_lines_to_int_array(text);
+    let directory_list = new_lines_to_array(text);
     let current_index = get_current_index(directory_list);
-    let directory = "comics/" + directory_list[current_index] + "/";
+    let directory = "./comics/" + directory_list[current_index] + "/";
     let info_response = await fetch(directory + "info.json");
     let post_response = await fetch(directory + "post.html");
     load_navigation_bar(directory_list, current_index);
 
     let json = await info_response.json();
-    console.log(json);
     load_title(json["title"]);
     load_post_date(json["post_date"]);
     load_comic_tag(directory + json["filename"], json["alt_text"]);
@@ -19,8 +22,8 @@ export async function load_comic_data() {
     load_post_body(await post_response.text());
 }
 
-function new_lines_to_int_array(s) {
-    return s.trim().split('\r\n').map(x => parseInt(x.trim()));
+function new_lines_to_array(s) {
+    return s.trim().split('\n').map(x => x.trim());
 }
 
 function get_current_index(directory_list) {

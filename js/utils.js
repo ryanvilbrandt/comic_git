@@ -1,8 +1,26 @@
 export function ajax_call(url, func, params=null) {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            func(this);
+        switch (this.readyState) {
+            case 0:
+                break;
+            case 1:
+                console.log("Ajax opened " + url);
+                break;
+            case 2:
+                console.log("Ajax status/headers received " + this.status + " / " + this.getAllResponseHeaders());
+                break;
+            case 3:
+                console.log("Ajax loading response text");
+                break;
+            case 4:
+                if (this.status === 200) {
+                    func(this);
+                } else {
+                    console.log("Ajax error: " + this.status + " / " + this.error());
+                }
+                break;
+            default:
         }
     };
     xhttp.open(params === null ? "GET" : "POST", url, true);
