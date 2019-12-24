@@ -1,1 +1,23 @@
-<b>Hello World!</b>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div id="comic-title">Loading comic title...</div>
+
+    <div id="post-date">Loading post date...</div>
+
+    <div id="comic-page">Loading comic image...</div>
+
+    <div id="tags">Loading tags...</div>
+
+    <div id="navigation-bar">Loading navigation bar...</div>
+
+    <div id="post-body">Loading post body...</div>
+
+</body>
+<script type="module">
+    import { load_comic_data } from "/js/comic.js";
+    load_comic_data();
+</script>
+</html>
