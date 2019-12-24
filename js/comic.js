@@ -1,4 +1,4 @@
-import { ajax_call, find_get_parameter } from "./utils.js";
+import { find_get_parameter, new_lines_to_array } from "./utils.js";
 
 export async function load_comic_data() {
     let response = await fetch("/comic_git/comics/directory_list.txt");
