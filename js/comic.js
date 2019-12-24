@@ -1,7 +1,7 @@
 import { find_get_parameter, new_lines_to_array } from "./utils.js";
 
 export async function load_comic_data() {
-    let response = await fetch("/comic_git/comics/directory_list.txt");
+    let response = await fetch("./comics/directory_list.txt");
     if (!response.ok) {
         console.log(response.headers);
         return
