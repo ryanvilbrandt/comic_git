@@ -37,18 +37,18 @@ function load_navigation_bar(directory_list, current_index) {
     console.log(previous_id);
     console.log(next_id);
     console.log(last_id);
-    document.getElementById("navigation-bar").innerHTML = `<table class="navigation-buttons">
+    document.getElementById("navigation-bar").innerHTML = `<table id="navigation-buttons">
     <tr>
-        <td class="navigation-button-first">
+        <td id="navigation-button-first">
             <a href="index.html?id=` + first_id + `">&lt;&lt;</a>
         </td>
-        <td class="navigation-button-previous">
+        <td id="navigation-button-previous">
             <a href="index.html?id=` + previous_id + `">&lt;</a>
         </td>
-        <td class="navigation-button-next">
+        <td id="navigation-button-next">
             <a href="index.html?id=` + next_id + `">&gt;</a>
         </td>
-        <td class="navigation-button-last">
+        <td id="navigation-button-last">
             <a href="index.html?id=` + last_id + `">&gt;&gt;</a>
         </td>
     </tr>
@@ -60,12 +60,12 @@ function load_title(title) {
 }
 
 function load_post_date(post_date) {
-    document.getElementById("post-date").innerHTML = post_date;
+    document.getElementById("post-date").innerHTML = "Posted on: " + post_date;
 }
 
 function load_comic_tag(path, alt_text) {
     document.getElementById("comic-page").innerHTML =
-        '<img class="comic-page" src="' + path + '" alt="' + alt_text + '"/>';
+        '<img id="comic-image" src="' + path + '" alt="' + alt_text + '"/>';
 }
 
 function load_tags(tags) {
