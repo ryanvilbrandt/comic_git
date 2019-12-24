@@ -22,10 +22,6 @@ export async function load_comic_data() {
     load_post_body(await post_response.text());
 }
 
-function new_lines_to_array(s) {
-    return s.trim().split('\n').map(x => x.trim());
-}
-
 function get_current_index(directory_list) {
     let current_id = find_get_parameter("id");
     return (current_id == null) ? directory_list.length - 1 : directory_list.indexOf(current_id);

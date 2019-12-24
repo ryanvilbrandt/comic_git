@@ -77,3 +77,7 @@ export function find_get_parameter(parameter_name) {
         });
     return result;
 }
+
+export function new_lines_to_array(s) {
+    return s.trim().split('\n').map(x => x.trim());
+}
