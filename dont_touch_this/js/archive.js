@@ -36,8 +36,7 @@ async function fetch_json_data(comic_num) {
 }
 
 function build_archive_list(sections, json_list) {
-    let html = "<div id='archive-list'>\n";
-    html += "<ul>\n";
+    let html = "<ul>\n";
     if (sections.length === 0) {
         Object.keys(json_list).forEach(key => {
             html += build_page_link(key, json_list[key]);
@@ -56,7 +55,6 @@ function build_archive_list(sections, json_list) {
         });
     }
     html += "</ul>";
-    html += "</div>";
     document.getElementById("archives").innerHTML = html;
 }
 

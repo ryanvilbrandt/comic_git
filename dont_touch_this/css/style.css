@@ -4,6 +4,22 @@ body {
     text-align: center;
 }
 
+div#container {
+    display: inline-block;
+    max-width: 1050px;
+    width: 70%;
+    background-color: floralwhite;
+    text-align: center;
+}
+
+div img {
+    max-width: 100%;
+}
+
+div#banner, div#comic-page {
+    margin: 30px;
+}
+
 div#comic-title {
     color: maroon;
     font-size: 60px;
@@ -23,10 +39,7 @@ table#navigation-buttons {
 }
 
 div#archives {
-    max-width: 60%;
-}
-
-div#archive-list {
     display: inline-block;
+    width: 70%;
     text-align: left;
 }
