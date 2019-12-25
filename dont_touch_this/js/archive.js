@@ -61,7 +61,7 @@ function build_archive_list(sections, json_list) {
 }
 
 function build_page_link(comic_id, comic_json) {
-    let html = "        <li><a href='index?id=" + comic_id + "'>" + comic_json["title"] + "</a>";
+    let html = "        <li><a href='index.html?id=" + comic_id + "'>" + comic_json["title"] + "</a>";
     html += " -- " + comic_json["post_date"] +"</li>\n";
     return html;
 }
