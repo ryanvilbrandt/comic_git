@@ -1,1 +1,1 @@
-dir /a:d /b comics > comics/directory_list.txt
+dir /a:d /b comics > directory_list.txt

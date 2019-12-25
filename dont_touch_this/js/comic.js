@@ -1,15 +1,15 @@
 import { find_get_parameter, new_lines_to_array } from "./utils.js";
 
 export async function load_comic_data() {
-    let response = await fetch("./comics/directory_list.txt");
+    let response = await fetch("./your_content/directory_list.txt");
     if (!response.ok) {
-        console.log(response.headers);
+        console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
         return
     }
     let text = await response.text();
     let directory_list = new_lines_to_array(text);
     let current_index = get_current_index(directory_list);
-    let directory = "./comics/" + directory_list[current_index] + "/";
+    let directory = "./your_content/comics/" + directory_list[current_index] + "/";
     let info_response = await fetch(directory + "info.json");
     let post_response = await fetch(directory + "post.html");
     load_navigation_bar(directory_list, current_index);

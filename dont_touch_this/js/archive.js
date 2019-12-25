@@ -9,14 +9,14 @@ export async function load_archive() {
 }
 
 async function fetch_archive_sections() {
-    let response = await fetch("./comics/archive_sections.txt");
+    let response = await fetch("./your_content/archive_sections.txt");
     console.log("Fetched archive sections");
     let text = await response.text();
     return new_lines_to_array(text);
 }
 
 async function fetch_all_json_data() {
-    let response = await fetch("./comics/directory_list.txt");
+    let response = await fetch("./your_content/directory_list.txt");
     console.log("Fetched directory list");
     let text = await response.text();
     let directory_list = new_lines_to_array(text);
@@ -30,7 +30,7 @@ async function fetch_all_json_data() {
 }
 
 async function fetch_json_data(comic_num) {
-    let response = await fetch("./comics/" + comic_num + "/info.json");
+    let response = await fetch("./your_content/comics/" + comic_num + "/info.json");
     console.log("Fetched " + comic_num);
     return response.json();
 }
