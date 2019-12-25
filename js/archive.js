@@ -38,19 +38,30 @@ async function fetch_json_data(comic_num) {
 function build_archive_list(sections, json_list) {
     let html = "<div id='archive-list'>\n";
     html += "<ul>\n";
-    sections.forEach(section => {
-        html += "    <li>" + section + "\n";
-        html += "    <ul>";
+    if (sections.length === 0) {
         Object.keys(json_list).forEach(key => {
-            let comic = json_list[key];
-            if (comic["tags"].includes(section)) {
-                html += "        <li><a href='index?id=" + key + "'>" + comic["title"] + "</a>";
-                html += " -- " + comic["post_date"] +"</li>";
-            }
+            html += build_page_link(key, json_list[key]);
         });
-        html += "    </ul></li>";
-    });
+    } else {
+        sections.forEach(section => {
+            html += "    <li>" + section + "\n";
+            html += "    <ul>";
+            Object.keys(json_list).forEach(key => {
+                let comic = json_list[key];
+                if (comic["tags"].includes(section)) {
+                    html += build_page_link(key, comic);
+                }
+            });
+            html += "    </ul></li>";
+        });
+    }
     html += "</ul>";
     html += "</div>";
     document.getElementById("archives").innerHTML = html;
+}
+
+function build_page_link(comic_id, comic_json) {
+    let html = "        <li><a href='index?id=" + comic_id + "'>" + comic_json["title"] + "</a>";
+    html += " -- " + comic_json["post_date"] +"</li>\n";
+    return html;
 }
