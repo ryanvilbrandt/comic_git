@@ -36,6 +36,12 @@ div#tags {
 table#navigation-buttons {
     margin-left: auto;
     margin-right: auto;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+a.navigation-button {
+    text-decoration: none;
 }
 
 div#archives {

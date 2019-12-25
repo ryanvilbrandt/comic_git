@@ -1,7 +1,14 @@
 import { find_get_parameter, new_lines_to_array } from "./utils.js";
 
 export async function load_comic_data() {
-    let response = await fetch("./your_content/directory_list.txt");
+    let response = await fetch("links_bar.html");
+    if (!response.ok) {
+        console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
+        return
+    }
+    document.getElementById("links-bar").innerHTML = await response.text();
+
+    response = await fetch("./your_content/directory_list.txt");
     if (!response.ok) {
         console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
         return
@@ -39,16 +46,16 @@ function load_navigation_bar(directory_list, current_index) {
     document.getElementById("navigation-bar").innerHTML = `<table id="navigation-buttons">
     <tr>
         <td id="navigation-button-first">
-            <a href="index.html?id=` + first_id + `">&lt;&lt;</a>
+            <a class="navigation-button" href="index.html?id=` + first_id + `">&lt;&lt;</a>
         </td>
         <td id="navigation-button-previous">
-            <a href="index.html?id=` + previous_id + `">&lt;</a>
+            <a class="navigation-button" href="index.html?id=` + previous_id + `">&lt;</a>
         </td>
         <td id="navigation-button-next">
-            <a href="index.html?id=` + next_id + `">&gt;</a>
+            <a class="navigation-button" href="index.html?id=` + next_id + `">&gt;</a>
         </td>
         <td id="navigation-button-last">
-            <a href="index.html?id=` + last_id + `">&gt;&gt;</a>
+            <a class="navigation-button" href="index.html?id=` + last_id + `">&gt;&gt;</a>
         </td>
     </tr>
 </table>`;
