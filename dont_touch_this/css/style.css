@@ -4,12 +4,17 @@ body {
     text-align: center;
 }
 
+a {
+    color: maroon;
+}
+
 div#container {
     display: inline-block;
     max-width: 1050px;
     background-color: floralwhite;
     text-align: center;
     margin: 15px;
+    box-shadow: 5px 5px 10px darkolivegreen;
 }
 
 div img {
@@ -17,12 +22,11 @@ div img {
 }
 
 div#banner {
-    margin: 30px;
+    margin: 30px 30px 20px 30px;
 }
 
 div#comic-page {
     margin: 20px 30px;
-    box-shadow: 5px 5px 5px grey;
 }
 
 table#navigation-buttons {
@@ -42,8 +46,10 @@ div#blurb {
     display: inline-block;
     background-color: lightgray;
     text-align: left;
+    width: 700px;
+    max-width: 100%;
     margin: 20px;
-    padding: 15px;
+    padding: 15px 15px 10px 15px;
     border-left: 3px dotted lightslategray;
     border-right: 3px dotted lightslategray;
 }
@@ -53,16 +59,18 @@ div#comic-title {
     font-size: 32px;
 }
 
-div#post-date, #post-body {
-    margin: 1em 0 0 0;
-}
-
 div#post-date {
+    margin: 1em 0 0 0;
     font-weight: bold;
 }
 
 div#tags {
+    margin: 0.25em 0 0 0;
     font-style: italic;
+}
+
+hr#post-body-break {
+    margin: 1em 0;
 }
 
 div#archives {
@@ -74,8 +82,4 @@ div#archives {
 div#powered-by {
     font-size: 12px;
     padding: 0 0 15px 0;
-}
-
-a#powered-by-link {
-    color: maroon;
 }

@@ -19,12 +19,12 @@ export async function load_comic_data() {
     let directory = "./your_content/comics/" + directory_list[current_index] + "/";
     let info_response = await fetch(directory + "info.json");
     let post_response = await fetch(directory + "post.html");
-    load_navigation_bar(directory_list, current_index);
+    let next_id = load_navigation_bar(directory_list, current_index);
 
     let json = await info_response.json();
     load_title(json["title"]);
     load_post_date(json["post_date"]);
-    load_comic_tag(directory + json["filename"], json["alt_text"]);
+    load_comic_page(directory + json["filename"], json["alt_text"], next_id);
     load_tags(json["tags"]);
     load_post_body(await post_response.text());
 }
@@ -59,6 +59,7 @@ function load_navigation_bar(directory_list, current_index) {
         </td>
     </tr>
 </table>`;
+    return next_id;  // Return so that the comic page itself can be a link
 }
 
 function load_title(title) {
@@ -69,13 +70,16 @@ function load_post_date(post_date) {
     document.getElementById("post-date").innerHTML = "Posted on: " + post_date;
 }
 
-function load_comic_tag(path, alt_text) {
-    document.getElementById("comic-page").innerHTML =
-        '<img id="comic-image" src="' + path + '" alt="' + alt_text + '"/>';
+function load_comic_page(path, alt_text, next_id) {
+    let html = '<a href="index.html?id=' + next_id + '">';
+    html += '<img id="comic-image" src="' + path + '" title="' + alt_text + '"/>';
+    html += "</a>";
+    document.getElementById("comic-page").innerHTML = html;
 }
 
 function load_tags(tags) {
-    document.getElementById("tags").innerHTML = "Tags: " + tags.join(", ");
+    let tag_links = tags.map(t => '<a href="tags.html?tag=' + t + '">' + t + '</a>');
+    document.getElementById("tags").innerHTML = "Tags: " + tag_links.join(", ");
 }
 
 function load_post_body(post_body) {
