@@ -14,7 +14,7 @@
 
     <div style="font-style: italic; margin: 10px 40px;">
         This is an example page for displaying the cast of your comic, and an example of how you can still have
-        custom paged available and linked from your main site. This is not automatically updated by comic_git, and
+        custom pages available and linked from your main site. This is not automatically updated by comic_git, and
         must be manually maintained by you. You do not want a cast page, or any other extra pages, you can simply
         delete this HTML file, and the link in the links_bar.html file.
     </div>
@@ -205,23 +205,13 @@
 
 </body>
 <script type="module">
-    import { load_title, load_links_bar } from "./dont_touch_this/js/utils.js";
+    /*
+    To keep the links bar and title of your pages properly updated, you must provide this whole <script> block and
+    the three javascript lines below on all your pages.
+     */
+    import { load_title, load_links_bar, init_accordions } from "./dont_touch_this/js/utils.js";
     load_title("Cast Page");
     load_links_bar();
-
-    let acc = document.getElementsByClassName("accordion-button");
-    let i;
-
-    for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            let panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-        });
-    }
+    init_accordions();  // Except this. This is just to make the accordion text work.
 </script>
 </html>
