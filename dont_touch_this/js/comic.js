@@ -46,16 +46,16 @@ function load_navigation_bar(directory_list, current_index) {
     document.getElementById("navigation-bar").innerHTML = `<table id="navigation-buttons">
     <tr>
         <td id="navigation-button-first">
-            <a class="navigation-button" href="index.html?id=` + first_id + `">&lt;&lt;</a>
+            <a class="navigation-button" href="index.html?id=` + first_id + `">First</a>
         </td>
         <td id="navigation-button-previous">
-            <a class="navigation-button" href="index.html?id=` + previous_id + `">&lt;</a>
+            <a class="navigation-button" href="index.html?id=` + previous_id + `">Previous</a>
         </td>
         <td id="navigation-button-next">
-            <a class="navigation-button" href="index.html?id=` + next_id + `">&gt;</a>
+            <a class="navigation-button" href="index.html?id=` + next_id + `">Next</a>
         </td>
         <td id="navigation-button-last">
-            <a class="navigation-button" href="index.html?id=` + last_id + `">&gt;&gt;</a>
+            <a class="navigation-button" href="index.html?id=` + last_id + `">Last</a>
         </td>
     </tr>
 </table>`;

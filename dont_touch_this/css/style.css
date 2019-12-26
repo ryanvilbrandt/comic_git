@@ -7,22 +7,54 @@ body {
 div#container {
     display: inline-block;
     max-width: 1050px;
-    width: 70%;
     background-color: floralwhite;
     text-align: center;
+    margin: 15px;
 }
 
 div img {
     max-width: 100%;
 }
 
-div#banner, div#comic-page {
+div#banner {
     margin: 30px;
+}
+
+div#comic-page {
+    margin: 20px 30px;
+    box-shadow: 5px 5px 5px grey;
+}
+
+table#navigation-buttons {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 24pt;
+    font-weight: bold;
+}
+
+a.navigation-button {
+    color: darkgreen;
+    text-decoration: none;
+    padding: 0 15px;
+}
+
+div#blurb {
+    display: inline-block;
+    background-color: lightgray;
+    text-align: left;
+    margin: 20px;
+    padding: 15px;
+    border-left: 3px dotted lightslategray;
+    border-right: 3px dotted lightslategray;
 }
 
 div#comic-title {
     color: maroon;
-    font-size: 60px;
+    font-size: 32px;
+}
+
+div#post-date, #post-body {
+    margin: 1em 0 0 0;
 }
 
 div#post-date {
@@ -33,19 +65,17 @@ div#tags {
     font-style: italic;
 }
 
-table#navigation-buttons {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 18pt;
-    font-weight: bold;
-}
-
-a.navigation-button {
-    text-decoration: none;
-}
-
 div#archives {
     display: inline-block;
     width: 70%;
     text-align: left;
+}
+
+div#powered-by {
+    font-size: 12px;
+    padding: 0 0 15px 0;
+}
+
+a#powered-by-link {
+    color: maroon;
 }
