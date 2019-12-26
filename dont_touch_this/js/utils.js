@@ -83,3 +83,12 @@ export function new_lines_to_array(s) {
         return [];
     return s.trim().split('\n').map(x => x.trim());
 }
+
+export async function load_links_bar() {
+    let response = await fetch("links_bar.html");
+    if (!response.ok) {
+        console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
+        return;
+    }
+    document.getElementById("links-bar").innerHTML = await response.text();
+}

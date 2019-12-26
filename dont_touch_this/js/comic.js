@@ -1,14 +1,11 @@
-import { find_get_parameter, new_lines_to_array } from "./utils.js";
+import { find_get_parameter, new_lines_to_array, load_links_bar } from "./utils.js";
 
-export async function load_comic_data() {
-    let response = await fetch("links_bar.html");
-    if (!response.ok) {
-        console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
-        return
-    }
-    document.getElementById("links-bar").innerHTML = await response.text();
+export async function load_page() {
+    await Promise.all([load_links_bar(), load_comic_data()]);
+}
 
-    response = await fetch("./your_content/directory_list.txt");
+async function load_comic_data() {
+    let response = await fetch("./your_content/directory_list.txt");
     if (!response.ok) {
         console.log("Error when fetching " + response.url + ": " + response.status + " " + response.statusText);
         return
@@ -24,7 +21,7 @@ export async function load_comic_data() {
     let json = await info_response.json();
     load_title(json["title"]);
     load_post_date(json["post_date"]);
-    load_comic_page(directory + json["filename"], json["alt_text"], next_id);
+    load_comic_image(directory + json["filename"], json["alt_text"], next_id);
     load_tags(json["tags"]);
     load_post_body(await post_response.text());
 }
@@ -70,7 +67,7 @@ function load_post_date(post_date) {
     document.getElementById("post-date").innerHTML = "Posted on: " + post_date;
 }
 
-function load_comic_page(path, alt_text, next_id) {
+function load_comic_image(path, alt_text, next_id) {
     let html = '<a href="index.html?id=' + next_id + '">';
     html += '<img id="comic-image" src="' + path + '" title="' + alt_text + '"/>';
     html += "</a>";

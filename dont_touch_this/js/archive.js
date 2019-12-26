@@ -1,6 +1,10 @@
-import { new_lines_to_array } from "./utils.js";
+import { new_lines_to_array, load_links_bar } from "./utils.js";
 
-export async function load_archive() {
+export async function load_page() {
+    await Promise.all([load_links_bar(), load_archive()]);
+}
+
+async function load_archive() {
     let sections_promise = fetch_archive_sections();
     let json_list_promise = fetch_all_json_data();
     let sections = await sections_promise;

@@ -1,11 +1,7 @@
-import { new_lines_to_array, find_get_parameter } from "./utils.js";
+import { new_lines_to_array, find_get_parameter, load_links_bar } from "./utils.js";
 
-export async function load_tagged() {
-    let json_list_promise = fetch_all_json_data();
-    let json_list = await json_list_promise;
-    let tag = find_get_parameter("tag");
-    build_tagged_list(json_list, tag);
-    document.getElementById("page-title").innerText = 'Posts tagged with "' + tag + '"';
+export async function load_page() {
+    await Promise.all([load_links_bar(), fetch_all_json_data()]);
 }
 
 async function fetch_all_json_data() {
@@ -19,7 +15,9 @@ async function fetch_all_json_data() {
     for (let i=0; i < json_dicts.length; i++) {
         new_obj[directory_list[i]] = json_dicts[i];
     }
-    return new_obj;
+    let tag = find_get_parameter("tag");
+    build_tagged_list(new_obj, tag);
+    document.getElementById("page-title").innerText = 'Posts tagged with "' + tag + '"';
 }
 
 async function fetch_json_data(comic_num) {
