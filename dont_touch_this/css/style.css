@@ -46,6 +46,11 @@ div#tags {
     font-style: italic;  /* Delete this to unbold the tags */
 }
 
+div#archive-title {
+    color: maroon;  /* Color of the post title */
+    font-size: 32px;  /* Font size of the post title */
+}
+
 /* ADVANCED OPTIONS -- CHANGE AT YOUR OWN RISK */
 
 body {
@@ -102,7 +107,6 @@ hr#post-body-break {
 
 div#archives {
     display: inline-block;
-    max-width: 100%;
     text-align: left;
 }
 
