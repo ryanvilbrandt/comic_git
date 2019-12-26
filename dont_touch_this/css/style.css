@@ -35,7 +35,7 @@ div#blurb {
 
 div#comic-title {
     color: maroon;  /* Color of the post title */
-    font-size: 32px;  /* Font size of the post title */
+    font-size: 32pt;  /* Font size of the post title */
 }
 
 div#post-date {
@@ -48,8 +48,24 @@ div#tags {
 
 div#page-title {
     color: maroon;  /* Color of the page title */
-    font-size: 32px;  /* Font size of the page title */
+    font-size: 32pt;  /* Font size of the page title */
 }
+
+div.cast-member {
+    background-color: lightgray;  /* The color of the box containing each cast member's entry on the cast page. */
+}
+
+img.cast-member-picture {
+    border-radius: 10px;  /* Remove this to remove the rounding from the corners of the cast member pictures on the cast page. */
+}
+
+div.cast-member-name {
+    font-size: 18pt;  /* The font size of the cast member's name in their bio */
+    color: maroon;
+}
+
+
+
 
 /* ADVANCED OPTIONS -- CHANGE AT YOUR OWN RISK */
 
@@ -115,6 +131,63 @@ div#archives {
 }
 
 div#powered-by {
-    font-size: 12px;
+    font-size: 9pt;
     margin-bottom: 20px;
+}
+
+div.cast-member {
+    max-width: 100%;
+    margin: 30px;
+}
+
+img.cast-member-picture {
+    max-width: none;
+    margin: 10px;
+}
+
+div.cast-member-bio {
+    text-align: left;
+    margin: 5px;
+}
+
+div.accordion {
+    margin: 5px;
+}
+
+button.accordion-button {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 12pt;
+    transition: 0.4s;
+}
+
+.active, button.accordion-button:hover {
+    background-color: #ccc;
+}
+
+button.accordion-button:after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+div.accordion-panel {
+    text-align: left;
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
 }

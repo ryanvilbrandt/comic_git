@@ -29,7 +29,7 @@ async function fetch_json_data(comic_num) {
 }
 
 function build_tagged_list(json_list, tag) {
-    let html = "<ul>";
+    let html = "<ul>\n";
     Object.keys(json_list).forEach(key => {
         let comic = json_list[key];
         if (comic["tags"].includes(tag)) {
@@ -37,6 +37,9 @@ function build_tagged_list(json_list, tag) {
         }
     });
     html += "</ul>";
+    if (html === "<ul>\n</ul>") {
+        html = "No posts found.";
+    }
     document.getElementById("tagged").innerHTML = html;
 }
 
