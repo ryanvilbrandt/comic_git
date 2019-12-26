@@ -1,20 +1,61 @@
+/*
+MAIN OPTIONS -- CHANGE TO SUIT YOUR TASTE
+
+For any colors, you can represent them in hexadecimal like this (#FF0000 = red)
+or use this list of available color names: https://www.w3schools.com/cssref/css_colors.asp
+ */
+
 body {
-    font-family: 'PT Sans', sans-serif;
-    background-color: darkseagreen;
-    text-align: center;
+    font-family: 'PT Sans', sans-serif;  /* Font of all the text on all pages */
+    background-color: darkseagreen;  /* The color of the background */
 }
 
 a {
-    color: maroon;
+    color: maroon;  /* Color of the hyperlinks */
+}
+
+div#container {
+    max-width: 1000px;  /* The width of the main box that contains all content on the pages */
+    background-color: floralwhite;  /* The background color of the main box */
+    box-shadow: 5px 5px 10px darkolivegreen;  /* If you change the background color of the main box, play with this or else it will look bad. */
+}
+
+a.navigation-button {
+    color: darkgreen;  /* Color of the navigation bar hyperlinks */
+    font-size: 24pt;  /* Size of the navigation bar hyperlinks */
+    text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
+}
+
+div#blurb {
+    background-color: lightgray;  /* The color of the "blurb" box that contains post title, post date, tags, etc. */
+    width: 700px;  /* The maximum width of the blurb box. */
+    border-left: 3px dotted lightslategray;  /* If you change the background color of the blurb, play with these two lines or else it will look bad */
+    border-right: 3px dotted lightslategray;
+}
+
+div#comic-title {
+    color: maroon;  /* Color of the post title */
+    font-size: 32px;  /* Font size of the post title */
+}
+
+div#post-date {
+    font-weight: bold;  /* Delete this to unbold the post date */
+}
+
+div#tags {
+    font-style: italic;  /* Delete this to unbold the tags */
+}
+
+/* ADVANCED OPTIONS -- CHANGE AT YOUR OWN RISK */
+
+body {
+    text-align: center;
 }
 
 div#container {
     display: inline-block;
-    max-width: 1050px;
-    background-color: floralwhite;
     text-align: center;
     margin: 15px;
-    box-shadow: 5px 5px 10px darkolivegreen;
 }
 
 div img {
@@ -32,41 +73,27 @@ div#comic-page {
 table#navigation-buttons {
     margin-left: auto;
     margin-right: auto;
-    font-size: 24pt;
     font-weight: bold;
 }
 
 a.navigation-button {
-    color: darkgreen;
-    text-decoration: none;
     padding: 0 15px;
 }
 
 div#blurb {
     display: inline-block;
-    background-color: lightgray;
     text-align: left;
-    width: 700px;
     max-width: 100%;
     margin: 20px;
     padding: 15px 15px 10px 15px;
-    border-left: 3px dotted lightslategray;
-    border-right: 3px dotted lightslategray;
-}
-
-div#comic-title {
-    color: maroon;
-    font-size: 32px;
 }
 
 div#post-date {
     margin: 1em 0 0 0;
-    font-weight: bold;
 }
 
 div#tags {
     margin: 0.25em 0 0 0;
-    font-style: italic;
 }
 
 hr#post-body-break {
@@ -75,7 +102,7 @@ hr#post-body-break {
 
 div#archives {
     display: inline-block;
-    width: 70%;
+    max-width: 100%;
     text-align: left;
 }
 
