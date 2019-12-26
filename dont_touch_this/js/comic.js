@@ -78,7 +78,7 @@ function load_comic_page(path, alt_text, next_id) {
 }
 
 function load_tags(tags) {
-    let tag_links = tags.map(t => '<a href="tags.html?tag=' + t + '">' + t + '</a>');
+    let tag_links = tags.map(t => '<a href="tagged.html?tag=' + t + '">' + t + '</a>');
     document.getElementById("tags").innerHTML = "Tags: " + tag_links.join(", ");
 }
 

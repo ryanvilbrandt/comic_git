@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="dont_touch_this/css/style.css">
-    <title>Archive</title>
 </head>
 <body>
 
 <div id="container">
     <div id="banner"><img id="banner-img" src="your_content/images/banner.png"></div>
 
-    <div id="page-title">Archive</div>
+    <div id="page-title">&nbsp;</div>
 
     <div id="blurb">
-        <div id="archives">Loading archive... This requires querying the server for every comic in the archive. This will take a while, please be patient.</div>
+        <div id="tagged">Loading tags... This requires querying the server for every comic in the archive. This will take a while, please be patient.</div>
     </div>
     <div id="powered-by">
         Powered by <a id="powered-by-link" href="https://github.com/ryanvilbrandt/comic_git">comic_git</a>
@@ -22,7 +21,7 @@
 
 </body>
 <script type="module">
-    import { load_archive } from "./dont_touch_this/js/archive.js";
-    load_archive();
+    import { load_tagged } from "./dont_touch_this/js/tagged.js";
+    load_tagged();
 </script>
 </html>
