@@ -1,4 +1,4 @@
-import { new_lines_to_array, find_get_parameter, load_links_bar } from "./utils.js";
+import { new_lines_to_array, find_get_parameter, load_links_bar, load_title } from "./utils.js";
 
 export async function load_page() {
     await Promise.all([load_links_bar(), fetch_all_json_data()]);
@@ -19,7 +19,7 @@ async function fetch_all_json_data() {
     build_tagged_list(new_obj, tag);
     let title = 'Posts tagged with "' + tag + '"';
     document.getElementById("page-title").innerText = title;
-    document.title = title;
+    await load_title(title);
 }
 
 async function fetch_json_data(comic_num) {

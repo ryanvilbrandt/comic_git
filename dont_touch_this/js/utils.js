@@ -93,7 +93,7 @@ export async function load_links_bar() {
     document.getElementById("links-bar").innerHTML = await response.text();
 }
 
-export async function fetch_comic_info() {
+export async function load_title(page_title) {
     let response = await fetch("./your_content/comic_info.json");
-    return response.json();
+    document.title = page_title + " - " + (await response.json())["name"];
 }

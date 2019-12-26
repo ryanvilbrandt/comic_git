@@ -1,7 +1,7 @@
-import { new_lines_to_array, load_links_bar } from "./utils.js";
+import { new_lines_to_array, load_links_bar, load_title } from "./utils.js";
 
 export async function load_page() {
-    await Promise.all([load_links_bar(), load_archive()]);
+    await Promise.all([load_title("Archive"), load_links_bar(), load_archive()]);
 }
 
 async function load_archive() {

@@ -1,4 +1,4 @@
-import { find_get_parameter, new_lines_to_array, load_links_bar, fetch_comic_info } from "./utils.js";
+import { find_get_parameter, new_lines_to_array, load_links_bar, load_title } from "./utils.js";
 
 export async function load_page() {
     await Promise.all([load_links_bar(), load_comic_data()]);
@@ -19,7 +19,7 @@ async function load_comic_data() {
     let next_id = load_navigation_bar(directory_list, current_index);
 
     let json = await info_response.json();
-    load_title(json["title"]);
+    load_comic_title(json["title"]);
     load_post_date(json["post_date"]);
     load_comic_image(directory + json["filename"], json["alt_text"], next_id);
     load_tags(json["tags"]);
@@ -59,10 +59,9 @@ function load_navigation_bar(directory_list, current_index) {
     return next_id;  // Return so that the comic page itself can be a link
 }
 
-async function load_title(title) {
+async function load_comic_title(title) {
     document.getElementById("comic-title").innerHTML = title;
-    let comic_info = await fetch_comic_info();
-    document.title = comic_info["name"] + " - " + title;
+    await load_title(title);
 }
 
 function load_post_date(post_date) {
