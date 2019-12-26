@@ -17,7 +17,9 @@ async function fetch_all_json_data() {
     }
     let tag = find_get_parameter("tag");
     build_tagged_list(new_obj, tag);
-    document.getElementById("page-title").innerText = 'Posts tagged with "' + tag + '"';
+    let title = 'Posts tagged with "' + tag + '"';
+    document.getElementById("page-title").innerText = title;
+    document.title = title;
 }
 
 async function fetch_json_data(comic_num) {

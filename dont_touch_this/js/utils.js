@@ -92,3 +92,8 @@ export async function load_links_bar() {
     }
     document.getElementById("links-bar").innerHTML = await response.text();
 }
+
+export async function fetch_comic_info() {
+    let response = await fetch("./your_content/comic_info.json");
+    return response.json();
+}
