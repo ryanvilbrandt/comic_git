@@ -22,4 +22,4 @@ More detailed setup instructions can be found on the [wiki](https://github.com/r
 
 ### Wiki
 
-* @JacobGW
+* @JacobWG
