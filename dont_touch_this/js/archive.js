@@ -13,7 +13,12 @@ async function load_archive() {
 }
 
 async function fetch_archive_sections() {
-    let response = await fetch("./your_content/archive_sections.txt");
+    let path = "./your_content/archive_sections.txt";
+    let response = await fetch(path);
+    if (response.status === 404) {
+        console.log("Could not find the file " + "./your_content/archive_sections.txt");
+        return [];
+    }
     console.log("Fetched archive sections");
     let text = await response.text();
     return new_lines_to_array(text);
