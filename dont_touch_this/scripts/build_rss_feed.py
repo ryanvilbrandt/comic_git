@@ -3,9 +3,13 @@ from json import loads
 from os.path import basename, isfile
 from os.path import join as pjoin
 from re import sub
+from time import strptime, strftime
 from urllib.parse import urljoin
 from xml.dom import minidom
 from xml.etree import ElementTree
+
+
+DATE_FORMAT = "%B %d, %Y"
 
 cdata_dict = {}
 
@@ -31,7 +35,8 @@ def add_item(xml_parent, info_json, post_html, post_id, creator, comic_url):
     item = ElementTree.SubElement(xml_parent, "item")
     ElementTree.SubElement(item, "title").text = info_json["title"]
     ElementTree.SubElement(item, "dc:creator").text = creator
-    ElementTree.SubElement(item, "pubDate").text = info_json["post_date"]
+    post_date = strptime(info_json["post_date"], DATE_FORMAT)
+    ElementTree.SubElement(item, "pubDate").text = strftime("%a, %d %b %Y %H:%M:%S +0000", post_date)
     direct_link = urljoin(comic_url, "index.html") + "?id=" + str(post_id)
     ElementTree.SubElement(item, "link").text = direct_link
     ElementTree.SubElement(item, "guid", isPermaLink="true").text = direct_link
@@ -41,7 +46,7 @@ def add_item(xml_parent, info_json, post_html, post_id, creator, comic_url):
     html = '<p><img src="{}"'.format(comic_image_url)
     if info_json.get("alt_text"):
         html += ' alt_text="{}"'.format(info_json["alt_text"].replace(r'"', r'\"'))
-    html += "></p>\n\n"
+    html += "></p>\n\n<hr>\n\n"
     html += post_html
     # print(html)
     cdata_dict["post_id_" + post_id] = "<![CDATA[{}]]>".format(html)
