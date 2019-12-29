@@ -38,7 +38,7 @@ div#blurb {
 
 h1#comic-title {
     color: maroon;  /* Color of the post title */
-    font-size: 32pt;  /* Font size of the post title */
+    font-size: 24pt;  /* Font size of the post title */
 }
 
 div#post-date {
