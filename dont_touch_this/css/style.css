@@ -8,6 +8,7 @@ div#container {
     display: inline-block;
     text-align: center;
     margin: 15px;
+    padding: 30px;
 }
 
 div img {
@@ -15,27 +16,33 @@ div img {
 }
 
 div#banner {
-    margin: 30px 30px 20px 30px;
+    margin-bottom: 15px;
+}
+
+div#links-bar {
+    background-color: indianred;
+    margin-bottom: 15px;
+    padding: 5px;
 }
 
 div#comic-page {
-    margin: 20px 30px;
+    margin-bottom: 20px;
 }
 
 table#navigation-buttons {
-    margin: 0 auto 15px auto;
+    margin: 0 auto 20px auto;
     font-weight: bold;
 }
 
 a.navigation-button {
-    padding: 0 15px;
+    padding: 0 20px;
 }
 
 div#blurb {
     display: inline-block;
     text-align: left;
     max-width: 100%;
-    margin: 10px;
+    margin-bottom: 20px;
     padding: 15px 15px 10px 15px;
 }
 
@@ -63,8 +70,6 @@ div#archives {
 
 div#powered-by {
     font-size: 9pt;
-    margin-top: 10px;
-    margin-bottom: 20px;
 }
 
 div.cast-member {
