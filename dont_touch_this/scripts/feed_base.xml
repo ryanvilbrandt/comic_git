@@ -3,12 +3,10 @@
     <channel>
         <atom:link href="https://ryanvilbrandt.github.io/comic_git/feed.xml" rel="self" type="application/rss+xml" />
         <title>My Comic</title>
-        <link>https://ryanvilbrandt.github.io/comic_git/</link>
         <description>This is a comic about a girl who knows a lot of animals.</description>
+        <link>https://ryanvilbrandt.github.io/comic_git/</link>
+        <dc:creator>My Name</dc:creator>
         <language>en-us</language>
-        <dc:publisher>stupid@email.com (Stupid Name)</dc:publisher>
-        <dc:creator>stupid@email.com (Stupid Name)</dc:creator>
-        <copyright>2019</copyright>
         <image>
             <title>My Comic</title>
             <link>https://ryanvilbrandt.github.io/comic_git/</link>

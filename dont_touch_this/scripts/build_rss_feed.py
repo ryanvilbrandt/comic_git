@@ -14,7 +14,8 @@ DATE_FORMAT = "%B %d, %Y"
 cdata_dict = {}
 
 
-def get_comic_data(path):
+def get_comic_data(post_id):
+    path = pjoin("../../your_content/comics", post_id)
     info_json_path = pjoin(path, "info.json")
     post_html_path = pjoin(path, "post.html")
     if not isfile(info_json_path):
@@ -43,14 +44,18 @@ def add_item(xml_parent, info_json, post_html, post_id, creator, comic_url):
     for tag in info_json["tags"]:
         ElementTree.SubElement(item, "category").text = tag
     comic_image_url = urljoin(comic_url, "your_content/comics/{}/{}".format(post_id, info_json["filename"]))
-    html = '<p><img src="{}"'.format(comic_image_url)
-    if info_json.get("alt_text"):
-        html += ' alt_text="{}"'.format(info_json["alt_text"].replace(r'"', r'\"'))
-    html += "></p>\n\n<hr>\n\n"
-    html += post_html
     # print(html)
+    html = build_rss_post(comic_image_url, info_json.get("alt_text"), post_html)
     cdata_dict["post_id_" + post_id] = "<![CDATA[{}]]>".format(html)
     ElementTree.SubElement(item, "description").text = "{post_id_" + post_id + "}"
+
+
+def build_rss_post(comic_image_url, alt_text, post_html):
+    comic_image = '<img src="{}"{}>'.format(
+        comic_image_url,
+        ' alt_text="{}"'.format(alt_text.replace(r'"', r'\"')) if alt_text else ""
+    )
+    return "<p>{}</p>\n\n<hr>\n\n{}".format(comic_image, post_html)
 
 
 def pretty_xml(element):
@@ -70,11 +75,13 @@ def main():
     creator = channel.find("{http://purl.org/dc/elements/1.1/}creator").text
     comic_url = channel.find("link").text
 
-    for path in glob("../../your_content/comics/*"):
-        info_json, post_html = get_comic_data(path)
+    with open("../../your_content/directory_list.txt") as f:
+        directory_list = reversed(f.read().strip().split("\n"))
+    for post_id in directory_list:
+        post_id = post_id.strip()
+        info_json, post_html = get_comic_data(post_id)
         if info_json is None:
             continue
-        post_id = basename(path)
         add_item(channel, info_json, post_html, post_id, creator, comic_url)
 
     pretty_string = pretty_xml(root)
