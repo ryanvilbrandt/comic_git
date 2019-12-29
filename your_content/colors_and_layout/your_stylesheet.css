@@ -36,7 +36,7 @@ div#blurb {
     border-right: 3px dotted lightslategray;
 }
 
-div#comic-title {
+h1#comic-title {
     color: maroon;  /* Color of the post title */
     font-size: 32pt;  /* Font size of the post title */
 }
@@ -49,8 +49,8 @@ div#tags {
     font-style: italic;  /* Delete this to unitalicize the tags */
 }
 
-div#page-title {
-    color: maroon;  /* The color of the page title */
+h1#page-title {
+    color: maroon;  /* The color of the page title, on pages like archive.html and tagged.html */
     font-size: 32pt;  /* The font size of the page title */
 }
 
