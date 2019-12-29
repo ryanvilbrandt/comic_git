@@ -1,0 +1,68 @@
+/*
+Change these options to customize the color scheme and a few layout options of your website.
+Most layout options are stored in dont_touch_this/css/style.css. I do not recommend messing with those settings
+unless you know what you're doing, or you're willing to spend a lot of time on trial and error.
+
+For any colors, you can represent them in hexadecimal like this (#FF0000 = red)
+or use this list of available color names: https://www.w3schools.com/cssref/css_colors.asp
+ */
+
+body {
+    font-family: 'PT Sans', sans-serif;  /* The font of all the text on all pages */
+    color: black;  /* The color of the font of most of the text on your website */
+    background-color: darkseagreen;  /* The color of the background behind everything */
+}
+
+a {
+    color: maroon;  /* The color of the hyperlinks */
+}
+
+div#container {
+    max-width: 1000px;  /* The width of the main box that contains all content on the pages */
+    background-color: floralwhite;  /* The background color of the main box */
+    box-shadow: 5px 5px 10px darkolivegreen;  /* If you change the background color of website, play with this or else it will look bad. */
+}
+
+a.navigation-button {
+    color: darkgreen;  /* Color of the navigation bar hyperlinks */
+    font-size: 24pt;  /* Size of the navigation bar hyperlinks */
+    text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
+}
+
+div#blurb {
+    background-color: lightgray;  /* The color of the "blurb" box that contains post title, post date, tags, etc. */
+    width: 700px;  /* The maximum width of the blurb box. */
+    border-left: 3px dotted lightslategray;  /* If you change the background color of the blurb, play with these two lines or else it will look bad */
+    border-right: 3px dotted lightslategray;
+}
+
+div#comic-title {
+    color: maroon;  /* Color of the post title */
+    font-size: 32pt;  /* Font size of the post title */
+}
+
+div#post-date {
+    font-weight: bold;  /* Delete this to unbold the post date */
+}
+
+div#tags {
+    font-style: italic;  /* Delete this to unitalicize the tags */
+}
+
+div#page-title {
+    color: maroon;  /* The color of the page title */
+    font-size: 32pt;  /* The font size of the page title */
+}
+
+div.cast-member {
+    background-color: lightgray;  /* The color of the box containing each cast member's entry on the cast page. */
+}
+
+img.cast-member-picture {
+    border-radius: 10px;  /* Remove this to remove the rounding from the corners of the cast member pictures on the cast page. */
+}
+
+div.cast-member-name {
+    font-size: 18pt;  /* The font size of the cast member's name in their bio */
+    color: maroon;  /* The color of the cast member's name in their bio */
+}
