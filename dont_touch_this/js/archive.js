@@ -52,6 +52,7 @@ function build_archive_list(sections, json_list) {
         });
     } else {
         sections.forEach(section => {
+            console.log("Building section " + section);
             html += "    <li>" + section + "\n";
             html += "    <ul>";
             Object.keys(json_list).forEach(key => {
