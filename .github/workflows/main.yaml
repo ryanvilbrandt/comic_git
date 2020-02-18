@@ -1,0 +1,35 @@
+name: Auto-build HTML files
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/scripts/requirements.txt
+      - name: Run python build script
+        run: |
+          python src/scripts/build_site.py
+      - name: Commit files
+        run: |
+          git config --local user.name "Github Action"
+          git config --local user.email "action@github.com"
+          git add *
+          git commit -m "Auto-build"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
