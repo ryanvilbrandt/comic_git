@@ -13,7 +13,7 @@ from typing import Dict, List
 
 from jinja2 import Environment, FileSystemLoader
 
-from src.scripts.build_rss_feed import build_rss_feed
+from build_rss_feed import build_rss_feed
 
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
