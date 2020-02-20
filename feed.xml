@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <atom:link href="https://ryanvilbrandt.github.io/comic_git/feed.xml" rel="self" type="application/rss+xml"/>
+        <title>Tamberlane</title>
+        <description>This is a comic about a girl who knows a lot of animals.</description>
+        <link>https://ryanvilbrandt.github.io/comic_git/</link>
+        <dc:creator>Caytlin Vilbrandt</dc:creator>
+        <language>en-us</language>
+        <image>
+            <title>Tamberlane</title>
+            <link>https://ryanvilbrandt.github.io/comic_git/</link>
+            <url>https://ryanvilbrandt.github.io/comic_git/your_content/images/banner.png</url>
+            <width>100</width>
+            <height>36</height>
+        </image>
+        <item>
+            <title>Page 197</title>
+            <dc:creator>Caytlin Vilbrandt</dc:creator>
+            <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+            <link>https://ryanvilbrandt.github.io/comic_git/comic/197.html</link>
+            <guid isPermaLink="true">https://ryanvilbrandt.github.io/comic_git/comic/197.html</guid>
+            <category>Chapter 4 (section 1)</category>
+            <category>Avery</category>
+            <category>Belfry</category>
+            <category>Cur</category>
+            <category>Piper</category>
+            <category>Tamberlane</category>
+            <description><![CDATA[<p><img src="https://ryanvilbrandt.github.io/comic_git/your_content/comics/197/Page_197.png" alt_text="Tamberlane, can you sign &quot;ongoing trauma&quot;?"></p>
+
+<hr>
+
+<p>WHOOPS! Caught red-pawed! ...and poor Tamberlane is having a heck of a time today, isn't she? 🙁
+
+<p>Thanks again to Chaon for letting me use Cur in his Patreon cameo!]]></description>
+        </item>
+        <item>
+            <title>Page 198</title>
+            <dc:creator>Caytlin Vilbrandt</dc:creator>
+            <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+            <link>https://ryanvilbrandt.github.io/comic_git/comic/198.html</link>
+            <guid isPermaLink="true">https://ryanvilbrandt.github.io/comic_git/comic/198.html</guid>
+            <category>Chapter 4 (section 1)</category>
+            <category>Belfry</category>
+            <category>Tamberlane</category>
+            <description><![CDATA[<p><img src="https://ryanvilbrandt.github.io/comic_git/your_content/comics/198/Page_198.png" alt_text="Sometimes I wish I could put actual sounds in comics, just to be able to get across the frantic little slapping sound of snappy, distressed signing."></p>
+
+<hr>
+
+Poor sad Tamberlane. I promise the tears will stop ... soon ... probably.]]></description>
+        </item>
+        <item>
+            <title>Page 199</title>
+            <dc:creator>Caytlin Vilbrandt</dc:creator>
+            <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+            <link>https://ryanvilbrandt.github.io/comic_git/comic/199.html</link>
+            <guid isPermaLink="true">https://ryanvilbrandt.github.io/comic_git/comic/199.html</guid>
+            <category>Chapter 4 (section 2)</category>
+            <category>Anthony</category>
+            <category>Belfry</category>
+            <category>Piper</category>
+            <category>Tamberlane</category>
+            <description><![CDATA[<p><img src="https://ryanvilbrandt.github.io/comic_git/your_content/comics/199/Page_199.png" alt_text="&quot;Yeah, I&#x27;ll start a fight. And I&#x27;ll end it too!! From time out!!&quot;"></p>
+
+<hr>
+
+<p>Anthony has all the answers! And Piper ... well, Piper is unapologetically her.
+
+<p>Saturday's my birthday! Yay! Happy birthday to me 😀 Thank you all for the wonderful birthday gift of reading my little story here. It means a lot to me!]]></description>
+        </item>
+        <item>
+            <title>Page 200</title>
+            <dc:creator>Caytlin Vilbrandt</dc:creator>
+            <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+            <link>https://ryanvilbrandt.github.io/comic_git/comic/200.html</link>
+            <guid isPermaLink="true">https://ryanvilbrandt.github.io/comic_git/comic/200.html</guid>
+            <category>Chapter 4 (section 2)</category>
+            <category>Belfry</category>
+            <category>Tamberlane</category>
+            <description><![CDATA[<p><img src="https://ryanvilbrandt.github.io/comic_git/your_content/comics/200/Page_200.png" alt_text="Sometimes you don&#x27;t need words."></p>
+
+<hr>
+
+<p>A big thank you to the lovely Caytlin Vilbrandt for allowing me to use her web comic as the example for this project!</p>
+
+<p>If you'd like to check out more of this amazing comic (and I recommend you do), you can read more at <a href="https://www.tamberlanecomic.com/">https://www.tamberlanecomic.com/</a></p>]]></description>
+        </item>
+    </channel>
+</rss>

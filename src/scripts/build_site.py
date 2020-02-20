@@ -13,6 +13,8 @@ from typing import Dict, List
 
 from jinja2 import Environment, FileSystemLoader
 
+from src.scripts.build_rss_feed import build_rss_feed
+
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
 )
@@ -130,6 +132,7 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
         post_html = f.read().decode("utf-8")
     return {
         "page_name": page_info["page_name"],
+        "filename": page_info["Filename"],
         "comic_path": "../your_content/comics/{}/{}".format(
             page_info["page_name"],
             page_info["Filename"]
@@ -222,6 +225,7 @@ def main():
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
     write_tagged_page()
+    build_rss_feed(comic_info, comic_data_dicts)
 
 
 if __name__ == "__main__":
