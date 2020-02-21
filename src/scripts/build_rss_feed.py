@@ -82,7 +82,7 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     if not comic_info.getboolean("RSS Feed", "Build RSS feed"):
         return
 
-    if not "GITHUB_REPOSITORY" in os.environ:
+    if "GITHUB_REPOSITORY" not in os.environ:
         raise ValueError("Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally")
 
     register_namespace("atom", "http://www.w3.org/2005/Atom")
