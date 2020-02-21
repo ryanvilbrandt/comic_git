@@ -82,6 +82,7 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     if not comic_info.getboolean("RSS Feed", "Build RSS feed"):
         return
 
+    print(os.environ)
     if not "GITHUB_REPOSTORY" in os.environ:
         raise ValueError("Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally")
 

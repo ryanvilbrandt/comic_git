@@ -125,8 +125,7 @@ def get_ids(comic_list: List[Dict], index):
     }
 
 
-def create_comic_data(comic_info: RawConfigParser, page_info: dict,
-                 first_id: str, previous_id: str, next_id: str, last_id: str):
+def create_comic_data(page_info: dict, first_id: str, previous_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
     with open("your_content/comics/{}/post.html".format(page_info["page_name"]), "rb") as f:
         post_html = f.read().decode("utf-8")
@@ -149,10 +148,10 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
     }
 
 
-def build_comic_data_dicts(comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
+def build_comic_data_dicts(page_info_list: List[Dict]) -> List[Dict]:
     comic_data_dicts = []
     for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(comic_info, page_info, **get_ids(page_info_list, i))
+        comic_dict = create_comic_data(page_info, **get_ids(page_info_list, i))
         comic_data_dicts.append(comic_dict)
     return comic_data_dicts
 
@@ -220,7 +219,7 @@ def main():
     with open("comic/page_info_list.json", "w") as f:
         f.write(dumps(page_info_list))
     # Build full comic data dicts, to build templates with
-    comic_data_dicts = build_comic_data_dicts(comic_info, page_info_list)
+    comic_data_dicts = build_comic_data_dicts(page_info_list)
     # Write page info to comic HTML pages
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
