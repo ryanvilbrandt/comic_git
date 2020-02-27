@@ -10,8 +10,8 @@ from json import dumps
 from os.path import isfile
 
 from PIL import Image
-from time import strptime, localtime
-from typing import Dict, List
+from time import strptime, localtime, time
+from typing import Dict, List, Tuple
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -245,29 +245,59 @@ def write_tagged_page():
     write_to_template("tagged.tpl", "tagged.html", {"page_title": "Tagged posts"})
 
 
+def print_processing_times(processing_times: List[Tuple[str, float]]):
+    last_processed_time = None
+    print("")
+    for name, t in processing_times:
+        if last_processed_time is not None:
+            print("{}: {:.2f} ms".format(name, (t - last_processed_time) * 1000))
+        last_processed_time = t
+    print("{}: {:.2f} ms".format("Total time", (processing_times[-1][1] - processing_times[0][1]) * 1000))
+
+
 def main():
     global COMIC_TITLE, LINKS_LIST
+    processing_times = [("Start", time())]
+
     # Setup output file space
     setup_output_file_space()
+    processing_times.append(("Setup output file space", time()))
+
     # Get site-wide settings for this comic
     comic_info = read_info("your_content/comic_info.ini")
     COMIC_TITLE = comic_info.get("Comic Settings", "Comic name")
     LINKS_LIST = get_links_list(comic_info)
+    processing_times.append(("Get comic settings", time()))
+
     # Get the info for all pages, sorted by Post Date
     page_info_list = get_page_info_list(comic_info.get("Comic Settings", "Date format"))
     print([p["page_name"] for p in page_info_list])
+    processing_times.append(("Get info for all pages", time()))
+
     # Save page_info_list.json file for use by other pages
     with open("comic/page_info_list.json", "w") as f:
         f.write(dumps(page_info_list))
+    processing_times.append(("Save page_info_list.json file", time()))
+
     # Build full comic data dicts, to build templates with
     comic_data_dicts = build_comic_data_dicts(page_info_list)
+    processing_times.append(("Build full comic data dicts", time()))
+
     # Create low-res and thumbnail versions of all the comic pages
     process_comic_images(comic_info, comic_data_dicts)
+    processing_times.append(("Process comic images", time()))
+
     # Write page info to comic HTML pages
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
     write_tagged_page()
+    processing_times.append(("Write HTML files", time()))
+
+    # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
+    processing_times.append(("Build RSS feed", time()))
+
+    print_processing_times(processing_times)
 
 
 if __name__ == "__main__":
