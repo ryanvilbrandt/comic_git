@@ -8,6 +8,8 @@ from configparser import RawConfigParser
 from glob import glob
 from json import dumps
 from os.path import isfile
+
+from PIL import Image
 from time import strptime, localtime
 from typing import Dict, List
 
@@ -156,6 +158,45 @@ def build_comic_data_dicts(page_info_list: List[Dict]) -> List[Dict]:
     return comic_data_dicts
 
 
+def resize(im, size):
+    if "," in size:
+        # Convert a string of the form "100, 36" into a 2-tuple of ints (100, 36)
+        x, y = size.strip().split(",")
+        new_size = (int(x.strip()), int(y.strip()))
+    elif size.endswith("%"):
+        # Convert a percentage (50%) into a new size (50, 18)
+        size = float(size.strip().strip("%"))
+        size = size / 100
+        x, y = im.size
+        new_size = (int(x * size), int(y * size))
+    else:
+        raise ValueError("Unknown resize value: {!r}".format(size))
+    return im.resize(new_size)
+
+
+def process_comic_image(comic_info, comic_page_path, create_thumbnails, create_low_quality):
+    section = "Image Reprocessing"
+    comic_page_dir = os.path.dirname(comic_page_path)
+    comic_page_name, comic_page_ext = os.path.splitext(os.path.basename(comic_page_path))
+    with open(comic_page_path, "rb") as f:
+        im = Image.open(f)
+        if create_thumbnails:
+            thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
+            thumb_im.save(os.path.join(comic_page_dir, comic_page_name + "_thumbnail.jpg"))
+        if create_low_quality:
+            file_type = comic_info.get(section, "Low-quality file type")
+            im.save(os.path.join(comic_page_dir, comic_page_name + "_low_quality." + file_type.lower()))
+
+
+def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
+    section = "Image Reprocessing"
+    create_thumbnails = comic_info.getboolean(section, "Create thumbnails")
+    create_low_quality = comic_info.getboolean(section, "Create low-quality versions of images")
+    if create_thumbnails or create_low_quality:
+        for comic_data in comic_data_dicts:
+            process_comic_image(comic_info, comic_data["comic_path"][3:], create_thumbnails, create_low_quality)
+
+
 def write_to_template(template_path, html_path, data_dict=None):
     if data_dict is None:
         data_dict = {}
@@ -220,6 +261,8 @@ def main():
         f.write(dumps(page_info_list))
     # Build full comic data dicts, to build templates with
     comic_data_dicts = build_comic_data_dicts(page_info_list)
+    # Create low-res and thumbnail versions of all the comic pages
+    process_comic_images(comic_info, comic_data_dicts)
     # Write page info to comic HTML pages
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
