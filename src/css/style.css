@@ -72,6 +72,34 @@ div#powered-by {
     font-size: 9pt;
 }
 
+div.archive-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+div.archive-thumbnail {
+    text-align: center;
+    padding: 10px;
+}
+
+h2.archive-section {
+    text-align: center;
+}
+
+div.archive-thumbnail-page {
+    margin-bottom: 2px;
+}
+
+div.archive-thumbnail-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+div.archive-thumbnail-post-date {
+    font-style: italic;
+    font-size: 10pt;
+}
+
 div.cast-member {
     max-width: 100%;
     margin: 30px;

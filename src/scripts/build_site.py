@@ -138,6 +138,10 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, next_id:
             page_info["page_name"],
             page_info["Filename"]
         ),
+        "thumbnail_path": "your_content/comics/{}/{}".format(
+            page_info["page_name"],
+            os.path.splitext(page_info["Filename"])[0] + "_thumbnail.jpg"
+        ),
         "alt_text": html.escape(page_info["Alt text"]),
         "first_id": first_id,
         "previous_id": previous_id,
@@ -237,7 +241,11 @@ def write_archive_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]
             "name": section,
             "pages": pages
         })
-    write_to_template("archive.tpl", "archive.html", {"page_title": "Archive", "archive_sections": archive_sections})
+    write_to_template("archive.tpl", "archive.html", {
+        "page_title": "Archive",
+        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
+        "archive_sections": archive_sections
+    })
 
 
 def write_tagged_page():
