@@ -253,6 +253,11 @@ def write_tagged_page():
     write_to_template("tagged.tpl", "tagged.html", {"page_title": "Tagged posts"})
 
 
+def write_infinite_scroll_page():
+    print("Building infinite scroll page...")
+    write_to_template("infinite_scroll.tpl", "infinite_scroll.html", {"page_title": "Infinite scroll"})
+
+
 def print_processing_times(processing_times: List[Tuple[str, float]]):
     last_processed_time = None
     print("")
@@ -299,6 +304,7 @@ def main():
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
     write_tagged_page()
+    write_infinite_scroll_page()
     processing_times.append(("Write HTML files", time()))
 
     # Build RSS feed
