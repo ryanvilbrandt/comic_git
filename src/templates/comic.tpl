@@ -5,22 +5,10 @@
     </div>
 
     <div id="navigation-bar">
-        <table id="navigation-buttons">
-            <tr>
-                <td id="navigation-button-first">
-                    <a class="navigation-button" href="{{ first_id }}.html#comic-page">First</a>
-                </td>
-                <td id="navigation-button-previous">
-                    <a class="navigation-button" href="{{ previous_id }}.html#comic-page">Previous</a>
-                </td>
-                <td id="navigation-button-next">
-                    <a class="navigation-button" href="{{ next_id }}.html#comic-page">Next</a>
-                </td>
-                <td id="navigation-button-last">
-                    <a class="navigation-button" href="{{ last_id }}.html#comic-page">Last</a>
-                </td>
-            </tr>
-        </table>
+        <a class="navigation-button" href="{{ first_id }}.html#comic-page">First</a>
+        <a class="navigation-button" href="{{ previous_id }}.html#comic-page">Previous</a>
+        <a class="navigation-button" href="{{ next_id }}.html#comic-page">Next</a>
+        <a class="navigation-button" href="{{ last_id }}.html#comic-page">Last</a>
     </div>
 
     <div id="blurb">

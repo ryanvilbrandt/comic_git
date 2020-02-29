@@ -23,15 +23,25 @@ div#links-bar {
     background-color: indianred;
     margin-bottom: 15px;
     padding: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+a.link-bar-link + a.link-bar-link::before {
+    content: "|";
+    color: black;
+    margin: 0 10px;
 }
 
 div#comic-page {
     margin-bottom: 20px;
 }
 
-table#navigation-buttons {
+div#navigation-bar {
+    display: flex;
     margin: 0 auto 20px auto;
     font-weight: bold;
+    justify-content: center;
 }
 
 a.navigation-button {

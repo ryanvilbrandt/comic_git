@@ -17,7 +17,6 @@
     <div id="links-bar">
         {% for link in links %}
             <a class="link-bar-link" href="{{ link.url }}">{{ link.name }}</a>
-            {% if not loop.last %}&nbsp;&nbsp;|&nbsp;&nbsp;{% endif %}
         {% endfor %}
     </div>
 
