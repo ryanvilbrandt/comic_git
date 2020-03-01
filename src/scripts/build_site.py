@@ -10,7 +10,7 @@ from json import dumps
 from os.path import isfile
 
 from PIL import Image
-from time import strptime, localtime, time
+from time import strptime, localtime, time, strftime
 from typing import Dict, List, Tuple
 
 from jinja2 import Environment, FileSystemLoader
@@ -95,7 +95,7 @@ def unschedule_files(folder_path):
 
 def get_page_info_list(date_format: str) -> List[Dict]:
     local_time = localtime()
-    print("Local time is {}".format(local_time))
+    print("Local time is {}".format(strftime('%Y-%m-%dT%H:%M:%SZ', local_time)))
     page_info_list = []
     for page_path in glob("your_content/comics/*"):
         page_info = read_info("{}/info.ini".format(page_path), to_dict=True, might_be_scheduled=True)
