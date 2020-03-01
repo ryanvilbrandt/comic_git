@@ -11,7 +11,7 @@ If you want to edit any of these files, edit their *.tpl versions in src/templat
     <link rel="stylesheet" type="text/css" href="/comic_git/src/css/style.css">
     <link rel="stylesheet" type="text/css" href="/comic_git/your_content/colors_and_layout/your_stylesheet.css">
     <link rel="icon" href="/comic_git/favicon.ico" type="image/x-icon" />
-    <title>Archive - Tamberlane</title>
+    <title>Infinite scroll - Tamberlane</title>
 </head>
 <body>
 
@@ -26,23 +26,12 @@ If you want to edit any of these files, edit their *.tpl versions in src/templat
     </div>
 
     
-    <h1 id="page-title">Archive</h1>
-
-    <div id="blurb">
-    <ul>
-        <li>Chapter 4 (section 1)
-            <ul>
-                <li><a href="/comic_git/comic/197.html">Page 197</a> -- November 27, 2019</li>
-                <li><a href="/comic_git/comic/198.html">Page 198</a> -- December 4, 2019</li>
-            </ul>
-        </li>
-        <li>Chapter 4 (section 2)
-            <ul>
-                <li><a href="/comic_git/comic/199.html">Page 199</a> -- December 11, 2019</li>
-                <li><a href="/comic_git/comic/200.html">Page 200</a> -- December 18, 2019</li>
-            </ul>
-        </li>
-    </ul>
+    <div id="load-older" hidden>
+        <button id="load-older-button">Load Older</button>
+    </div>
+    <div id="infinite-scroll"></div>
+    <div id="load-newer">
+        <button id="load-newer-button">Load Newer</button>
     </div>
 
 
@@ -52,5 +41,10 @@ If you want to edit any of these files, edit their *.tpl versions in src/templat
 </div>
 
 </body>
+
+<script type="module">
+    import { load_page } from "./src/js/infinite_scroll.js";
+    load_page();
+</script>
 
 </html>
