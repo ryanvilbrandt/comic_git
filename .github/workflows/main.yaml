@@ -27,8 +27,8 @@ jobs:
         run: |
           git config --local user.name "Github Action"
           git config --local user.email "action@github.com"
-          git add *
-          git commit -m "Auto-build"
+          git add --all
+          git diff-index --quiet HEAD || git commit -m "Auto-build"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
