@@ -5,7 +5,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: '0 16 * * MON'  # At 8:00 AM UTC every Wednesday
+    - cron: '0 8 * * WED'  # Runs at 8:00 AM UTC every Wednesday
 
 jobs:
   build:
