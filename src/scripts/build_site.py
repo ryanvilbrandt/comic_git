@@ -93,15 +93,16 @@ def unschedule_files(folder_path):
             os.rename(filepath, filepath[:-11])
 
 
-def get_page_info_list(date_format: str) -> List[Dict]:
+def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> List[Dict]:
     local_time = localtime()
     print("Local time is {}".format(strftime('%Y-%m-%dT%H:%M:%SZ', local_time)))
     page_info_list = []
     for page_path in glob("your_content/comics/*"):
         page_info = read_info("{}/info.ini".format(page_path), to_dict=True, might_be_scheduled=True)
         if strptime(page_info["Post date"], date_format) > local_time:
-            # Post date is in the future, so mark all the files as .scheduled so they don't show up online
-            schedule_files(page_path)
+            # Post date is in the future, so rename all resource files so they can't easily be found
+            if hide_scheduled_posts:
+                schedule_files(page_path)
         else:
             # Post date is in the past, so publish the comic files
             unschedule_files(page_path)
@@ -275,12 +276,15 @@ def main():
 
     # Get site-wide settings for this comic
     comic_info = read_info("your_content/comic_info.ini")
-    COMIC_TITLE = comic_info.get("Comic Settings", "Comic name")
+    COMIC_TITLE = comic_info.get("Comic Info", "Comic name")
     LINKS_LIST = get_links_list(comic_info)
     processing_times.append(("Get comic settings", time()))
 
     # Get the info for all pages, sorted by Post Date
-    page_info_list = get_page_info_list(comic_info.get("Comic Settings", "Date format"))
+    page_info_list = get_page_info_list(
+        comic_info.get("Comic Settings", "Date format"),
+        comic_info.getboolean("Comic Settings", "Hide scheduled posts")
+    )
     print([p["page_name"] for p in page_info_list])
     processing_times.append(("Get info for all pages", time()))
 

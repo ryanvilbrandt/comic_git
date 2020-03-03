@@ -20,17 +20,17 @@ def add_base_tags_to_channel(channel, comic_url, comic_info):
     atom_link.set("type", "application/rss+xml")
 
     # Set title, description, creator, and language
-    ElementTree.SubElement(channel, "title").text = comic_info.get("Comic Settings", "Comic name")
+    ElementTree.SubElement(channel, "title").text = comic_info.get("Comic Info", "Comic name")
     ElementTree.SubElement(channel, "description").text = comic_info.get("RSS Feed", "Description")
     ElementTree.SubElement(channel, "link").text = comic_url
     ElementTree.SubElement(channel, "{http://purl.org/dc/elements/1.1/}creator").text = \
-        comic_info.get("Comic Settings", "Author")
+        comic_info.get("Comic Info", "Author")
     ElementTree.SubElement(channel, "language").text = comic_info.get("RSS Feed", "Language")
 
 
 def add_image_tag(channel, comic_url, comic_info):
     image_tag = ElementTree.SubElement(channel, "image")
-    ElementTree.SubElement(image_tag, "title").text = comic_info.get("Comic Settings", "Comic name")
+    ElementTree.SubElement(image_tag, "title").text = comic_info.get("Comic Info", "Comic name")
     ElementTree.SubElement(image_tag, "link").text = comic_url
     ElementTree.SubElement(image_tag, "url").text = urljoin(comic_url, comic_info.get("RSS Feed", "Image"))
     ElementTree.SubElement(image_tag, "width").text = comic_info.get("RSS Feed", "Image width")
@@ -43,7 +43,7 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
     item = ElementTree.SubElement(xml_parent, "item")
     ElementTree.SubElement(item, "title").text = comic_data["page_title"]
     ElementTree.SubElement(item, "{http://purl.org/dc/elements/1.1/}creator").text = \
-        comic_info.get("Comic Settings", "Author")
+        comic_info.get("Comic Info", "Author")
     post_date = strptime(comic_data["post_date"], comic_info.get("Comic Settings", "Date format"))
     ElementTree.SubElement(item, "pubDate").text = strftime("%a, %d %b %Y %H:%M:%S +0000", post_date)
     direct_link = urljoin(comic_url, "comic/{}.html".format(post_id))
