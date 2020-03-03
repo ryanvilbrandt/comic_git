@@ -9,7 +9,8 @@ async function fetch_all_json_data() {
     console.log("Fetched page info list");
     let json = await response.json();
     let tag = find_get_parameter("tag");
-    build_tagged_list(json, tag);
+    console.log(json);
+    build_tagged_list(json["page_info_list"], tag);
     document.getElementById("page-title").innerText = 'Posts tagged with "' + tag + '"';
 }
 

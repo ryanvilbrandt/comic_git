@@ -93,13 +93,15 @@ def unschedule_files(folder_path):
             os.rename(filepath, filepath[:-11])
 
 
-def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> List[Dict]:
+def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> Tuple[List[Dict], int]:
     local_time = localtime()
     print("Local time is {}".format(strftime('%Y-%m-%dT%H:%M:%SZ', local_time)))
     page_info_list = []
+    scheduled_post_count = 0
     for page_path in glob("your_content/comics/*"):
         page_info = read_info("{}/info.ini".format(page_path), to_dict=True, might_be_scheduled=True)
         if strptime(page_info["Post date"], date_format) > local_time:
+            scheduled_post_count += 1
             # Post date is in the future, so rename all resource files so they can't easily be found
             if hide_scheduled_posts:
                 schedule_files(page_path)
@@ -114,7 +116,16 @@ def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> List[Dict
         page_info_list,
         key=lambda x: (strptime(x["Post date"], date_format), x["page_name"])
     )
-    return page_info_list
+    return page_info_list, scheduled_post_count
+
+
+def save_page_info_json_file(page_info_list: List, scheduled_post_count: int):
+    d = {
+        "page_info_list": page_info_list,
+        "scheduled_post_count": scheduled_post_count
+    }
+    with open("comic/page_info_list.json", "w") as f:
+        f.write(dumps(d))
 
 
 def get_ids(comic_list: List[Dict], index):
@@ -281,7 +292,7 @@ def main():
     processing_times.append(("Get comic settings", time()))
 
     # Get the info for all pages, sorted by Post Date
-    page_info_list = get_page_info_list(
+    page_info_list, scheduled_post_count = get_page_info_list(
         comic_info.get("Comic Settings", "Date format"),
         comic_info.getboolean("Comic Settings", "Hide scheduled posts")
     )
@@ -289,8 +300,7 @@ def main():
     processing_times.append(("Get info for all pages", time()))
 
     # Save page_info_list.json file for use by other pages
-    with open("comic/page_info_list.json", "w") as f:
-        f.write(dumps(page_info_list))
+    save_page_info_json_file(page_info_list, scheduled_post_count)
     processing_times.append(("Save page_info_list.json file", time()))
 
     # Build full comic data dicts, to build templates with

@@ -34,7 +34,8 @@ export async function load_page() {
 async function fetch_all_json_data() {
     let response = await fetch("./comic/page_info_list.json");
     console.log("Fetched page info list");
-    page_info_json = await response.json();
+    let json = await response.json();
+    page_info_json = json["page_info_list"];
 }
 
 function get_starting_page() {
