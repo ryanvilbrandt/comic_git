@@ -134,7 +134,7 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, next_id:
     return {
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
-        "comic_path": "../your_content/comics/{}/{}".format(
+        "comic_path": "your_content/comics/{}/{}".format(
             page_info["page_name"],
             page_info["Filename"]
         ),
@@ -224,10 +224,7 @@ def write_comic_pages(comic_data_dicts: List[Dict], create_index_file=True):
     if create_index_file:
         # Write index redirect HTML page
         print("Building index page...")
-        index_dict = {
-            "last_id": comic_data_dicts[-1]["page_name"]
-        }
-        write_to_template("index.tpl", "index.html", index_dict)
+        write_to_template("index.tpl", "index.html", comic_data_dicts[-1])
 
 
 def write_archive_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
