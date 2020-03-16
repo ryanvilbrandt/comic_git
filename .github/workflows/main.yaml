@@ -20,8 +20,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: docs
-      - name: Merge master into docs 
+      - name: Merge master into docs
         run: |
+          git status
           git fetch --all --no-tags
           git merge -X theirs origin/master
           git status
@@ -43,6 +44,6 @@ jobs:
           git add --all
           git diff-index --quiet HEAD || git commit -m "Auto-build"
       - name: Push changes
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@docs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
