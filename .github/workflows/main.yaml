@@ -16,7 +16,7 @@ jobs:
         python-version: [3.8]
 
     steps:
-      - name: Checkout docs branch
+      - name: Checkout master branch and build website
         uses: actions/checkout@v2
       - name: Reset master to point to working's HEAD
         run: |
