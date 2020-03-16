@@ -23,3 +23,5 @@ node_modules/
 *.sqlite
 
 .idea/
+venv/
+__pycache__/
