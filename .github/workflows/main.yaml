@@ -3,7 +3,7 @@ name: Auto-build HTML files
 on:
   push:
     branches:
-      - master
+      - working
   schedule:
     - cron: '0 8 * * WED'  # Runs at 8:00 AM UTC every Wednesday
 
@@ -18,14 +18,10 @@ jobs:
     steps:
       - name: Checkout docs branch
         uses: actions/checkout@v2
-        with:
-          ref: docs
-      - name: Merge master into docs
+      - name: Reset master to point to working's HEAD
         run: |
-          git status
           git fetch --all --no-tags
-          git merge -X theirs origin/master
-          git status
+          git reset --hard origin/working
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -47,4 +43,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: docs
+          force: true
