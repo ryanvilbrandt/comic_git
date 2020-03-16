@@ -11,10 +11,20 @@
     </div>
 
     <div id="navigation-bar">
+    {% if first_id == current_id %}
+        <a class="navigation-button-disabled">First</a>
+        <a class="navigation-button-disabled">Previous</a>
+    {% else %}
         <a class="navigation-button" href="/{{ base_dir }}/comic/{{ first_id }}.html#comic-page">First</a>
         <a class="navigation-button" href="/{{ base_dir }}/comic/{{ previous_id }}.html#comic-page">Previous</a>
+    {% endif %}
+    {% if last_id == current_id %}
+        <a class="navigation-button-disabled">Next</a>
+        <a class="navigation-button-disabled">Last</a>
+    {% else %}
         <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">Next</a>
         <a class="navigation-button" href="/{{ base_dir }}/comic/{{ last_id }}.html#comic-page">Last</a>
+    {% endif %}
     </div>
 
     <div id="blurb">

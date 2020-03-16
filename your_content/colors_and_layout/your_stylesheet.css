@@ -41,6 +41,12 @@ a.navigation-button {
     text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
 }
 
+a.navigation-button-disabled {
+    color: gray;  /* Color of the disabled navigation bar hyperlinks */
+    font-size: 18pt;  /* Size of the disabled navigation bar hyperlinks */
+    text-decoration: none;  /* Delete this if you want your disabled navigation links to be underlined */
+}
+
 div#blurb {
     background-color: lightgray;  /* The color of the "blurb" box that contains post title, post date, tags, etc. */
     max-width: 700px;  /* The maximum width of the blurb box. */

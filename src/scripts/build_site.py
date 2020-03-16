@@ -134,12 +134,13 @@ def get_ids(comic_list: List[Dict], index):
     return {
         "first_id": first_id,
         "previous_id": first_id if index == 0 else comic_list[index - 1]["page_name"],
+        "current_id": comic_list[index]["page_name"],
         "next_id": last_id if index == (len(comic_list) - 1) else comic_list[index + 1]["page_name"],
         "last_id": last_id
     }
 
 
-def create_comic_data(page_info: dict, first_id: str, previous_id: str, next_id: str, last_id: str):
+def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
     with open("your_content/comics/{}/post.html".format(page_info["page_name"]), "rb") as f:
         post_html = f.read().decode("utf-8")
@@ -157,6 +158,7 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, next_id:
         "alt_text": html.escape(page_info["Alt text"]),
         "first_id": first_id,
         "previous_id": previous_id,
+        "current_id": current_id,
         "next_id": next_id,
         "last_id": last_id,
         "page_title": page_info["Title"],

@@ -44,7 +44,7 @@ div#navigation-bar {
     justify-content: center;
 }
 
-a.navigation-button {
+a.navigation-button, a.navigation-button-disabled {
     padding: 0 20px;
 }
 
