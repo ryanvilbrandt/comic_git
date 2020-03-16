@@ -46,7 +46,7 @@ def get_links_list(comic_info: RawConfigParser):
 
 def delete_output_file_space():
     shutil.rmtree("comic", ignore_errors=True)
-    for f in ["index.html", "archive.html", "tagged.html", "feed.xml"]:
+    for f in ["index.html", "archive.html", "tagged.html", "feed.xml", "infinite_scroll.html"]:
         if os.path.isfile(f):
             os.remove(f)
 
