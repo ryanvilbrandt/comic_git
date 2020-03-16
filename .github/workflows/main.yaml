@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: docs
+      - name: Merge master into docs
         run: |
           git fetch --all --no-tags
           git merge -X theirs origin/master
