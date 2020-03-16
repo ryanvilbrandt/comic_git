@@ -44,6 +44,7 @@ jobs:
           git add --all
           git diff-index --quiet HEAD || git commit -m "Auto-build"
       - name: Push changes
-        uses: ad-m/github-push-action@docs
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs
