@@ -110,6 +110,10 @@ div.archive-thumbnail-post-date {
     font-size: 10pt;
 }
 
+div#load-older {
+    margin-bottom: 15px;
+}
+
 div.cast-member {
     max-width: 100%;
     margin: 30px;

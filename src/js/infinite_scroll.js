@@ -115,6 +115,7 @@ function load_newer_pages() {
     if (loading_more_pages)
         return;
     loading_more_pages = true;
+    document.getElementById("loading-infinite-scroll").hidden = true;
     try {
         for (let i = 0; i < num_pages_to_load; i++) {
             latest_comic_loaded++;
