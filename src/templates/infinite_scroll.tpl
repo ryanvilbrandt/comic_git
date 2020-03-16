@@ -7,6 +7,9 @@
     <div id="load-newer">
         <button id="load-newer-button">Load Newer</button>
     </div>
+    <div id="caught-up-notification" hidden>
+        <h3>You're all caught up!</h3>
+    </div>
 {% endblock %}
 {% block script %}
 <script type="module">

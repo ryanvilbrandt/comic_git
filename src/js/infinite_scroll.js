@@ -125,6 +125,7 @@ function load_newer_pages() {
             if (latest_comic_loaded + 1 >= page_info_json.length) {
                 // No more pages to display
                 document.getElementById("load-newer").hidden = true;
+                document.getElementById("caught-up-notification").hidden = false;
                 break;
             }
         }
