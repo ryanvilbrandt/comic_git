@@ -17,13 +17,13 @@ jobs:
 
     steps:
       - name: Checkout docs branch
-      - uses: actions/checkout@v2
-      - with:
-        ref: docs
-      - run: |
-        git fetch --all --no-tags
-        git merge -X theirs origin/master
-        git status
+        uses: actions/checkout@v2
+        with:
+          ref: docs
+        run: |
+          git fetch --all --no-tags
+          git merge -X theirs origin/master
+          git status
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
