@@ -215,6 +215,19 @@ def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
             process_comic_image(comic_info, comic_data["comic_path"][3:], create_thumbnails, create_low_quality)
 
 
+def get_archive_sections(comic_info: RawConfigParser, comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
+    archive_sections = []
+    for section in comic_info.get("Archive", "Archive sections").strip().split(","):
+        section = section.strip()
+        pages = [comic_data for comic_data in comic_data_dicts
+                 if section in comic_data["tags"]]
+        archive_sections.append({
+            "name": section,
+            "pages": pages
+        })
+    return archive_sections
+
+
 def write_to_template(template_path, html_path, data_dict=None):
     if data_dict is None:
         data_dict = {}
@@ -243,15 +256,7 @@ def write_comic_pages(comic_data_dicts: List[Dict], create_index_file=True):
 
 def write_archive_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     print("Building archive page...")
-    archive_sections = []
-    for section in comic_info.get("Archive", "Archive sections").strip().split(","):
-        section = section.strip()
-        pages = [comic_data for comic_data in comic_data_dicts
-                 if section in comic_data["tags"]]
-        archive_sections.append({
-            "name": section,
-            "pages": pages
-        })
+    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
     write_to_template("archive.tpl", "archive.html", {
         "page_title": "Archive",
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
@@ -264,9 +269,13 @@ def write_tagged_page():
     write_to_template("tagged.tpl", "tagged.html", {"page_title": "Tagged posts"})
 
 
-def write_infinite_scroll_page():
+def write_infinite_scroll_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     print("Building infinite scroll page...")
-    write_to_template("infinite_scroll.tpl", "infinite_scroll.html", {"page_title": "Infinite scroll"})
+    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
+    write_to_template("infinite_scroll.tpl", "infinite_scroll.html", {
+        "page_title": "Infinite scroll",
+        "archive_sections": archive_sections
+    })
 
 
 def print_processing_times(processing_times: List[Tuple[str, float]]):
@@ -317,7 +326,7 @@ def main():
     write_comic_pages(comic_data_dicts)
     write_archive_page(comic_info, comic_data_dicts)
     write_tagged_page()
-    write_infinite_scroll_page()
+    write_infinite_scroll_page(comic_info, comic_data_dicts)
     processing_times.append(("Write HTML files", time()))
 
     # Build RSS feed

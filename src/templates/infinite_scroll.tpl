@@ -1,5 +1,11 @@
 {% extends "base.tpl" %}
 {% block content %}
+    <div id="jump-to">
+        <h2>Jump to...</h2>
+        {%- for section in archive_sections %}
+            <a class="chapter-links" href="infinite_scroll.html#{{ section.pages[0].page_name }}">{{ section.name }}</a>
+        {%- endfor %}
+    </div>
     <div id="load-older" hidden>
         <button id="load-older-button">Load Older</button>
     </div>

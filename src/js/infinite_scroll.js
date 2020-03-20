@@ -17,17 +17,26 @@ export async function load_page() {
     initializing = true;
     await fetch_all_json_data();
     infinite_scroll_div = document.getElementById("infinite-scroll");
-    get_starting_page();
-    load_newer_pages();
-    go_to_anchor();
+    load_and_go_to_page();
     document.getElementById("load-older-button").onclick = load_older_pages;
     document.getElementById("load-newer-button").onclick = load_newer_pages;
     window.onscroll = on_scroll;
-    document.addEventListener("keydown", event => {
-        if (event.code === "KeyL") {
-            set_current_page(get_current_page(current_page, true));
-        }
-    });
+    // document.addEventListener("keydown", event => {
+    //     if (event.code === "KeyL") {
+    //         set_current_page(get_current_page(current_page, true));
+    //     }
+    // });
+    for (let link of document.getElementsByClassName("chapter-links")) {
+        link.addEventListener("click", function () {
+            let url = this.getAttribute("href");
+            console.log(url);
+            window.location.href = url;
+            initializing = true;
+            infinite_scroll_div.textContent = '';
+            load_and_go_to_page();
+            initializing = false;
+        })
+    }
     initializing = false;
 }
 
@@ -36,6 +45,12 @@ async function fetch_all_json_data() {
     console.log("Fetched page info list");
     let json = await response.json();
     page_info_json = json["page_info_list"];
+}
+
+function load_and_go_to_page() {
+    get_starting_page();
+    load_newer_pages();
+    go_to_anchor();
 }
 
 function get_starting_page() {
