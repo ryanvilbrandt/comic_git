@@ -25,6 +25,11 @@ div#container {
     box-shadow: 5px 5px 10px lightgray;  /* If you change the background color of website, play with this or else it will look bad. */
 }
 
+img#banner-img {
+    width: 1000px;  /* The width of your banner image */
+    height: 355px;  /* The height of your banner image */
+}
+
 div#links-bar {
     background-color: indianred;  /* The background color of your links bar */
 }
@@ -33,6 +38,11 @@ a.link-bar-link {
     color: white;  /* The color of the links in your links bar */
     font-weight: bold;  /* Delete this to unbold the links in your links bar*/
     text-decoration: none;  /* Delete this line to put underlining on the links in your links bar */
+}
+
+div#comic-page {
+    width: 1000px;  /* The width of your comic page */
+    height: 1535px;  /* The height of your comic page */
 }
 
 a.navigation-button {
