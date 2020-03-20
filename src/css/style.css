@@ -110,6 +110,14 @@ div.archive-thumbnail-post-date {
     font-size: 10pt;
 }
 
+div#jump-to {
+    margin-bottom: 15px;
+}
+
+a.chapter-links {
+    margin-right: 10px;
+}
+
 div#load-older {
     margin-bottom: 15px;
 }
