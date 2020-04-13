@@ -8,12 +8,11 @@ from configparser import RawConfigParser
 from glob import glob
 from json import dumps
 from os.path import isfile
-
-from PIL import Image
 from time import strptime, localtime, time, strftime
 from typing import Dict, List, Tuple
 
-from jinja2 import Environment, FileSystemLoader
+from PIL import Image
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 from build_rss_feed import build_rss_feed
 
@@ -44,16 +43,27 @@ def get_links_list(comic_info: RawConfigParser):
     return link_list
 
 
-def delete_output_file_space():
+def get_pages_list(comic_info: RawConfigParser):
+    page_list = []
+    for option in comic_info.options("Pages"):
+        page_list.append({"template_name": option, "title": path(comic_info.get("Pages", option))})
+    return page_list
+
+
+def delete_output_file_space(comic_info: RawConfigParser=None):
     shutil.rmtree("comic", ignore_errors=True)
-    for f in ["index.html", "archive.html", "tagged.html", "feed.xml", "infinite_scroll.html"]:
-        if os.path.isfile(f):
-            os.remove(f)
+    if os.path.isfile("feed.xml"):
+        os.remove("feed.xml")
+    if comic_info is None:
+        comic_info = read_info("your_content/comic_info.ini")
+    for page in get_pages_list(comic_info):
+        if os.path.isfile(page["template_name"] + ".html"):
+            os.remove(page["template_name"] + ".html")
 
 
-def setup_output_file_space():
+def setup_output_file_space(comic_info: RawConfigParser):
     # Clean workspace, i.e. delete old files
-    delete_output_file_space()
+    delete_output_file_space(comic_info)
     # Create directories if needed
     os.makedirs("comic", exist_ok=True)
 
@@ -231,27 +241,48 @@ def get_archive_sections(comic_info: RawConfigParser, comic_data_dicts: List[Dic
 def write_to_template(template_path, html_path, data_dict=None):
     if data_dict is None:
         data_dict = {}
-    template = JINJA_ENVIRONMENT.get_template(template_path)
-    with open(html_path, "wb") as f:
-        rendered_template = template.render(
-            autogenerate_warning=AUTOGENERATE_WARNING,
-            comic_title=COMIC_TITLE,
-            base_dir=BASE_DIRECTORY,
-            links=LINKS_LIST,
-            **data_dict
-        )
-        f.write(bytes(rendered_template, "utf-8"))
+    try:
+        template = JINJA_ENVIRONMENT.get_template(template_path)
+    except TemplateNotFound:
+        print("Template file {} not found".format(template_path))
+    else:
+        with open(html_path, "wb") as f:
+            rendered_template = template.render(
+                autogenerate_warning=AUTOGENERATE_WARNING,
+                comic_title=COMIC_TITLE,
+                base_dir=BASE_DIRECTORY,
+                links=LINKS_LIST,
+                **data_dict
+            )
+            f.write(bytes(rendered_template, "utf-8"))
 
 
-def write_comic_pages(comic_data_dicts: List[Dict], create_index_file=True):
+def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     # Write individual comic pages
+    print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
         html_path = "comic/{}.html".format(comic_data_dict["page_name"])
         write_to_template("comic.tpl", html_path, comic_data_dict)
-    if create_index_file:
-        # Write index redirect HTML page
-        print("Building index page...")
-        write_to_template("index.tpl", "index.html", comic_data_dicts[-1])
+    write_other_pages(comic_info, comic_data_dicts)
+
+
+def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
+    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
+    last_comic_page = comic_data_dicts[-1]
+    last_comic_page.update({
+        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
+        "archive_sections": archive_sections
+    })
+    pages_list = get_pages_list(comic_info)
+    for page in pages_list:
+        template_name = page["template_name"] + ".tpl"
+        html_path = page["template_name"] + ".html"
+        data_dict = {}
+        data_dict.update(last_comic_page)
+        if page["title"]:
+            data_dict["page_title"] = page["title"]
+        print("Writing {}...".format(html_path))
+        write_to_template(template_name, html_path, data_dict)
 
 
 def write_archive_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
@@ -292,15 +323,15 @@ def main():
     global COMIC_TITLE, LINKS_LIST
     processing_times = [("Start", time())]
 
-    # Setup output file space
-    setup_output_file_space()
-    processing_times.append(("Setup output file space", time()))
-
     # Get site-wide settings for this comic
     comic_info = read_info("your_content/comic_info.ini")
     COMIC_TITLE = comic_info.get("Comic Info", "Comic name")
     LINKS_LIST = get_links_list(comic_info)
     processing_times.append(("Get comic settings", time()))
+
+    # Setup output file space
+    setup_output_file_space(comic_info)
+    processing_times.append(("Setup output file space", time()))
 
     # Get the info for all pages, sorted by Post Date
     page_info_list, scheduled_post_count = get_page_info_list(
@@ -323,10 +354,7 @@ def main():
     processing_times.append(("Process comic images", time()))
 
     # Write page info to comic HTML pages
-    write_comic_pages(comic_data_dicts)
-    write_archive_page(comic_info, comic_data_dicts)
-    write_tagged_page()
-    write_infinite_scroll_page(comic_info, comic_data_dicts)
+    write_html_files(comic_info, comic_data_dicts)
     processing_times.append(("Write HTML files", time()))
 
     # Build RSS feed
