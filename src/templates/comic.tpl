@@ -30,12 +30,25 @@
     <div id="blurb">
         <h1 id="page-title">{{ page_title }}</h1>
         <div id="post-date">Posted on: {{ post_date }}</div>
-        <div id="tags">
-        Tags:
-        {%- for tag in tags %}
-            <a class="tag-link" href="/{{ base_dir }}/tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
-        {%- endfor %}
-        </div>
+        {%- if storyline %}
+            <div>Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a></div>
+        {%- endif %}
+        {%- if characters %}
+            <div>
+            Characters:
+            {%- for character in characters %}
+                <a href="/{{ base_dir }}/tagged.html?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
+            {%- endfor %}
+            </div>
+        {%- endif %}
+        {%- if tags %}
+            <div>
+            Tags:
+            {%- for tag in tags %}
+                <a class="tag-link" href="../tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            {%- endfor %}
+            </div>
+        {%- endif %}
         <hr id="post-body-break">
         <div id="post-body">
 {{ post_html }}

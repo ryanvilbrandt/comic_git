@@ -2,8 +2,8 @@
 {% block content %}
     <div id="jump-to">
         <h2>Jump to...</h2>
-        {%- for section in archive_sections %}
-            <a class="chapter-links" href="infinite_scroll.html#{{ section.pages[0].page_name }}">{{ section.name }}</a>
+        {%- for storyline in storylines %}
+            <a class="chapter-links" href="infinite_scroll.html#{{ storyline.pages[0].page_name }}">{{ storyline.name }}</a>
         {%- endfor %}
     </div>
     <div id="load-older" hidden>

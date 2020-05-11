@@ -4,11 +4,11 @@
 
     <div id="blurb">
     {%- if use_thumbnails %}
-        {%- for section in archive_sections %}
-        {%- if section.pages %}
-        <h2 class="archive-section">{{ section.name }}</h2>
+        {%- for storyline in storylines %}
+        {%- if storyline.pages %}
+        <h2 class="archive-section">{{ storyline.name }}</h2>
         <div class="archive-grid">
-        {%- for page in section.pages %}
+        {%- for page in storyline.pages %}
             <a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">
             <div class="archive-thumbnail">
                 <div class="archive-thumbnail-page"><img src="/{{ base_dir }}/{{ page.thumbnail_path }}"></div>
@@ -22,11 +22,11 @@
         {%- endfor %}
     {%- else %}
     <ul>
-    {%- for section in archive_sections %}
-        {%- if section.pages %}
-        <li>{{ section.name }}
+    {%- for storyline in storylines %}
+        {%- if storyline.pages %}
+        <li>{{ storyline.name }}
             <ul>
-            {%- for page in section.pages %}
+            {%- for page in storyline.pages %}
                 <li><a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
             {%- endfor %}
             </ul>

@@ -4,6 +4,7 @@ import random
 import re
 import shutil
 import string
+from collections import OrderedDict
 from configparser import RawConfigParser
 from glob import glob
 from json import dumps
@@ -34,6 +35,16 @@ def path(rel_path: str):
     if rel_path.startswith("/"):
         return "/" + BASE_DIRECTORY + rel_path
     return rel_path
+
+
+def str_to_list(s, delimiter=","):
+    """
+    split(), but with extra stripping of white space and leading/trailing delimiters
+    :param s:
+    :param delimiter:
+    :return:
+    """
+    return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
 
 
 def get_links_list(comic_info: RawConfigParser):
@@ -119,7 +130,9 @@ def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> Tuple[Lis
             # Post date is in the past, so publish the comic files
             unschedule_files(page_path)
             page_info["page_name"] = os.path.basename(page_path)
-            page_info["Tags"] = [tag.strip() for tag in page_info["Tags"].strip().split(",")]
+            page_info["Storyline"] = page_info.get("Storyline", "")
+            page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
+            page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
             page_info_list.append(page_info)
 
     page_info_list = sorted(
@@ -173,7 +186,9 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_
         "last_id": last_id,
         "page_title": page_info["Title"],
         "post_date": page_info["Post date"],
-        "tags": page_info["Tags"],
+        "storyline": None if "Storyline" not in page_info else page_info["Storyline"],
+        "characters": str_to_list(page_info["Characters"]),
+        "tags": str_to_list(page_info["Tags"]),
         "post_html": post_html
     }
 
@@ -225,17 +240,25 @@ def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
             process_comic_image(comic_info, comic_data["comic_path"][3:], create_thumbnails, create_low_quality)
 
 
-def get_archive_sections(comic_info: RawConfigParser, comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
-    archive_sections = []
-    for section in comic_info.get("Archive", "Archive sections").strip().split(","):
-        section = section.strip()
-        pages = [comic_data for comic_data in comic_data_dicts
-                 if section in comic_data["tags"]]
-        archive_sections.append({
-            "name": section,
+def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
+    # Start with an OrderedDict, so we can easily drop the pages we encounter in the proper buckets, while keeping
+    # their proper order
+    storylines_dict = OrderedDict()
+    for comic_data in comic_data_dicts:
+        storyline = comic_data["storyline"]
+        if storyline:
+            if storyline not in storylines_dict.keys():
+                storylines_dict[storyline] = []
+            storylines_dict[storyline].append(comic_data)
+
+    # Convert the OrderedDict to a list of dicts, so it's more easily accessible by the Jinja2 templates later
+    storylines = []
+    for name, pages in storylines_dict:
+        storylines.append({
+            "name": name,
             "pages": pages
         })
-    return archive_sections
+    return storylines
 
 
 def write_to_template(template_path, html_path, data_dict=None):
@@ -267,11 +290,11 @@ def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
 
 
 def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
+    storylines = get_storylines(comic_data_dicts)
     last_comic_page = comic_data_dicts[-1]
     last_comic_page.update({
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "archive_sections": archive_sections
+        "storylines": storylines
     })
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
@@ -283,30 +306,6 @@ def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict])
             data_dict["page_title"] = page["title"]
         print("Writing {}...".format(html_path))
         write_to_template(template_name, html_path, data_dict)
-
-
-def write_archive_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    print("Building archive page...")
-    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
-    write_to_template("archive.tpl", "archive.html", {
-        "page_title": "Archive",
-        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "archive_sections": archive_sections
-    })
-
-
-def write_tagged_page():
-    print("Building tagged page...")
-    write_to_template("tagged.tpl", "tagged.html", {"page_title": "Tagged posts"})
-
-
-def write_infinite_scroll_page(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    print("Building infinite scroll page...")
-    archive_sections = get_archive_sections(comic_info, comic_data_dicts)
-    write_to_template("infinite_scroll.tpl", "infinite_scroll.html", {
-        "page_title": "Infinite scroll",
-        "archive_sections": archive_sections
-    })
 
 
 def print_processing_times(processing_times: List[Tuple[str, float]]):
