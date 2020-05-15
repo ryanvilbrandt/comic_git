@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
-from .build_rss_feed import build_rss_feed
+from build_rss_feed import build_rss_feed
 
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
