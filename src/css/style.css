@@ -61,12 +61,9 @@ h1#page-title {
     margin-bottom: 10px;
 }
 
-div#post-date {
+h3#post-date {
     margin-top: 1em;
-}
-
-div#tags {
-    margin-top: 0.25em;
+    margin-bottom: 0.25em;
 }
 
 hr#post-body-break {
@@ -79,7 +76,7 @@ div#archives {
 }
 
 div#powered-by {
-    font-size: 9pt;
+    font-size: 0.7em;
 }
 
 div.archive-grid {
@@ -107,7 +104,7 @@ div.archive-thumbnail-title {
 
 div.archive-thumbnail-post-date {
     font-style: italic;
-    font-size: 10pt;
+    font-size: 0.8em;
 }
 
 div#jump-to {
@@ -150,7 +147,6 @@ button.accordion-button {
     border: none;
     text-align: left;
     outline: none;
-    font-size: 12pt;
     transition: 0.4s;
 }
 

@@ -29,12 +29,14 @@
 
     <div id="blurb">
         <h1 id="page-title">{{ page_title }}</h1>
-        <div id="post-date">Posted on: {{ post_date }}</div>
+        <h3 id="post-date">Posted on: {{ post_date }}</h3>
         {%- if storyline %}
-            <div>Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a></div>
+            <div id="storyline">
+                Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a>
+            </div>
         {%- endif %}
         {%- if characters %}
-            <div>
+            <div id="characters">
             Characters:
             {%- for character in characters %}
                 <a href="/{{ base_dir }}/tagged.html?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
@@ -42,7 +44,7 @@
             </div>
         {%- endif %}
         {%- if tags %}
-            <div>
+            <div id="tags">
             Tags:
             {%- for tag in tags %}
                 <a class="tag-link" href="../tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}

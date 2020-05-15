@@ -11,7 +11,7 @@ body {
     font-family: 'PT Sans', sans-serif;  /* The font of all the text on all pages */
     color: black;  /* The color of the font of most of the text on your website */
     background-color: white;  /* The color of the background behind everything */
-    background-image: url("background_image.png");  /* The pattern on the background. Delete to change to a solid color
+    background-image: url("../images/background_image.png");  /* The pattern on the background. Delete to change to a solid color
                                                        or replace with your own image to tile across your background. */
 }
 
@@ -47,13 +47,13 @@ div#comic-page {
 
 a.navigation-button {
     color: indianred;  /* Color of the navigation bar hyperlinks */
-    font-size: 18pt;  /* Size of the navigation bar hyperlinks */
+    font-size: 2em;  /* Size of the navigation bar hyperlinks */
     text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
 }
 
 a.navigation-button-disabled {
     color: gray;  /* Color of the disabled navigation bar hyperlinks */
-    font-size: 18pt;  /* Size of the disabled navigation bar hyperlinks */
+    font-size: 2em;  /* Size of the disabled navigation bar hyperlinks */
     text-decoration: none;  /* Delete this if you want your disabled navigation links to be underlined */
 }
 
@@ -65,32 +65,14 @@ div#blurb {
 }
 
 h1#page-title {
-    color: maroon;  /* Color of the post title */
-    font-size: 24pt;  /* Font size of the post title */
+    color: maroon;  /* Color of the page title */
+    font-size: 3em;  /* Font size of the post title */
 }
 
 div#post-date {
     font-weight: bold;  /* Delete this to unbold the post date */
 }
 
-div#tags {
+div#storyline, div#characters, div#tags {
     font-style: italic;  /* Delete this to unitalicize the tags */
-}
-
-h1#page-title {
-    color: maroon;  /* The color of the page title, on pages like archive.html and tagged.html */
-    font-size: 32pt;  /* The font size of the page title */
-}
-
-div.cast-member {
-    background-color: lightgray;  /* The color of the box containing each cast member's entry on the cast page. */
-}
-
-img.cast-member-picture {
-    border-radius: 10px;  /* Remove this to remove the rounding from the corners of the cast member pictures on the cast page. */
-}
-
-div.cast-member-name {
-    font-size: 18pt;  /* The font size of the cast member's name in their bio */
-    color: maroon;  /* The color of the cast member's name in their bio */
 }
