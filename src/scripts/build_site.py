@@ -44,6 +44,8 @@ def str_to_list(s, delimiter=","):
     :param delimiter:
     :return:
     """
+    if not s:
+        return []
     return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
 
 
