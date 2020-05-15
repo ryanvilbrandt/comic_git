@@ -13,7 +13,11 @@
 <body>
 {% block body %}
 <div id="container">
-    <div id="banner"><img id="banner-img" src="/{{ base_dir }}/your_content/images/banner.png"></div>
+    <div id="banner">
+        <a id="banner-img-link" href="/{{ base_dir }}/">
+            <img id="banner-img" alt="banner" src="/{{ base_dir }}/your_content/images/banner.png">
+        </a>
+    </div>
     <div id="links-bar">
     {%- for link in links %}
         <a class="link-bar-link" href="{{ link.url }}">{{ link.name }}</a>
