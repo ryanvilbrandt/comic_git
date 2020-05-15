@@ -17,6 +17,8 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 from build_rss_feed import build_rss_feed
 
+VERSION = "0.1.0"
+
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
 )
@@ -277,6 +279,7 @@ def write_to_template(template_path, html_path, data_dict=None):
                 comic_title=COMIC_TITLE,
                 base_dir=BASE_DIRECTORY,
                 links=LINKS_LIST,
+                version=VERSION,
                 **data_dict
             )
             f.write(bytes(rendered_template, "utf-8"))
