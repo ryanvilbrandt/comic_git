@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
-from build_rss_feed import build_rss_feed
+from .build_rss_feed import build_rss_feed
 
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
@@ -87,7 +87,7 @@ def read_info(filepath, to_dict=False, might_be_scheduled=True):
         filepath = scheduled_files[0]
     with open(filepath) as f:
         info_string = f.read()
-    if not re.search("^\[.*?\]", info_string):
+    if not re.search(r"^\[.*?\]", info_string):
         # print(filepath + " has no section")
         info_string = "[DEFAULT]\n" + info_string
     info = RawConfigParser()
@@ -187,8 +187,8 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_
         "page_title": page_info["Title"],
         "post_date": page_info["Post date"],
         "storyline": None if "Storyline" not in page_info else page_info["Storyline"],
-        "characters": str_to_list(page_info["Characters"]),
-        "tags": str_to_list(page_info["Tags"]),
+        "characters": page_info["Characters"],
+        "tags": page_info["Tags"],
         "post_html": post_html
     }
 
@@ -253,7 +253,7 @@ def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
 
     # Convert the OrderedDict to a list of dicts, so it's more easily accessible by the Jinja2 templates later
     storylines = []
-    for name, pages in storylines_dict:
+    for name, pages in storylines_dict.items():
         storylines.append({
             "name": name,
             "pages": pages
