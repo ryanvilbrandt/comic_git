@@ -100,30 +100,7 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def schedule_folder(folder_path):
-    if not re.search(r"--[a-z]{10}$", folder_path):
-        os.rename(folder_path, folder_path + "--" + "".join(random.choices(string.ascii_lowercase, k=10)))
-
-
-def unschedule_folder(folder_path):
-    if re.search(r"--[a-z]{10}$", folder_path):
-        os.rename(folder_path, folder_path[:-12])
-
-
-def schedule_files(folder_path):
-    for filepath in glob(folder_path + "/*"):
-        if not re.search(r"\.[a-z]{10}$", filepath):
-            # Add an extra extension to the filepath, a period followed by ten random lower case characters
-            os.rename(filepath, filepath + "." + "".join(random.choices(string.ascii_lowercase, k=10)))
-
-
-def unschedule_files(folder_path):
-    for filepath in glob(folder_path + "/*"):
-        if re.search(r"\.[a-z]{10}$", filepath):
-            os.rename(filepath, filepath[:-11])
-
-
-def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> Tuple[List[Dict], int]:
+def get_page_info_list(date_format: str, delete_scheduled_posts=True) -> Tuple[List[Dict], int]:
     local_time = localtime()
     print("Local time is {}".format(strftime('%Y-%m-%dT%H:%M:%SZ', local_time)))
     page_info_list = []
@@ -132,12 +109,10 @@ def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> Tuple[Lis
         page_info = read_info("{}/info.ini".format(page_path), to_dict=True)
         if strptime(page_info["Post date"], date_format) > local_time:
             scheduled_post_count += 1
-            # Post date is in the future, so rename the folder so it can't easily be found
-            if hide_scheduled_posts:
-                schedule_folder(page_path)
+            # Post date is in the future, so delete the folder with the resources
+            if delete_scheduled_posts:
+                shutil.rmtree(page_path)
         else:
-            # Post date is in the past, so publish the comic files
-            unschedule_folder(page_path)
             page_info["page_name"] = os.path.basename(page_path)
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
@@ -345,7 +320,7 @@ def main():
     # Get the info for all pages, sorted by Post Date
     page_info_list, scheduled_post_count = get_page_info_list(
         comic_info.get("Comic Settings", "Date format"),
-        comic_info.getboolean("Comic Settings", "Hide scheduled posts")
+        comic_info.getboolean("Comic Settings", "Delete scheduled posts")
     )
     print([p["page_name"] for p in page_info_list])
     processing_times.append(("Get info for all pages", time()))
