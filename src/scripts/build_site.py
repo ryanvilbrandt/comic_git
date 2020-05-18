@@ -83,12 +83,7 @@ def setup_output_file_space(comic_info: RawConfigParser):
     os.makedirs("comic", exist_ok=True)
 
 
-def read_info(filepath, to_dict=False, might_be_scheduled=True):
-    if might_be_scheduled and not isfile(filepath):
-        scheduled_files = glob(filepath + ".*")
-        if not scheduled_files:
-            raise FileNotFoundError(filepath)
-        filepath = scheduled_files[0]
+def read_info(filepath, to_dict=False):
     with open(filepath) as f:
         info_string = f.read()
     if not re.search(r"^\[.*?\]", info_string):
@@ -103,6 +98,16 @@ def read_info(filepath, to_dict=False, might_be_scheduled=True):
             raise NotImplementedError("Configs with multiple sections not yet supported")
         return dict(info["DEFAULT"])
     return info
+
+
+def schedule_folder(folder_path):
+    if not re.search(r"--[a-z]{10}$", folder_path):
+        os.rename(folder_path, folder_path + "--" + "".join(random.choices(string.ascii_lowercase, k=10)))
+
+
+def unschedule_folder(folder_path):
+    if re.search(r"--[a-z]{10}$", folder_path):
+        os.rename(folder_path, folder_path[:-12])
 
 
 def schedule_files(folder_path):
@@ -124,15 +129,15 @@ def get_page_info_list(date_format: str, hide_scheduled_posts=True) -> Tuple[Lis
     page_info_list = []
     scheduled_post_count = 0
     for page_path in glob("your_content/comics/*"):
-        page_info = read_info("{}/info.ini".format(page_path), to_dict=True, might_be_scheduled=True)
+        page_info = read_info("{}/info.ini".format(page_path), to_dict=True)
         if strptime(page_info["Post date"], date_format) > local_time:
             scheduled_post_count += 1
-            # Post date is in the future, so rename all resource files so they can't easily be found
+            # Post date is in the future, so rename the folder so it can't easily be found
             if hide_scheduled_posts:
-                schedule_files(page_path)
+                schedule_folder(page_path)
         else:
             # Post date is in the past, so publish the comic files
-            unschedule_files(page_path)
+            unschedule_folder(page_path)
             page_info["page_name"] = os.path.basename(page_path)
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
