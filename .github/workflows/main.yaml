@@ -1,12 +1,10 @@
 name: Auto-build HTML files
 
 on:
-#  push:
-#    branches:
-#      - working
-  schedule:
+  push:
     branches:
       - working
+  schedule:
     - cron: '10 23 * * *'  # Runs at 8:00 AM UTC every Wednesday
 
 jobs:
