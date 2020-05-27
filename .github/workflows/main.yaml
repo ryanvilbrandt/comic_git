@@ -5,6 +5,8 @@ on:
 #    branches:
 #      - working
   schedule:
+    branches:
+      - working
     - cron: '0 22 * * THU'  # Runs at 8:00 AM UTC every Wednesday
 
 jobs:
