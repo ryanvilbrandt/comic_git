@@ -147,9 +147,12 @@ def get_ids(comic_list: List[Dict], index):
     }
 
 
-def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
+def create_comic_data(comic_info: RawConfigParser, page_info: dict,
+                      first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
-    with open("your_content/comics/{}/post.html".format(page_info["page_name"]), "rb") as f:
+    archive_post_date = strftime(comic_info.get("Archive", "Date format"),
+                                 strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
+    with open(f"your_content/comics/{page_info['page_name']}/post.html", "rb") as f:
         post_html = f.read().decode("utf-8")
     return {
         "page_name": page_info["page_name"],
@@ -170,6 +173,7 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_
         "last_id": last_id,
         "page_title": page_info["Title"],
         "post_date": page_info["Post date"],
+        "archive_post_date": archive_post_date,
         "storyline": None if "Storyline" not in page_info else page_info["Storyline"],
         "characters": page_info["Characters"],
         "tags": page_info["Tags"],
@@ -177,10 +181,10 @@ def create_comic_data(page_info: dict, first_id: str, previous_id: str, current_
     }
 
 
-def build_comic_data_dicts(page_info_list: List[Dict]) -> List[Dict]:
+def build_comic_data_dicts(comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
     comic_data_dicts = []
     for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(page_info, **get_ids(page_info_list, i))
+        comic_dict = create_comic_data(comic_info, page_info, **get_ids(page_info_list, i))
         comic_data_dicts.append(comic_dict)
     return comic_data_dicts
 
@@ -201,6 +205,19 @@ def resize(im, size):
     return im.resize(new_size)
 
 
+def save_image(im, path):
+    try:
+        im.save(path)
+    except OSError as e:
+        if str(e) == "cannot write mode RGBA as JPEG":
+            # Get rid of transparency
+            bg = Image.new("RGB", im.size, "WHITE")
+            bg.paste(im, (0, 0), im)
+            bg.save(path)
+        else:
+            raise
+
+
 def process_comic_image(comic_info, comic_page_path, create_thumbnails, create_low_quality):
     section = "Image Reprocessing"
     comic_page_dir = os.path.dirname(comic_page_path)
@@ -208,11 +225,17 @@ def process_comic_image(comic_info, comic_page_path, create_thumbnails, create_l
     with open(comic_page_path, "rb") as f:
         im = Image.open(f)
         if create_thumbnails:
-            thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
-            thumb_im.save(os.path.join(comic_page_dir, comic_page_name + "_thumbnail.jpg"))
+            thumbnail_path = os.path.join(comic_page_dir, comic_page_name + "_thumbnail.jpg")
+            if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(thumbnail_path):
+                print(f"Creating thumbnail for {comic_page_name}")
+                thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
+                save_image(thumb_im, thumbnail_path)
         if create_low_quality:
             file_type = comic_info.get(section, "Low-quality file type")
-            im.save(os.path.join(comic_page_dir, comic_page_name + "_low_quality." + file_type.lower()))
+            low_quality_path = os.path.join(comic_page_dir, comic_page_name + "_low_quality." + file_type.lower())
+            if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(low_quality_path):
+                print(f"Creating low quality version of {comic_page_name}")
+                save_image(im, low_quality_path)
 
 
 def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
@@ -221,7 +244,7 @@ def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
     create_low_quality = comic_info.getboolean(section, "Create low-quality versions of images")
     if create_thumbnails or create_low_quality:
         for comic_data in comic_data_dicts:
-            process_comic_image(comic_info, comic_data["comic_path"][3:], create_thumbnails, create_low_quality)
+            process_comic_image(comic_info, comic_data["comic_path"], create_thumbnails, create_low_quality)
 
 
 def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
@@ -330,7 +353,7 @@ def main():
     processing_times.append(("Save page_info_list.json file", time()))
 
     # Build full comic data dicts, to build templates with
-    comic_data_dicts = build_comic_data_dicts(page_info_list)
+    comic_data_dicts = build_comic_data_dicts(comic_info, page_info_list)
     processing_times.append(("Build full comic data dicts", time()))
 
     # Create low-res and thumbnail versions of all the comic pages

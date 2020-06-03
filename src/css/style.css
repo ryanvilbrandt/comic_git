@@ -82,11 +82,13 @@ div#powered-by {
 div.archive-grid {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 div.archive-thumbnail {
+    width: 100px;
+    margin: 10px;
     text-align: center;
-    padding: 10px;
 }
 
 h2.archive-section {

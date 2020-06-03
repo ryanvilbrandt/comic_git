@@ -13,7 +13,7 @@
             <div class="archive-thumbnail">
                 <div class="archive-thumbnail-page"><img src="/{{ base_dir }}/{{ page.thumbnail_path }}"></div>
                 <div class="archive-thumbnail-title">{{ page.page_title }}</div>
-                <div class="archive-thumbnail-post-date">{{ page.post_date }}</div>
+                <div class="archive-thumbnail-post-date">{{ page.archive_post_date }}</div>
             </div>
             </a>
         {%- endfor %}
