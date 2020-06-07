@@ -8,8 +8,6 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 from xml.etree.ElementTree import register_namespace
 
-DATE_FORMAT = "%B %d, %Y"
-
 cdata_dict = {}
 
 
@@ -49,8 +47,20 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
     direct_link = urljoin(comic_url, "comic/{}.html".format(post_id))
     ElementTree.SubElement(item, "link").text = direct_link
     ElementTree.SubElement(item, "guid", isPermaLink="true").text = direct_link
-    for tag in comic_data["tags"]:
-        ElementTree.SubElement(item, "category").text = tag
+    if "storyline" in comic_data:
+        e = ElementTree.SubElement(item, "category")
+        e.attrib["type"] = "storyline"
+        e.text = comic_data["storyline"]
+    if "characters" in comic_data:
+        for character in comic_data["characters"]:
+            e = ElementTree.SubElement(item, "category")
+            e.attrib["type"] = "character"
+            e.text = character
+    if "tags" in comic_data:
+        for tag in comic_data["tags"]:
+            e = ElementTree.SubElement(item, "category")
+            e.attrib["type"] = "tag"
+            e.text = tag
     comic_image_url = urljoin(comic_url, "your_content/comics/{}/{}".format(post_id, comic_data["filename"]))
     html = build_rss_post(comic_image_url, comic_data.get("alt_text"), comic_data["post_html"])
     cdata_dict["post_id_" + post_id] = "<![CDATA[{}]]>".format(html)
@@ -83,7 +93,10 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
         return
 
     if "GITHUB_REPOSITORY" not in os.environ:
-        raise ValueError("Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally")
+        raise ValueError(
+            "Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally. "
+            'The format should be "<github username>/<github repo name>". For example, "ryanvilbrandt/comic_git".'
+        )
 
     register_namespace("atom", "http://www.w3.org/2005/Atom")
     register_namespace("dc", "http://purl.org/dc/elements/1.1/")

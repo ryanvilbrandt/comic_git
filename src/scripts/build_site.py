@@ -29,7 +29,7 @@ If you want to edit any of these files, edit their *.tpl versions in src/templat
 -->
 """
 COMIC_TITLE = ""
-BASE_DIRECTORY = os.path.basename(os.getcwd())
+BASE_DIRECTORY = None
 LINKS_LIST = []
 
 
@@ -327,10 +327,19 @@ def print_processing_times(processing_times: List[Tuple[str, float]]):
 
 
 def main():
-    global COMIC_TITLE, LINKS_LIST
+    global COMIC_TITLE, LINKS_LIST, BASE_DIRECTORY
+
+    if "GITHUB_REPOSITORY" not in os.environ:
+        raise ValueError(
+            "Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally. "
+            'The format should be "<github username>/<github repo name>". For example, "ryanvilbrandt/comic_git".'
+        )
+
     processing_times = [("Start", time())]
 
     # Get site-wide settings for this comic
+    repo_author, repo_name = os.environ["GITHUB_REPOSITORY"].split("/")
+    BASE_DIRECTORY = repo_name
     comic_info = read_info("your_content/comic_info.ini")
     COMIC_TITLE = comic_info.get("Comic Info", "Comic name")
     LINKS_LIST = get_links_list(comic_info)
