@@ -8,6 +8,7 @@
     <title>{{ page_title }} - {{ comic_title }}</title>
 </head>
 <body>
+<div id="container">
     <!-- Banner Image -->
     <div id="banner"><img id="banner-img" src="/{{ base_dir }}/your_content/images/banner.png"></div>
     <!-- Links Bar -->
@@ -18,61 +19,74 @@
     </div>
 
     <!-- Comic Page -->
-    <a href="{{ next_id }}.html">
-        <img src="/{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
-    </a>
+    <div id="comic-page">
+        <a href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">
+            <img id="comic-image" src="/{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
+        </a>
+    </div>
 
     <!-- Navigation links. Supports disabling the links when you're at the first or last page. -->
-    <div>
-        {%- if first_id == current_id %}
-            <a>First</a>
-            <a>Previous</a>
-        {%- else %}
-            <a href="{{ first_id }}.html#comic-page">First</a>
-            <a href="{{ previous_id }}.html#comic-page">Previous</a>
-        {%- endif %}
-        {%- if last_id == current_id %}
-            <a>Next</a>
-            <a>Last</a>
-        {%- else %}
-            <a href="{{ next_id }}.html#comic-page">Next</a>
-            <a href="{{ last_id }}.html#comic-page">Last</a>
-        {%- endif %}
+    <div id="navigation-bar">
+    {% if first_id == current_id %}
+        <a class="navigation-button-disabled">First</a>
+        <a class="navigation-button-disabled">Previous</a>
+    {% else %}
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ first_id }}.html#comic-page">First</a>
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ previous_id }}.html#comic-page">Previous</a>
+    {% endif %}
+    {% if last_id == current_id %}
+        <a class="navigation-button-disabled">Next</a>
+        <a class="navigation-button-disabled">Last</a>
+    {% else %}
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">Next</a>
+        <a class="navigation-button" href="/{{ base_dir }}/comic/latest.html#comic-page">Last</a>
+    {% endif %}
     </div>
 
     <!-- The comic "blurb" at the bottom with title, post date, tags, etc -->
-    <h1>{{ page_title }}</h1>
-    <div>Posted on: {{ post_date }}</div>
+    <div id="blurb">
+        <h1 id="page-title">{{ page_title }}</h1>
+        <h3 id="post-date">Posted on: {{ post_date }}</h3>
 
-    <!-- The storyline this page is in, with a link to the first page in that storyline -->
-    {%- if storyline %}
-        <div>Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a></div>
-    {%- endif %}
+        <!-- The storyline this page is in, with a link to the first page in that storyline -->
+        {%- if storyline %}
+            <div id="storyline">
+                Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a>
+            </div>
+        {%- endif %}
 
-    <!-- List of characters in this comic, with a link to a web page that lists all comics with that character -->
-    {%- if characters %}
-        <div>
-        Characters:
-        {%- for character in characters %}
-            <!-- "if not loop.last" puts commas after every tag except at the very end -->
-            <a href="/{{ base_dir }}/tagged.html?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
-        {%- endfor %}
+        <!-- List of characters in this comic, with a link to a web page that lists all comics with that character -->
+        {%- if characters %}
+            <div id="characters">
+            Characters:
+            {%- for character in characters %}
+                <!-- "if not loop.last" puts commas after every link except at the very end -->
+                <a href="/{{ base_dir }}/tagged.html?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
+            {%- endfor %}
+            </div>
+        {%- endif %}
+
+        <!-- List of other tags on this comic, with a link to a web page that lists all comics with that tag -->
+        {%- if tags %}
+            <div id="tags">
+            Tags:
+            {%- for tag in tags %}
+                <!-- "if not loop.last" puts commas after every link except at the very end -->
+                <a class="tag-link" href="../tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            {%- endfor %}
+            </div>
+        {%- endif %}
+
+        <hr id="post-body-break">
+        <!-- The post that goes with this comic -->
+        <div id="post-body">
+{{ post_html }}
         </div>
-    {%- endif %}
+    </div>
 
-    <!-- List of other tags on this comic, with a link to a web page that lists all comics with that tag -->
-    {%- if tags %}
-        <div>
-        Tags:
-        {%- for tag in tags %}
-            <!-- "if not loop.last" puts commas after every tag except at the very end -->
-            <a href="../tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
-        {%- endfor %}
-        </div>
-    {%- endif %}
-
-    <hr>
-    <!-- The post that goes with this comic -->
-    {{ post_html }}
+    <div id="powered-by">
+        Powered by <a id="powered-by-link" href="https://github.com/ryanvilbrandt/comic_git">comic_git</a> v{{ version }}
+    </div>
+</div>
 </body>
 </html>
