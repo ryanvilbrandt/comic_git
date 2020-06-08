@@ -3,7 +3,10 @@
     <div id="jump-to">
         <h2>Jump to...</h2>
         {%- for storyline in storylines %}
-            <a class="chapter-links" href="infinite_scroll.html#{{ storyline.pages[0].page_name }}">{{ storyline.name }}</a>
+            <a class="chapter-links" href="infinite_scroll.html#{{ storyline.pages[0].page_name }}"
+                id="infinite-scroll-{{ storyline.name | replace(' ', '-') }}">
+                {{ storyline.name }}
+            </a>
         {%- endfor %}
     </div>
     <div id="load-older" hidden>
