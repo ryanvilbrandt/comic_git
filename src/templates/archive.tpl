@@ -6,7 +6,7 @@
     {%- if use_thumbnails %}
         {%- for storyline in storylines %}
         {%- if storyline.pages %}
-        <h2 class="archive-section">{{ storyline.name }}</h2>
+        <h2 class="archive-section" id="archive-section-{{ storyline.name | replace(' ', '-') }}">{{ storyline.name }}</h2>
         <div class="archive-grid">
         {%- for page in storyline.pages %}
             <a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">
