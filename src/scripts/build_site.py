@@ -1,19 +1,18 @@
 import html
 import os
-import random
 import re
 import shutil
-import string
 from collections import OrderedDict
 from configparser import RawConfigParser
+from datetime import datetime
 from glob import glob
 from json import dumps
-from os.path import isfile
-from time import strptime, localtime, time, strftime
+from time import strptime, time, strftime
 from typing import Dict, List, Tuple
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from pytz import timezone
 
 from build_rss_feed import build_rss_feed
 
@@ -100,17 +99,20 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_page_info_list(date_format: str, delete_scheduled_posts=True) -> Tuple[List[Dict], int]:
-    local_time = localtime()
-    print("Local time is {}".format(strftime('%Y-%m-%dT%H:%M:%SZ', local_time)))
+def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
+    date_format = comic_info.get("Comic Settings", "Date format")
+    tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
+    local_time = datetime.now(tz=tzinfo)
+    print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
     for page_path in glob("your_content/comics/*"):
         page_info = read_info("{}/info.ini".format(page_path), to_dict=True)
-        if strptime(page_info["Post date"], date_format) > local_time:
+        post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
+        if post_date > local_time:
             scheduled_post_count += 1
             # Post date is in the future, so delete the folder with the resources
-            if delete_scheduled_posts:
+            if comic_info.getboolean("Comic Settings", "Delete scheduled posts"):
                 shutil.rmtree(page_path)
         else:
             page_info["page_name"] = os.path.basename(page_path)
@@ -350,10 +352,7 @@ def main():
     processing_times.append(("Setup output file space", time()))
 
     # Get the info for all pages, sorted by Post Date
-    page_info_list, scheduled_post_count = get_page_info_list(
-        comic_info.get("Comic Settings", "Date format"),
-        comic_info.getboolean("Comic Settings", "Delete scheduled posts")
-    )
+    page_info_list, scheduled_post_count = get_page_info_list(comic_info)
     print([p["page_name"] for p in page_info_list])
     processing_times.append(("Get info for all pages", time()))
 
