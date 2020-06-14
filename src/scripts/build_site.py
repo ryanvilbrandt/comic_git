@@ -12,6 +12,7 @@ from typing import Dict, List, Tuple
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from markdown2 import Markdown
 from pytz import timezone
 
 from build_rss_feed import build_rss_feed
@@ -27,9 +28,8 @@ It is auto-generated and any work you do here will be replaced the next time thi
 If you want to edit any of these files, edit their *.tpl versions in src/templates.
 -->
 """
-COMIC_TITLE = ""
 BASE_DIRECTORY = None
-LINKS_LIST = []
+MARKDOWN = Markdown(extras=["strike"])
 
 
 def path(rel_path: str):
@@ -154,8 +154,8 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
     print("Building page {}...".format(page_info["page_name"]))
     archive_post_date = strftime(comic_info.get("Archive", "Date format"),
                                  strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
-    with open(f"your_content/comics/{page_info['page_name']}/post.html", "rb") as f:
-        post_html = f.read().decode("utf-8")
+    with open(f"your_content/comics/{page_info['page_name']}/post.txt", "rb") as f:
+        post_html = MARKDOWN.convert(f.read().decode("utf-8"))
     return {
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
@@ -369,7 +369,7 @@ def main():
         "comic_description": comic_info.get("Comic Info", "Description"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
-        "links_list": get_links_list(comic_info),
+        "links": get_links_list(comic_info),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
     }

@@ -39,7 +39,7 @@
         <a class="navigation-button-disabled">Last</a>
     {% else %}
         <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">Next</a>
-        <a class="navigation-button" href="/{{ base_dir }}/comic/latest.html#comic-page">Last</a>
+        <a class="navigation-button" href="/{{ base_dir }}/latest.html#comic-page">Last</a>
     {% endif %}
     </div>
 
