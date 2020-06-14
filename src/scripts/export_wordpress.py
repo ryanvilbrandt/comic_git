@@ -12,7 +12,8 @@ WEBCOMIC_POST_TYPE = "webcomic1"
 ATTACHMENT_POST_TYPE = "attachment"
 
 
-filename = "tamberlane.WordPress.2020-05-31.xml"
+# filename = "tamberlane.WordPress.2020-05-31.xml"
+filename = "tamberlane.WordPress.2020-06-13.xml"
 
 tree = ET.parse(filename)
 root = tree.getroot()
@@ -31,8 +32,12 @@ for child in channel.iter('item'):
     #     print("")
 
     post_name = child.find('{http://wordpress.org/export/1.2/}post_name').text
+    if post_name is None:
+        continue
     post_type = child.find("{http://wordpress.org/export/1.2/}post_type").text
     if post_type == WEBCOMIC_POST_TYPE:
+        if post_name.endswith("-2"):
+            post_name = post_name[:-2]
         pages[post_name]["title"] = child.find('title').text
         pages[post_name]["page_name"] = post_name
         pages[post_name]["post_date"] = child.find('{http://wordpress.org/export/1.2/}post_date').text
@@ -49,6 +54,8 @@ for child in channel.iter('item'):
         pages[post_name]["characters"] = characters
     elif post_type == ATTACHMENT_POST_TYPE:
         if post_name.endswith("-2"):
+            post_name = post_name[:-2]
+        elif post_name.endswith("-3"):
             post_name = post_name[:-2]
         elif post_name.endswith("-ks"):
             post_name = post_name[:-3]
