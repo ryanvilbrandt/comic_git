@@ -106,8 +106,8 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
-    for page_path in glob("your_content/comics/*"):
-        page_info = read_info("{}/info.ini".format(page_path), to_dict=True)
+    for page_path in glob("your_content/comics/*/"):
+        page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
         if post_date > local_time:
             scheduled_post_count += 1
@@ -115,7 +115,7 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
             if comic_info.getboolean("Comic Settings", "Delete scheduled posts"):
                 shutil.rmtree(page_path)
         else:
-            page_info["page_name"] = os.path.basename(page_path)
+            page_info["page_name"] = os.path.basename(page_path.strip("\\"))
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
             page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
@@ -279,33 +279,22 @@ def write_to_template(template_path, html_path, data_dict=None):
         print("Template file {} not found".format(template_path))
     else:
         with open(html_path, "wb") as f:
-            rendered_template = template.render(
-                autogenerate_warning=AUTOGENERATE_WARNING,
-                comic_title=COMIC_TITLE,
-                base_dir=BASE_DIRECTORY,
-                links=LINKS_LIST,
-                version=VERSION,
-                **data_dict
-            )
+            rendered_template = template.render(**data_dict)
             f.write(bytes(rendered_template, "utf-8"))
 
 
-def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
+def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
         html_path = "comic/{}.html".format(comic_data_dict["page_name"])
+        comic_data_dict.update(global_values)
         write_to_template("comic.tpl", html_path, comic_data_dict)
     write_other_pages(comic_info, comic_data_dicts)
 
 
 def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    storylines = get_storylines(comic_data_dicts)
     last_comic_page = comic_data_dicts[-1]
-    last_comic_page.update({
-        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "storylines": storylines
-    })
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
         template_name = page["template_name"] + ".tpl"
@@ -329,22 +318,26 @@ def print_processing_times(processing_times: List[Tuple[str, float]]):
 
 
 def main():
-    global COMIC_TITLE, LINKS_LIST, BASE_DIRECTORY
-
-    if "GITHUB_REPOSITORY" not in os.environ:
-        raise ValueError(
-            "Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally. "
-            'The format should be "<github username>/<github repo name>". For example, "ryanvilbrandt/comic_git".'
-        )
-
+    global BASE_DIRECTORY
     processing_times = [("Start", time())]
 
     # Get site-wide settings for this comic
-    repo_author, repo_name = os.environ["GITHUB_REPOSITORY"].split("/")
-    BASE_DIRECTORY = repo_name
     comic_info = read_info("your_content/comic_info.ini")
-    COMIC_TITLE = comic_info.get("Comic Info", "Comic name")
-    LINKS_LIST = get_links_list(comic_info)
+    comic_domain = None
+    if "GITHUB_REPOSITORY" in os.environ:
+        repo_author, BASE_DIRECTORY = os.environ["GITHUB_REPOSITORY"].split("/")
+        comic_domain = f"http://{repo_author}.github.io"
+    if comic_info.has_option("Comic Info", "Comic domain"):
+        comic_domain = comic_info.get("Comic Info", "Comic domain").rstrip("/")
+    if comic_info.has_option("Comic Info", "Comic subdirectory"):
+        BASE_DIRECTORY = comic_info.get("Comic Info", "Comic subdirectory").strip("/")
+    if not comic_domain or not BASE_DIRECTORY:
+        raise ValueError(
+            'Set "Comic domain" and "Comic subdirectory" in the [Comic Info] section of your comic_info.ini file '
+            'before building your site locally. Please see the comic_git wiki for more information.'
+        )
+    comic_url = comic_domain + '/' + BASE_DIRECTORY
+
     processing_times.append(("Get comic settings", time()))
 
     # Setup output file space
@@ -369,7 +362,18 @@ def main():
     processing_times.append(("Process comic images", time()))
 
     # Write page info to comic HTML pages
-    write_html_files(comic_info, comic_data_dicts)
+    global_values = {
+        "autogenerate_warning": AUTOGENERATE_WARNING,
+        "version": VERSION,
+        "comic_title": comic_info.get("Comic Info", "Comic name"),
+        "comic_description": comic_info.get("Comic Info", "Description"),
+        "comic_url": comic_url,
+        "base_dir": BASE_DIRECTORY,
+        "links_list": get_links_list(comic_info),
+        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
+        "storylines": get_storylines(comic_data_dicts),
+    }
+    write_html_files(comic_info, comic_data_dicts, global_values)
     processing_times.append(("Write HTML files", time()))
 
     # Build RSS feed
