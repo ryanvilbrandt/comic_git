@@ -153,15 +153,36 @@ def get_ids(comic_list: List[Dict], index):
     }
 
 
+def get_transcripts(comic_info: RawConfigParser, page_name: str) -> OrderedDict:
+    if not comic_info.getboolean("Transcripts", "Enable transcripts"):
+        return OrderedDict()
+    transcripts = OrderedDict()
+    transcripts_dir = "your_content/comics"
+    if comic_info.has_option("Transcripts", "Transcripts folder"):
+        directory = comic_info.get("Transcripts", "Transcripts folder")
+        if directory:
+            transcripts_dir = directory
+    for path in glob(os.path.join(transcripts_dir, page_name, "*.txt")):
+        if path.endswith("post.txt"):
+            continue
+        language = os.path.splitext(os.path.basename(path))[0]
+        with open(path, "rb") as f:
+            transcripts[language] = f.read().decode("utf-8").replace("\n", "<br>\n")
+    if "English" in transcripts:
+        transcripts.move_to_end("English", last=False)
+    return transcripts
+
+
 def create_comic_data(comic_info: RawConfigParser, page_info: dict,
                       first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
+    page_dir = f"your_content/comics/{page_info['page_name']}/"
     archive_post_date = strftime(comic_info.get("Archive", "Date format"),
                                  strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
     post_html = []
     post_text_paths = [
         "your_content/before post text.txt",
-        f"your_content/comics/{page_info['page_name']}/post.txt",
+        page_dir + "post.txt",
         "your_content/after post text.txt"
     ]
     for path in post_text_paths:
@@ -172,14 +193,8 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
     return {
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
-        "comic_path": "your_content/comics/{}/{}".format(
-            page_info["page_name"],
-            page_info["Filename"]
-        ),
-        "thumbnail_path": "your_content/comics/{}/{}".format(
-            page_info["page_name"],
-            os.path.splitext(page_info["Filename"])[0] + "_thumbnail.jpg"
-        ),
+        "comic_path": page_dir + page_info["Filename"],
+        "thumbnail_path": page_dir + os.path.splitext(page_info["Filename"])[0] + "_thumbnail.jpg",
         "alt_text": html.escape(page_info["Alt text"]),
         "first_id": first_id,
         "previous_id": previous_id,
@@ -192,7 +207,8 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
         "storyline": None if "Storyline" not in page_info else page_info["Storyline"],
         "characters": page_info["Characters"],
         "tags": page_info["Tags"],
-        "post_html": post_html
+        "post_html": post_html,
+        "transcripts": get_transcripts(comic_info, page_info["page_name"])
     }
 
 

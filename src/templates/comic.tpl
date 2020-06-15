@@ -55,5 +55,37 @@
         <div id="post-body">
 {{ post_html }}
         </div>
+        {% if transcripts %}
+        <table id="transcripts-container" border>
+            <tr>
+                <td id="transcript-panel">
+                    <h3>Transcript</h3>
+                    <div id="active-transcript">
+                    {% for language, transcript in transcripts.items() %}
+                        <div class="transcript" id='{{ language }}-transcript'>
+                        {{ transcript }}
+                        </div>
+                    {% endfor %}
+                    </div>
+                </td>
+                <td id="language-list">
+                    <label for="language-select">Languages</label>
+                    <select id="language-select" size="7">
+                        {% for language in transcripts.keys() %}
+                        <option>{{ language }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </table>
+        {% endif %}
     </div>
+{%- endblock %}
+{%- block script %}
+{% if transcripts %}
+<script type="module">
+    import { init } from "/{{ base_dir }}/src/js/transcript.js";
+    init();
+</script>
+{% endif %}
 {%- endblock %}

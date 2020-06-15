@@ -135,6 +135,8 @@ div.cast-member-bio {
     margin: 5px;
 }
 
+/* Accordion */
+
 div.accordion {
     margin: 5px;
 }
@@ -174,4 +176,27 @@ div.accordion-panel {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+/* Transcripts */
+
+#transcripts-container {
+    width: 100%
+}
+
+#transcript-panel {
+    padding: 0 10px 10px 10px;
+}
+
+.transcript {
+    display: none;
+}
+
+#language-list {
+    vertical-align: top;
+    padding: 10px;
+}
+
+#language-select {
+    width: 100%;
 }
