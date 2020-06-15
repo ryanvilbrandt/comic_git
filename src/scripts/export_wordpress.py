@@ -100,7 +100,7 @@ Characters = {", ".join(page["characters"])}
 Tags = """.encode("utf-8"))
             if not page["text_post"]:
                 page["text_post"] = ""
-            with open(dir_name + "/post.html", "wb") as f:
+            with open(dir_name + "/post.txt", "wb") as f:
                 f.write(page["text_post"].encode("utf-8"))
 
 
