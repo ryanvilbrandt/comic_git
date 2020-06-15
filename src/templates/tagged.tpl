@@ -1,14 +1,14 @@
 {% extends "base.tpl" %}
 {% block content %}
-    <h1 id="page-title">&nbsp;</h1>
+    <h1 id="page-title">Posts tagged with "{{ tag }}"</h1>
 
     <div id="blurb">
-        <div id="tagged">Loading tags...</div>
+        <div id="tagged">
+            <ul>
+            {%- for page in tagged_pages %}
+                <li><a href="/{{ base_dir }}/comic/{{ page["page_name"] }}/#comic-page">{{ page["page_title"] }}</a> -- {{ page["post_date"] }}</li>
+            {%- endfor %}
+            </ul>
+        </div>
     </div>
-{% endblock %}
-{% block script %}
-<script type="module">
-    import { load_page } from "./src/js/tagged.js";
-    load_page();
-</script>
 {% endblock %}

@@ -2,7 +2,7 @@ import html
 import os
 import re
 import shutil
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from datetime import datetime
 from glob import glob
@@ -283,22 +283,6 @@ def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
     return storylines
 
 
-def write_to_template(template_path, html_path, data_dict=None):
-    if data_dict is None:
-        data_dict = {}
-    try:
-        template = JINJA_ENVIRONMENT.get_template(template_path)
-    except TemplateNotFound:
-        print("Template file {} not found".format(template_path))
-    else:
-        print(html_path)
-        if html_path:
-            os.makedirs(html_path)
-        with open(os.path.join(html_path, "index.html"), "wb") as f:
-            rendered_template = template.render(**data_dict)
-            f.write(bytes(rendered_template, "utf-8"))
-
-
 def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
@@ -313,6 +297,9 @@ def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict])
     last_comic_page = comic_data_dicts[-1]
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
+        if page["template_name"] == "tagged":
+            write_tagged_pages(comic_data_dicts)
+            continue
         template_name = page["template_name"] + ".tpl"
         html_path = "" if page["template_name"] == "index" else page["template_name"]
         data_dict = {}
@@ -321,6 +308,39 @@ def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict])
             data_dict["page_title"] = page["title"]
         print("Writing {}...".format(html_path))
         write_to_template(template_name, html_path, data_dict)
+
+
+def write_tagged_pages(comic_data_dicts: List[Dict]):
+    last_comic_page = comic_data_dicts[-1]
+    tags = defaultdict(list)
+    for page in comic_data_dicts:
+        for character in page["characters"]:
+            tags[character].append(page)
+        for tag in page["tags"]:
+            tags[tag].append(page)
+    for tag, pages in tags.items():
+        print("Writing tagged page for {}...".format(tag))
+        data_dict = {
+            "tag": tag,
+            "tagged_pages": pages
+        }
+        data_dict.update(last_comic_page)
+        write_to_template("tagged.tpl", f"tagged/{tag}", data_dict)
+
+
+def write_to_template(template_path, html_path, data_dict=None):
+    if data_dict is None:
+        data_dict = {}
+    try:
+        template = JINJA_ENVIRONMENT.get_template(template_path)
+    except TemplateNotFound:
+        print("Template file {} not found".format(template_path))
+    else:
+        if html_path:
+            os.makedirs(html_path)
+        with open(os.path.join(html_path, "index.html"), "wb") as f:
+            rendered_template = template.render(**data_dict)
+            f.write(bytes(rendered_template, "utf-8"))
 
 
 def print_processing_times(processing_times: List[Tuple[str, float]]):

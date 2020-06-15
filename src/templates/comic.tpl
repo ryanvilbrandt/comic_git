@@ -39,7 +39,7 @@
             <div id="characters">
             Characters:
             {%- for character in characters %}
-                <a href="/{{ base_dir }}/tagged/?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
+                <a href="/{{ base_dir }}/tagged/{{ character }}/">{{ character }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}
@@ -47,7 +47,7 @@
             <div id="tags">
             Tags:
             {%- for tag in tags %}
-                <a class="tag-link" href="../tagged/?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+                <a class="tag-link" href="/{{ base_dir }}/tagged/{{ tag }}/">{{ tag }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}
