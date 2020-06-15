@@ -71,8 +71,12 @@ def delete_output_file_space(comic_info: RawConfigParser=None):
     if comic_info is None:
         comic_info = read_info("your_content/comic_info.ini")
     for page in get_pages_list(comic_info):
-        if os.path.isfile(page["template_name"] + ".html"):
-            os.remove(page["template_name"] + ".html")
+        if page["template_name"] == "index":
+            if os.path.exists("index.html"):
+                os.remove("index.html")
+        else:
+            if os.path.exists(page["template_name"]):
+                shutil.rmtree(page["template_name"])
 
 
 def setup_output_file_space(comic_info: RawConfigParser):
@@ -287,7 +291,10 @@ def write_to_template(template_path, html_path, data_dict=None):
     except TemplateNotFound:
         print("Template file {} not found".format(template_path))
     else:
-        with open(html_path, "wb") as f:
+        print(html_path)
+        if html_path:
+            os.makedirs(html_path)
+        with open(os.path.join(html_path, "index.html"), "wb") as f:
             rendered_template = template.render(**data_dict)
             f.write(bytes(rendered_template, "utf-8"))
 
@@ -296,7 +303,7 @@ def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], 
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
-        html_path = "comic/{}.html".format(comic_data_dict["page_name"])
+        html_path = f"comic/{comic_data_dict['page_name']}"
         comic_data_dict.update(global_values)
         write_to_template("comic.tpl", html_path, comic_data_dict)
     write_other_pages(comic_info, comic_data_dicts)
@@ -307,7 +314,7 @@ def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict])
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
         template_name = page["template_name"] + ".tpl"
-        html_path = page["template_name"] + ".html"
+        html_path = "" if page["template_name"] == "index" else page["template_name"]
         data_dict = {}
         data_dict.update(last_comic_page)
         if page["title"]:

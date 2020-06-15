@@ -1,11 +1,11 @@
 {% extends "base.tpl" %}
 {%- block head %}
     {{- super() }}
-    <link rel="next" href="/{{ base_dir }}/comic/{{ next_id }}.html">
+    <link rel="next" href="/{{ base_dir }}/comic/{{ next_id }}/">
 {%- endblock %}
 {%- block content %}
     <div id="comic-page">
-        <a href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">
+        <a href="/{{ base_dir }}/comic/{{ next_id }}/#comic-page">
             <img id="comic-image" src="/{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
         </a>
     </div>
@@ -15,15 +15,15 @@
         <a class="navigation-button-disabled">‹‹ First</a>
         <a class="navigation-button-disabled">‹ Previous</a>
     {% else %}
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ first_id }}.html#comic-page">‹‹ First</a>
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ previous_id }}.html#comic-page">‹ Previous</a>
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ first_id }}/#comic-page">‹‹ First</a>
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ previous_id }}/#comic-page">‹ Previous</a>
     {% endif %}
     {% if last_id == current_id %}
         <a class="navigation-button-disabled">Next ›</a>
         <a class="navigation-button-disabled">Last ››</a>
     {% else %}
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}.html#comic-page">Next ›</a>
-        <a class="navigation-button" href="/{{ base_dir }}/latest.html#comic-page">Last ››</a>
+        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}/#comic-page">Next ›</a>
+        <a class="navigation-button" href="/{{ base_dir }}/latest/#comic-page">Last ››</a>
     {% endif %}
     </div>
 
@@ -32,14 +32,14 @@
         <h3 id="post-date">Posted on: {{ post_date }}</h3>
         {%- if storyline %}
             <div id="storyline">
-                Storyline: <a href="/{{ base_dir }}/archive.html#{{ storyline | replace(" ", "-") }}">{{ storyline }}</a>
+                Storyline: <a href="/{{ base_dir }}/archive/#{{ storyline | replace(" ", "-") }}">{{ storyline }}</a>
             </div>
         {%- endif %}
         {%- if characters %}
             <div id="characters">
             Characters:
             {%- for character in characters %}
-                <a href="/{{ base_dir }}/tagged.html?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
+                <a href="/{{ base_dir }}/tagged/?tag={{ character }}">{{ character }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}
@@ -47,7 +47,7 @@
             <div id="tags">
             Tags:
             {%- for tag in tags %}
-                <a class="tag-link" href="../tagged.html?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+                <a class="tag-link" href="../tagged/?tag={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}

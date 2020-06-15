@@ -10,7 +10,7 @@
         <h2 class="archive-section" id="archive-section-{{ storyline.name | replace(' ', '-') }}">{{ storyline.name }}</h2>
         <div class="archive-grid">
         {%- for page in storyline.pages %}
-            <a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">
+            <a href="/{{ base_dir }}/comic/{{ page.page_name }}/">
             <div class="archive-thumbnail">
                 <div class="archive-thumbnail-page"><img src="/{{ base_dir }}/{{ page.thumbnail_path }}"></div>
                 <div class="archive-thumbnail-title">{{ page.page_title }}</div>
@@ -28,7 +28,7 @@
             <li><a id="{{ storyline.name | replace(' ', '-') }}"></a>{{ storyline.name }}
             <ul>
             {%- for page in storyline.pages %}
-                <li><a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
+                <li><a href="/{{ base_dir }}/comic/{{ page.page_name }}/">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
             {%- endfor %}
             </ul>
         </li>
