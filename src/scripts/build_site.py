@@ -154,8 +154,17 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
     print("Building page {}...".format(page_info["page_name"]))
     archive_post_date = strftime(comic_info.get("Archive", "Date format"),
                                  strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
-    with open(f"your_content/comics/{page_info['page_name']}/post.txt", "rb") as f:
-        post_html = MARKDOWN.convert(f.read().decode("utf-8"))
+    post_html = []
+    post_text_paths = [
+        "your_content/before post text.txt",
+        f"your_content/comics/{page_info['page_name']}/post.txt",
+        "your_content/after post text.txt"
+    ]
+    for path in post_text_paths:
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                post_html.append(f.read().decode("utf-8"))
+    post_html = MARKDOWN.convert("\n\n".join(post_html))
     return {
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
