@@ -16,7 +16,7 @@ body {
 }
 
 a {
-    color: maroon;  /* The color of the hyperlinks */
+    color: blue;  /* The color of the hyperlinks */
 }
 
 div#container {
@@ -26,7 +26,7 @@ div#container {
 }
 
 div#links-bar {
-    background-color: indianred;  /* The background color of your links bar */
+    background-color: black;  /* The background color of your links bar */
 }
 
 a.link-bar-link {
@@ -36,7 +36,7 @@ a.link-bar-link {
 }
 
 a.navigation-button {
-    color: indianred;  /* Color of the navigation bar hyperlinks */
+    color: blue;  /* Color of the navigation bar hyperlinks */
     font-size: 2em;  /* Size of the navigation bar hyperlinks */
     text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
 }
@@ -55,7 +55,7 @@ div#blurb {
 }
 
 h1#page-title {
-    color: maroon;  /* Color of the page title */
+    color: black;  /* Color of the page title */
     font-size: 3em;  /* Font size of the post title */
 }
 

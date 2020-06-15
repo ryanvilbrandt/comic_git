@@ -20,7 +20,6 @@ div#banner {
 }
 
 div#links-bar {
-    background-color: indianred;
     margin-bottom: 15px;
     padding: 5px;
     display: flex;
@@ -29,7 +28,7 @@ div#links-bar {
 
 a.link-bar-link + a.link-bar-link::before {
     content: "|";
-    color: black;
+    color: white;
     margin: 0 10px;
 }
 
