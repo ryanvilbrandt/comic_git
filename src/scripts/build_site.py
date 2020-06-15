@@ -271,7 +271,7 @@ def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
         if storyline:
             if storyline not in storylines_dict.keys():
                 storylines_dict[storyline] = []
-            storylines_dict[storyline].append(comic_data)
+            storylines_dict[storyline].append(comic_data.copy())
 
     # Convert the OrderedDict to a list of dicts, so it's more easily accessible by the Jinja2 templates later
     storylines = []
