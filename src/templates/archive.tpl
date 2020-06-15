@@ -6,6 +6,7 @@
     {%- if use_thumbnails %}
         {%- for storyline in storylines %}
         {%- if storyline.pages %}
+        <a id="{{ storyline.name | replace(' ', '-') }}"></a>
         <h2 class="archive-section" id="archive-section-{{ storyline.name | replace(' ', '-') }}">{{ storyline.name }}</h2>
         <div class="archive-grid">
         {%- for page in storyline.pages %}
@@ -24,7 +25,7 @@
     <ul>
     {%- for storyline in storylines %}
         {%- if storyline.pages %}
-        <li>{{ storyline.name }}
+            <li><a id="{{ storyline.name | replace(' ', '-') }}"></a>{{ storyline.name }}
             <ul>
             {%- for page in storyline.pages %}
                 <li><a href="/{{ base_dir }}/comic/{{ page.page_name }}.html">{{ page.page_title }}</a> -- {{ page.post_date }}</li>

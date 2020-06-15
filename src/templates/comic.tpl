@@ -32,7 +32,7 @@
         <h3 id="post-date">Posted on: {{ post_date }}</h3>
         {%- if storyline %}
             <div id="storyline">
-                Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}.html#comic-page">{{ storyline }}</a>
+                Storyline: <a href="/{{ base_dir }}/archive.html#{{ storyline | replace(" ", "-") }}">{{ storyline }}</a>
             </div>
         {%- endif %}
         {%- if characters %}
