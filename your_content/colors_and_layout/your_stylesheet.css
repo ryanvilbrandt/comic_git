@@ -16,7 +16,7 @@ body {
 }
 
 a {
-    color: blue;  /* The color of the hyperlinks */
+    color: maroon;  /* The color of the hyperlinks */
 }
 
 div#container {
@@ -36,7 +36,7 @@ a.link-bar-link {
 }
 
 a.navigation-button {
-    color: blue;  /* Color of the navigation bar hyperlinks */
+    color: maroon;  /* Color of the navigation bar hyperlinks */
     font-size: 2em;  /* Size of the navigation bar hyperlinks */
     text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
 }
