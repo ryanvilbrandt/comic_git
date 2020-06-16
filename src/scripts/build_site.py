@@ -64,7 +64,7 @@ def get_pages_list(comic_info: RawConfigParser):
     return page_list
 
 
-def delete_output_file_space(comic_info: RawConfigParser=None):
+def delete_output_file_space(comic_info: RawConfigParser = None):
     shutil.rmtree("comic", ignore_errors=True)
     if os.path.isfile("feed.xml"):
         os.remove("feed.xml")
@@ -288,15 +288,7 @@ def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
             if storyline not in storylines_dict.keys():
                 storylines_dict[storyline] = []
             storylines_dict[storyline].append(comic_data.copy())
-
-    # Convert the OrderedDict to a list of dicts, so it's more easily accessible by the Jinja2 templates later
-    storylines = []
-    for name, pages in storylines_dict.items():
-        storylines.append({
-            "name": name,
-            "pages": pages
-        })
-    return storylines
+    return storylines_dict
 
 
 def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
@@ -424,6 +416,8 @@ def main():
         "links": get_links_list(comic_info),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
+        "google_analytics_id": (comic_info.get("Google Analytics", "Tracking ID")
+                                if comic_info.has_option("Google Analytics", "Tracking ID") else "")
     }
     write_html_files(comic_info, comic_data_dicts, global_values)
     processing_times.append(("Write HTML files", time()))

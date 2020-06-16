@@ -1,15 +1,28 @@
+{# This template extends the base.tpl template, meaning that base.tpl provides a large framework
+   that this template then adds to. See base.tpl for more information. #}
 {% extends "base.tpl" %}
+{# This is the start of the `content` block. It's part of the <body> of the page. This is where all the visible
+   parts of the website after the links bar and before the "Powered by comic_git" footer go. #}
 {% block content %}
     <h1 id="page-title">Archive</h1>
 
     <div id="blurb">
+    {# If blocks let you check the value of a variable and then generate different HTML depending on that variable.
+       The if block below will check the `use_thumbnails` variable. If it's True, the template will generate a grid
+       of thumbnail images for each comic in the archive, each linking to the comic page.
+       If it's False, the template will generate a simple HTML list of links to each comic in the archive.#}
     {%- if use_thumbnails %}
-        {%- for storyline in storylines %}
-        {%- if storyline.pages %}
-        <a id="{{ storyline.name | replace(' ', '-') }}"></a>
-        <h2 class="archive-section" id="archive-section-{{ storyline.name | replace(' ', '-') }}">{{ storyline.name }}</h2>
+        {%- for name, pages in storylines.items() %}
+        {%- if pages %}
+        {# `| replace(" ", "-")` takes the value in the variable, in this case `storyline.name`, and replaces all
+           spaces with hyphens. This is important when building links to other parts of the site. #}
+        <a id="{{ name | replace(' ', '-') }}"></a>
+        <h2 class="archive-section" id="archive-section-{{ name | replace(' ', '-') }}">{{ name }}</h2>
         <div class="archive-grid">
-        {%- for page in storyline.pages %}
+        {# For loops let you take a list of a values and do something for each of those values. In this case,
+           it runs through list of all the pages in a particular storyline (Chapter 1, Chapter 2, etc) and creates
+           a tiny thumbnail image with a title and post date, all of which link to that comic page if clicked. #}
+        {%- for page in pages %}
             <a href="/{{ base_dir }}/comic/{{ page.page_name }}/">
             <div class="archive-thumbnail">
                 <div class="archive-thumbnail-page"><img src="/{{ base_dir }}/{{ page.thumbnail_path }}"></div>
@@ -23,11 +36,11 @@
         {%- endfor %}
     {%- else %}
     <ul>
-    {%- for storyline in storylines %}
-        {%- if storyline.pages %}
-            <li><a id="{{ storyline.name | replace(' ', '-') }}"></a>{{ storyline.name }}
+    {%- for name, pages in storylines.items() %}
+        {%- if pages %}
+            <li><a id="{{ name | replace(' ', '-') }}"></a>{{ name }}
             <ul>
-            {%- for page in storyline.pages %}
+            {%- for page in pages %}
                 <li><a href="/{{ base_dir }}/comic/{{ page.page_name }}/">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
             {%- endfor %}
             </ul>
