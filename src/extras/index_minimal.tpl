@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Style sheet for margins and advanced layout -->
+    {# Style sheet for margins and advanced layout #}
     <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/src/css/style.css">
-    <!-- Style sheet for colors and fonts -->
+    {# Style sheet for colors and fonts #}
     <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
     <title>{{ page_title }} - {{ comic_title }}</title>
 </head>
 <body>
 <div id="container">
-    <!-- Banner Image -->
+    {# Banner Image #}
     <div id="banner"><img id="banner-img" src="/{{ base_dir }}/your_content/images/banner.png"></div>
 
-    <!-- First and lage pages -->
+    {# First and lage pages #}
     <div id="navigation-bar">
         <a class="navigation-button" href="comic/{{ first_id }}.html#comic-page">First</a>
         <a class="navigation-button" href="comic/{{ last_id }}.html#comic-page">Last</a>
     </div>
 
-    <!-- Links Bar -->
+    {# Links Bar #}
     <div id="links-bar">
     {%- for link in links %}
         <a class="link-bar-link" href="{{ link.url }}">{{ link.name }}</a>
