@@ -16,8 +16,7 @@ from markdown2 import Markdown
 from pytz import timezone
 
 from build_rss_feed import build_rss_feed
-
-from src.scripts.utils import get_comic_url
+from utils import get_comic_url
 
 VERSION = "0.1.0"
 

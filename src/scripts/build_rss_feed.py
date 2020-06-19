@@ -8,7 +8,7 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 from xml.etree.ElementTree import register_namespace
 
-from src.scripts.utils import get_comic_url
+from utils import get_comic_url
 
 cdata_dict = {}
 
