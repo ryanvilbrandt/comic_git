@@ -1,9 +1,26 @@
+{# This template extends the base.tpl template, meaning that base.tpl provides a large framework
+   that this template then adds to. See base.tpl for more information. #}
 {% extends "base.tpl" %}
+{# This is the start of the `content` block. It's part of the <body> of the page. This is where all the visible
+   parts of the website after the links bar and before the "Powered by comic_git" footer go. #}
 {% block content %}
     <div id="jump-to">
         <h2>Jump to...</h2>
-        {%- for storyline in storylines %}
-            <a class="chapter-links" href="infinite_scroll.html#{{ storyline.pages[0].page_name }}">{{ storyline.name }}</a>
+        {# For loops let you take a list of a values and do something for each of those values. In this case,
+           it runs through list of all the storylines in the comic (Chapter 1, Chapter 2, etc.) it generates a link
+           for each of those them connecting to the first page in that storyline. #}
+        {%- for name, pages in storylines.items() %}
+            {# When text is surrounded by {{ these double curly braces }}, it's representing a variable that's passed in by
+               the Python script that generates the HTML file. That value is dropped into the existing HTML with no changes.
+               For example, if `pages` is a list of items and the first item has a variable on it called `page_name`,
+               and the value of that is `Chapter 3`, then `href="#{{ pages[0].page_name }}"` becomes
+               `href="#Chapter 3"` #}
+            <a class="chapter-links" href="#{{ pages[0].page_name }}"
+                {# `| replace(" ", "-")` takes the value in the variable, in this case `name`, and replaces all
+                   spaces with hyphens. This is important when building links to other parts of the site. #}
+                id="infinite-scroll-{{ name | replace(' ', '-') }}">
+                {{ name }}
+            </a>
         {%- endfor %}
     </div>
     <div id="load-older" hidden>
@@ -20,7 +37,7 @@
 {% endblock %}
 {% block script %}
 <script type="module">
-    import { load_page } from "./src/js/infinite_scroll.js";
+    import { load_page } from "/{{ base_dir }}/src/js/infinite_scroll.js";
     load_page();
 </script>
 {% endblock %}

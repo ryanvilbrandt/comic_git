@@ -41,7 +41,7 @@ export async function load_page() {
 }
 
 async function fetch_all_json_data() {
-    let response = await fetch("./comic/page_info_list.json");
+    let response = await fetch("../comic/page_info_list.json");
     console.log("Fetched page info list");
     let json = await response.json();
     page_info_json = json["page_info_list"];
@@ -87,7 +87,7 @@ function build_comic_div(page) {
     let image_node = document.createElement("img");
     image_node.className = "infinite-page-image";
     console.log("Adding div for page " + page["page_name"]);
-    image_node.src = "your_content/comics/" + page["page_name"] + "/" + page["Filename"];
+    image_node.src = "../your_content/comics/" + page["page_name"] + "/" + page["Filename"];
     image_node.title = page["Alt text"];
 
     link_node.appendChild(image_node);

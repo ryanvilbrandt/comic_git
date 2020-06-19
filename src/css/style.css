@@ -20,7 +20,6 @@ div#banner {
 }
 
 div#links-bar {
-    background-color: indianred;
     margin-bottom: 15px;
     padding: 5px;
     display: flex;
@@ -29,7 +28,7 @@ div#links-bar {
 
 a.link-bar-link + a.link-bar-link::before {
     content: "|";
-    color: black;
+    color: white;
     margin: 0 10px;
 }
 
@@ -82,11 +81,13 @@ div#powered-by {
 div.archive-grid {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 div.archive-thumbnail {
+    width: 100px;
+    margin: 10px;
     text-align: center;
-    padding: 10px;
 }
 
 h2.archive-section {
@@ -134,6 +135,8 @@ div.cast-member-bio {
     margin: 5px;
 }
 
+/* Accordion */
+
 div.accordion {
     margin: 5px;
 }
@@ -173,4 +176,27 @@ div.accordion-panel {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+/* Transcripts */
+
+#transcripts-container {
+    width: 100%
+}
+
+#transcript-panel {
+    padding: 0 10px 10px 10px;
+}
+
+.transcript {
+    display: none;
+}
+
+#language-list {
+    vertical-align: top;
+    padding: 10px;
+}
+
+#language-select {
+    width: 100%;
 }
