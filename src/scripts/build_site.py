@@ -17,6 +17,8 @@ from pytz import timezone
 
 from build_rss_feed import build_rss_feed
 
+from src.scripts.utils import get_comic_url
+
 VERSION = "0.1.0"
 
 JINJA_ENVIRONMENT = Environment(
@@ -367,20 +369,7 @@ def main():
 
     # Get site-wide settings for this comic
     comic_info = read_info("your_content/comic_info.ini")
-    comic_domain = None
-    if "GITHUB_REPOSITORY" in os.environ:
-        repo_author, BASE_DIRECTORY = os.environ["GITHUB_REPOSITORY"].split("/")
-        comic_domain = f"http://{repo_author}.github.io"
-    if comic_info.has_option("Comic Info", "Comic domain"):
-        comic_domain = comic_info.get("Comic Info", "Comic domain").rstrip("/")
-    if comic_info.has_option("Comic Info", "Comic subdirectory"):
-        BASE_DIRECTORY = comic_info.get("Comic Info", "Comic subdirectory").strip("/")
-    if not comic_domain or not BASE_DIRECTORY:
-        raise ValueError(
-            'Set "Comic domain" and "Comic subdirectory" in the [Comic Info] section of your comic_info.ini file '
-            'before building your site locally. Please see the comic_git wiki for more information.'
-        )
-    comic_url = comic_domain + '/' + BASE_DIRECTORY
+    comic_url, BASE_DIRECTORY = get_comic_url(comic_info)
 
     processing_times.append(("Get comic settings", time()))
 

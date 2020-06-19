@@ -8,6 +8,8 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 from xml.etree.ElementTree import register_namespace
 
+from src.scripts.utils import get_comic_url
+
 cdata_dict = {}
 
 
@@ -92,12 +94,6 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     if not comic_info.getboolean("RSS Feed", "Build RSS feed"):
         return
 
-    if "GITHUB_REPOSITORY" not in os.environ:
-        raise ValueError(
-            "Set GITHUB_REPOSITORY in your environment variables before building your RSS feed locally. "
-            'The format should be "<github username>/<github repo name>". For example, "ryanvilbrandt/comic_git".'
-        )
-
     register_namespace("atom", "http://www.w3.org/2005/Atom")
     register_namespace("dc", "http://purl.org/dc/elements/1.1/")
     root = ElementTree.Element("rss")
@@ -105,8 +101,7 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     channel = ElementTree.SubElement(root, "channel")
 
     # Build comic URL
-    repo_author, repo_name = os.environ["GITHUB_REPOSITORY"].split("/")
-    comic_url = "https://{}.github.io/{}/".format(repo_author, repo_name)
+    comic_url, _ = get_comic_url(comic_info)
 
     add_base_tags_to_channel(channel, comic_url, comic_info)
     add_image_tag(channel, comic_url, comic_info)
