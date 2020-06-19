@@ -121,7 +121,7 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
             if comic_info.getboolean("Comic Settings", "Delete scheduled posts"):
                 shutil.rmtree(page_path)
         else:
-            page_info["page_name"] = os.path.basename(page_path.strip("\\"))
+            page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
             page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
