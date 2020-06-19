@@ -346,7 +346,7 @@ def write_to_template(template_path, html_path, data_dict=None):
         print("Template file {} not found".format(template_path))
     else:
         if html_path:
-            os.makedirs(html_path)
+            os.makedirs(html_path, exist_ok=True)
         with open(os.path.join(html_path, "index.html"), "wb") as f:
             rendered_template = template.render(**data_dict)
             f.write(bytes(rendered_template, "utf-8"))
