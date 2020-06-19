@@ -111,6 +111,7 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
+    print(glob("your_content/comics/*/"))
     for page_path in glob("your_content/comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
@@ -126,6 +127,7 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
             page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
             page_info_list.append(page_info)
 
+    print(page_info_list)
     page_info_list = sorted(
         page_info_list,
         key=lambda x: (strptime(x["Post date"], date_format), x["page_name"])
