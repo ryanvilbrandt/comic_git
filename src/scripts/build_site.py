@@ -2,6 +2,7 @@ import html
 import os
 import re
 import shutil
+import socket
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from datetime import datetime
@@ -114,14 +115,22 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
-    print(glob("your_content/comics/*/"))
+    # Check if we're running on GitHub, and if scheduled posts should be deleted
+    running_on_github = "GITHUB_REPOSITORY" in os.environ
+    print(f"Running on GitHub: {running_on_github}")
+    delete_scheduled_posts_val = comic_info.get("Comic Settings", "Delete scheduled posts").lower()
+    delete_scheduled_posts = (
+        delete_scheduled_posts_val == "always" or
+        (delete_scheduled_posts_val == "github" and running_on_github)
+    )
     for page_path in glob("your_content/comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
         if post_date > local_time:
             scheduled_post_count += 1
             # Post date is in the future, so delete the folder with the resources
-            if comic_info.getboolean("Comic Settings", "Delete scheduled posts"):
+            if delete_scheduled_posts:
+                print(f"Deleting {page_path}")
                 shutil.rmtree(page_path)
         else:
             page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
