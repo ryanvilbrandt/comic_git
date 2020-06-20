@@ -75,6 +75,9 @@ def delete_output_file_space(comic_info: RawConfigParser = None):
         if page["template_name"] == "index":
             if os.path.exists("index.html"):
                 os.remove("index.html")
+        elif page["template_name"] == "404":
+            if os.path.exists("404.html"):
+                os.remove("404.html")
         else:
             if os.path.exists(page["template_name"]):
                 shutil.rmtree(page["template_name"])
@@ -127,7 +130,6 @@ def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
             page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
             page_info_list.append(page_info)
 
-    print(page_info_list)
     page_info_list = sorted(
         page_info_list,
         key=lambda x: (strptime(x["Post date"], date_format), x["page_name"])
@@ -298,7 +300,7 @@ def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], 
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
-        html_path = f"comic/{comic_data_dict['page_name']}"
+        html_path = f"comic/{comic_data_dict['page_name']}/index.html"
         comic_data_dict.update(global_values)
         write_to_template("comic.tpl", html_path, comic_data_dict)
     write_other_pages(comic_info, comic_data_dicts)
@@ -312,7 +314,10 @@ def write_other_pages(comic_info: RawConfigParser, comic_data_dicts: List[Dict])
             write_tagged_pages(comic_data_dicts)
             continue
         template_name = page["template_name"] + ".tpl"
-        html_path = "" if page["template_name"] == "index" else page["template_name"]
+        if page["template_name"].lower() in ("index", "404"):
+            html_path = f"{page['template_name']}.html"
+        else:
+            html_path = os.path.join(page['template_name'], "index.html")
         data_dict = {}
         data_dict.update(last_comic_page)
         if page["title"]:
@@ -336,7 +341,7 @@ def write_tagged_pages(comic_data_dicts: List[Dict]):
             "tagged_pages": pages
         }
         data_dict.update(last_comic_page)
-        write_to_template("tagged.tpl", f"tagged/{tag}", data_dict)
+        write_to_template("tagged.tpl", f"tagged/{tag}/index.html", data_dict)
 
 
 def write_to_template(template_path, html_path, data_dict=None):
@@ -347,9 +352,10 @@ def write_to_template(template_path, html_path, data_dict=None):
     except TemplateNotFound:
         print("Template file {} not found".format(template_path))
     else:
-        if html_path:
-            os.makedirs(html_path, exist_ok=True)
-        with open(os.path.join(html_path, "index.html"), "wb") as f:
+        dir_name = os.path.dirname(html_path)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+        with open(html_path, "wb") as f:
             rendered_template = template.render(**data_dict)
             f.write(bytes(rendered_template, "utf-8"))
 
