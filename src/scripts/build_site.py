@@ -291,7 +291,7 @@ def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
             process_comic_image(comic_info, comic_data["comic_path"], create_thumbnails, create_low_quality)
 
 
-def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict[str, List]:
+def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
     # Start with an OrderedDict, so we can easily drop the pages we encounter in the proper buckets, while keeping
     # their proper order
     storylines_dict = OrderedDict()
