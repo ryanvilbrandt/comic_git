@@ -14,8 +14,8 @@
 
     {# First and lage pages #}
     <div id="navigation-bar">
-        <a class="navigation-button" href="comic/{{ first_id }}.html#comic-page">First</a>
-        <a class="navigation-button" href="comic/{{ last_id }}.html#comic-page">Last</a>
+        <a class="navigation-button" href="comic/{{ first_id }}/#comic-page">First</a>
+        <a class="navigation-button" href="comic/{{ last_id }}/#comic-page">Last</a>
     </div>
 
     {# Links Bar #}
