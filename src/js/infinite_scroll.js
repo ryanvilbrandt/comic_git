@@ -5,7 +5,7 @@ let infinite_scroll_div;
 let earliest_comic_loaded = null;
 let latest_comic_loaded = null;
 let current_page = null;
-let num_pages_to_load = 2;
+let num_pages_to_load = 5;
 let initializing = true;
 let loading_more_pages = false;
 // If a page is within these many pixels of the top of the viewport (by percentage of current viewport height),
