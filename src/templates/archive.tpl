@@ -16,8 +16,10 @@
         {%- if pages %}
         {# `| replace(" ", "-")` takes the value in the variable, in this case `storyline.name`, and replaces all
            spaces with hyphens. This is important when building links to other parts of the site. #}
+        {%- if storylines.keys() | list != ["Uncategorized"] %}
         <a id="{{ name | replace(' ', '-') }}"></a>
         <h2 class="archive-section" id="archive-section-{{ name | replace(' ', '-') }}">{{ name }}</h2>
+        {%- endif %}
         <div class="archive-grid">
         {# For loops let you take a list of a values and do something for each of those values. In this case,
            it runs through list of all the pages in a particular storyline (Chapter 1, Chapter 2, etc) and creates
@@ -38,12 +40,16 @@
     <ul>
     {%- for name, pages in storylines.items() %}
         {%- if pages %}
+            {%- if storylines.keys() | list != ["Uncategorized"] %}
             <li><a id="{{ name | replace(' ', '-') }}"></a>{{ name }}
             <ul>
+            {%- endif %}
             {%- for page in pages %}
                 <li><a href="{{ base_dir }}/comic/{{ page.page_name }}/">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
             {%- endfor %}
+            {%- if storylines.keys() | list != ["Uncategorized"] %}
             </ul>
+            {%- endif %}
         </li>
         {%- endif %}
     {%- endfor %}

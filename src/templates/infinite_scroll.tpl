@@ -5,7 +5,9 @@
    parts of the website after the links bar and before the "Powered by comic_git" footer go. #}
 {% block content %}
     <div id="jump-to">
+        {%- if storylines.keys() | list != ["Uncategorized"] %}
         <h2>Jump to...</h2>
+        {%- endif %}
         {# For loops let you take a list of a values and do something for each of those values. In this case,
            it runs through list of all the storylines in the comic (Chapter 1, Chapter 2, etc.) it generates a link
            for each of those them connecting to the first page in that storyline. #}
@@ -15,12 +17,11 @@
                For example, if `pages` is a list of items and the first item has a variable on it called `page_name`,
                and the value of that is `Chapter 3`, then `href="#{{ pages[0].page_name }}"` becomes
                `href="#Chapter 3"` #}
-            <a class="chapter-links" href="#{{ pages[0].page_name }}"
-                {# `| replace(" ", "-")` takes the value in the variable, in this case `name`, and replaces all
-                   spaces with hyphens. This is important when building links to other parts of the site. #}
-                id="infinite-scroll-{{ name | replace(' ', '-') }}">
-                {{ name }}
-            </a>
+            {%- if name != "Uncategorized" %}
+            {# `| replace(" ", "-")` takes the value in the variable, in this case `name`, and replaces all
+               spaces with hyphens. This is important when building links to other parts of the site. #}
+            <a class="chapter-links" href="#{{ pages[0].page_name }}" id="infinite-scroll-{{ name | replace(' ', '-') }}">{{ name }}</a>
+            {%- endif %}
         {%- endfor %}
     </div>
     <div id="load-older" hidden>

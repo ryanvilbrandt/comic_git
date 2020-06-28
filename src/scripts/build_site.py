@@ -297,10 +297,13 @@ def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
     storylines_dict = OrderedDict()
     for comic_data in comic_data_dicts:
         storyline = comic_data["storyline"]
-        if storyline:
-            if storyline not in storylines_dict.keys():
-                storylines_dict[storyline] = []
-            storylines_dict[storyline].append(comic_data.copy())
+        if not storyline:
+            storyline = "Uncategorized"
+        if storyline not in storylines_dict.keys():
+            storylines_dict[storyline] = []
+        storylines_dict[storyline].append(comic_data.copy())
+    if "Uncategorized" in storylines_dict:
+        storylines_dict.move_to_end("Uncategorized")
     return storylines_dict
 
 
