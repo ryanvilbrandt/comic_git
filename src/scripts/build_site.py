@@ -2,7 +2,6 @@ import html
 import os
 import re
 import shutil
-import socket
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from datetime import datetime
@@ -30,13 +29,13 @@ It is auto-generated and any work you do here will be replaced the next time thi
 If you want to edit any of these files, edit their *.tpl versions in src/templates.
 -->
 """
-BASE_DIRECTORY = None
+BASE_DIRECTORY = ""
 MARKDOWN = Markdown(extras=["strike"])
 
 
-def path(rel_path: str):
+def web_path(rel_path: str):
     if rel_path.startswith("/"):
-        return "/" + BASE_DIRECTORY + rel_path
+        return BASE_DIRECTORY + rel_path
     return rel_path
 
 
@@ -55,14 +54,14 @@ def str_to_list(s, delimiter=","):
 def get_links_list(comic_info: RawConfigParser):
     link_list = []
     for option in comic_info.options("Links Bar"):
-        link_list.append({"name": option, "url": path(comic_info.get("Links Bar", option))})
+        link_list.append({"name": option, "url": web_path(comic_info.get("Links Bar", option))})
     return link_list
 
 
 def get_pages_list(comic_info: RawConfigParser):
     page_list = []
     for option in comic_info.options("Pages"):
-        page_list.append({"template_name": option, "title": path(comic_info.get("Pages", option))})
+        page_list.append({"template_name": option, "title": web_path(comic_info.get("Pages", option))})
     return page_list
 
 
@@ -292,7 +291,7 @@ def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
             process_comic_image(comic_info, comic_data["comic_path"], create_thumbnails, create_low_quality)
 
 
-def get_storylines(comic_data_dicts: List[Dict]) -> List[Dict[str, List]]:
+def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict[str, List]:
     # Start with an OrderedDict, so we can easily drop the pages we encounter in the proper buckets, while keeping
     # their proper order
     storylines_dict = OrderedDict()

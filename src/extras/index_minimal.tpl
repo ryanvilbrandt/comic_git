@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     {# Style sheet for margins and advanced layout #}
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/src/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/style.css">
     {# Style sheet for colors and fonts #}
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
     <title>{{ page_title }} - {{ comic_title }}</title>
 </head>
 <body>
 <div id="container">
     {# Banner Image #}
-    <div id="banner"><img id="banner-img" src="/{{ base_dir }}/your_content/images/banner.png"></div>
+    <div id="banner"><img id="banner-img" src="{{ base_dir }}/your_content/images/banner.png"></div>
 
     {# First and lage pages #}
     <div id="navigation-bar">

@@ -27,9 +27,9 @@
        name. #}
     {%- block head %}
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/src/css/style.css">
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
-    <link rel="icon" href="/{{ base_dir }}/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
+    <link rel="icon" href="{{ base_dir }}/favicon.ico" type="image/x-icon" />
     <meta property="og:title" content="{{ comic_title }}" />
     <meta property="og:description" content="{{ comic_description }}" />
     <meta property="og:type" content="website" />
@@ -45,8 +45,8 @@
 {% block body %}
 <div id="container">
     <div id="banner">
-        <a id="banner-img-link" href="/{{ base_dir }}/">
-            <img id="banner-img" alt="banner" src="/{{ base_dir }}/your_content/images/banner.png">
+        <a id="banner-img-link" href="{{ base_dir }}/">
+            <img id="banner-img" alt="banner" src="{{ base_dir }}/your_content/images/banner.png">
         </a>
     </div>
     <div id="links-bar">

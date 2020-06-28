@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     {# Style sheet for margins and advanced layout #}
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/src/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/style.css">
     {# Style sheet for colors and fonts #}
-    <link rel="stylesheet" type="text/css" href="/{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
     <title>{{ page_title }} - {{ comic_title }}</title>
 </head>
 <body>
 <div id="container">
     {# Banner Image #}
-    <div id="banner"><img id="banner-img" src="/{{ base_dir }}/your_content/images/banner.png"></div>
+    <div id="banner"><img id="banner-img" src="{{ base_dir }}/your_content/images/banner.png"></div>
     {# Links Bar #}
     <div id="links-bar">
     {%- for link in links %}
@@ -20,8 +20,8 @@
 
     {# Comic Page #}
     <div id="comic-page">
-        <a href="/{{ base_dir }}/comic/{{ next_id }}/#comic-page">
-            <img id="comic-image" src="/{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
+        <a href="{{ base_dir }}/comic/{{ next_id }}/#comic-page">
+            <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
         </a>
     </div>
 
@@ -31,15 +31,15 @@
         <a class="navigation-button-disabled">First</a>
         <a class="navigation-button-disabled">Previous</a>
     {% else %}
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ first_id }}/#comic-page">First</a>
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ previous_id }}/#comic-page">Previous</a>
+        <a class="navigation-button" href="{{ base_dir }}/comic/{{ first_id }}/#comic-page">First</a>
+        <a class="navigation-button" href="{{ base_dir }}/comic/{{ previous_id }}/#comic-page">Previous</a>
     {% endif %}
     {% if last_id == current_id %}
         <a class="navigation-button-disabled">Next</a>
         <a class="navigation-button-disabled">Last</a>
     {% else %}
-        <a class="navigation-button" href="/{{ base_dir }}/comic/{{ next_id }}/#comic-page">Next</a>
-        <a class="navigation-button" href="/{{ base_dir }}/latest/#comic-page">Last</a>
+        <a class="navigation-button" href="{{ base_dir }}/comic/{{ next_id }}/#comic-page">Next</a>
+        <a class="navigation-button" href="{{ base_dir }}/latest/#comic-page">Last</a>
     {% endif %}
     </div>
 
@@ -51,7 +51,7 @@
         {# The storyline this page is in, with a link to the first page in that storyline #}
         {%- if storyline %}
             <div id="storyline">
-                Storyline: <a href="/{{ base_dir }}/comic/{{ storyline_id }}/#comic-page">{{ storyline }}</a>
+                Storyline: <a href="{{ base_dir }}/comic/{{ storyline_id }}/#comic-page">{{ storyline }}</a>
             </div>
         {%- endif %}
 
@@ -61,7 +61,7 @@
             Characters:
             {%- for character in characters %}
                 {# "if not loop.last" puts commas after every link except at the very end #}
-                <a href="/{{ base_dir }}/tagged/{{ character }}/">{{ character }}</a>{% if not loop.last %}, {% endif %}
+                <a href="{{ base_dir }}/tagged/{{ character }}/">{{ character }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}
@@ -72,7 +72,7 @@
             Tags:
             {%- for tag in tags %}
                 {# "if not loop.last" puts commas after every link except at the very end #}
-                <a class="tag-link" href="/{{ base_dir }}/tagged/{{ tag }}/">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+                <a class="tag-link" href="{{ base_dir }}/tagged/{{ tag }}/">{{ tag }}</a>{% if not loop.last %}, {% endif %}
             {%- endfor %}
             </div>
         {%- endif %}
