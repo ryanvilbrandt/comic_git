@@ -5,7 +5,7 @@ on:
     branches:
       - working
   schedule:
-    - cron: '10 23 * * *'  # Runs at 8:00 AM UTC every Wednesday
+    - cron: '0 8 * * *'  # Runs at 8:00 AM UTC every day
 
 jobs:
   build:
