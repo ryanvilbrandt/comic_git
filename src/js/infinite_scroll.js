@@ -82,7 +82,7 @@ function build_comic_div(page) {
     node.id = page["page_name"];
 
     let link_node = document.createElement("a");
-    link_node.href = `comic/${page["page_name"]/`;
+    link_node.href = `comic/${page["page_name"]}/`;
 
     let image_node = document.createElement("img");
     image_node.className = "infinite-page-image";
