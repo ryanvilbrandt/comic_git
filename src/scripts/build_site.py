@@ -356,19 +356,30 @@ def write_tagged_pages(comic_data_dicts: List[Dict]):
 
 
 def write_to_template(template_path, html_path, data_dict=None):
-    if data_dict is None:
-        data_dict = {}
     try:
         template = JINJA_ENVIRONMENT.get_template(template_path)
     except TemplateNotFound:
-        print("Template file {} not found".format(template_path))
+        file_contents = None
     else:
-        dir_name = os.path.dirname(html_path)
-        if dir_name:
-            os.makedirs(dir_name, exist_ok=True)
-        with open(html_path, "wb") as f:
-            rendered_template = template.render(**data_dict)
-            f.write(bytes(rendered_template, "utf-8"))
+        if data_dict is None:
+            data_dict = {}
+        file_contents = template.render(**data_dict)
+
+    if file_contents is None:
+        # Check for HTML file and publish that instead
+        html_file = f"src/templates/{template_path[:-4]}.html"
+        if os.path.isfile(html_file):
+            with open(html_file, "rb") as f:
+                file_contents = f.read().decode("utf-8")
+        else:
+            print("Template file {} not found".format(template_path))
+            return
+
+    dir_name = os.path.dirname(html_path)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
+    with open(html_path, "wb") as f:
+        f.write(bytes(file_contents, "utf-8"))
 
 
 def print_processing_times(processing_times: List[Tuple[str, float]]):
