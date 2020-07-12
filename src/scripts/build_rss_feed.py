@@ -46,7 +46,7 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
         comic_info.get("Comic Info", "Author")
     post_date = strptime(comic_data["post_date"], comic_info.get("Comic Settings", "Date format"))
     ElementTree.SubElement(item, "pubDate").text = strftime("%a, %d %b %Y %H:%M:%S +0000", post_date)
-    direct_link = urljoin(comic_url, "comic/{}.html".format(post_id))
+    direct_link = urljoin(comic_url, "comic/{}/".format(post_id))
     ElementTree.SubElement(item, "link").text = direct_link
     ElementTree.SubElement(item, "guid", isPermaLink="true").text = direct_link
     if "storyline" in comic_data:
