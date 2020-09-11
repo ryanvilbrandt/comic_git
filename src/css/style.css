@@ -26,9 +26,15 @@ div#links-bar {
     justify-content: center;
 }
 
-a.link-bar-link + a.link-bar-link::before {
-    content: "|";
-    color: white;
+a.link-bar-link {
+    transition-duration: 0.2s;
+}
+
+a.link-bar-link:hover {
+    transition-duration: 0.2s;
+}
+
+span.link-bar-separator {
     margin: 0 10px;
 }
 

@@ -26,13 +26,17 @@ div#container {
 }
 
 div#links-bar {
-    background-color: black;  /* The background color of your links bar */
+    background-color: indianred;  /* The background color of your links bar */
 }
 
 a.link-bar-link {
     color: white;  /* The color of the links in your links bar */
     font-weight: bold;  /* Delete this to unbold the links in your links bar*/
     text-decoration: none;  /* Delete this line to put underlining on the links in your links bar */
+}
+
+a.link-bar-link:hover {
+    color: black;  /* The color of the links in your links bar while the cursor is hovering over them */
 }
 
 a.navigation-button {
