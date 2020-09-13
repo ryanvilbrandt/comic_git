@@ -181,8 +181,9 @@ def get_transcripts(comic_info: RawConfigParser, page_name: str) -> OrderedDict:
         language = os.path.splitext(os.path.basename(path))[0]
         with open(path, "rb") as f:
             transcripts[language] = f.read().decode("utf-8").replace("\n", "<br>\n")
-    if "English" in transcripts:
-        transcripts.move_to_end("English", last=False)
+    default_language = comic_info.get("Transcripts", "Default language")
+    if default_language and default_language in transcripts:
+        transcripts.move_to_end(default_language, last=False)
     return transcripts
 
 
@@ -428,6 +429,7 @@ def main():
         "autogenerate_warning": AUTOGENERATE_WARNING,
         "version": VERSION,
         "comic_title": comic_info.get("Comic Info", "Comic name"),
+        "comic_author": comic_info.get("Comic Info", "Author"),
         "comic_description": comic_info.get("Comic Info", "Description"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
