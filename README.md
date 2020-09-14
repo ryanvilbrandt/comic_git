@@ -1,5 +1,8 @@
+![Power in the Hands of the Creators](https://github.com/ryanvilbrandt/comic_git/raw/docs/docs/img/Comic_Git.png)
+
 # comic_git
- A statically-hosted web comic server core intended to be hosted on github.io
+
+A statically-hosted web comic server core intended to be hosted on github.io
 
 To see an example of how a webpage looks, go to https://ryanvilbrandt.github.io/comic_git/
 
