@@ -1,4 +1,4 @@
-![Power in the Hands of the Creators](https://github.com/ryanvilbrandt/comic_git/raw/docs/docs/img/Comic_Git.png)
+![Power in the Hands of the Creators](https://github.com/ryanvilbrandt/comic_git/raw/docs/docs/img/comic_git_small.png)
 
 # comic_git
 
