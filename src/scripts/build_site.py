@@ -18,7 +18,7 @@ from pytz import timezone
 from build_rss_feed import build_rss_feed
 from utils import get_comic_url
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 JINJA_ENVIRONMENT = Environment(
     loader=FileSystemLoader("src/templates")
