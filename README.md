@@ -16,6 +16,8 @@ To see an example of how a webpage looks, go to https://ryanvilbrandt.github.io/
 
 More detailed setup instructions can be found on the [wiki](https://github.com/ryanvilbrandt/comic_git/wiki).
 
+If you have questions, comments, or difficulties with comic_git, please join our discord at <https://discord.gg/zmdHGXB> and we'll be happy to help you out!
+
 ## Contributors
 
 ### Code
