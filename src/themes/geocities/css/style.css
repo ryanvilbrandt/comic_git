@@ -1,0 +1,33 @@
+body {
+    color: lime;
+    font-family: "Comic Sans MS", sans-serif;
+    /*text-align: left;*/
+    background-image: url("../images/stars_bg.gif");
+}
+
+h1#page-title {
+    color: magenta;  /* Color of the page title */
+    font-size: 3em;  /* Font size of the post title */
+}
+
+a {
+    color: blue;
+}
+
+a.navigation-button {
+    color: blue;
+}
+
+a.navigation-button-disabled {
+    color: white;  /* Color of the disabled navigation bar hyperlinks */
+}
+
+#comic-blinker {
+  animation: blinker 1s step-start infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
