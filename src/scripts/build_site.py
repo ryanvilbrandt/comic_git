@@ -1,3 +1,4 @@
+import argparse
 import html
 import os
 import re
@@ -93,7 +94,7 @@ def setup_output_file_space(comic_info: RawConfigParser):
 def read_info(filepath, to_dict=False):
     with open(filepath) as f:
         info_string = f.read()
-    if not re.search(r"^\[.*?\]", info_string):
+    if not re.search(r"^\[.*?]", info_string):
         # print(filepath + " has no section")
         info_string = "[DEFAULT]\n" + info_string
     info = RawConfigParser()
@@ -107,21 +108,13 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_page_info_list(comic_info: RawConfigParser) -> Tuple[List[Dict], int]:
+def get_page_info_list(comic_info: RawConfigParser, delete_scheduled_posts: bool) -> Tuple[List[Dict], int]:
     date_format = comic_info.get("Comic Settings", "Date format")
     tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
     local_time = datetime.now(tz=tzinfo)
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
-    # Check if we're running on GitHub, and if scheduled posts should be deleted
-    running_on_github = "GITHUB_REPOSITORY" in os.environ
-    print(f"Running on GitHub: {running_on_github}")
-    delete_scheduled_posts_val = comic_info.get("Comic Settings", "Delete scheduled posts").lower()
-    delete_scheduled_posts = (
-        delete_scheduled_posts_val == "always" or
-        (delete_scheduled_posts_val == "github" and running_on_github)
-    )
     for page_path in glob("your_content/comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
@@ -393,7 +386,7 @@ def print_processing_times(processing_times: List[Tuple[str, float]]):
     print("{}: {:.2f} ms".format("Total time", (processing_times[-1][1] - processing_times[0][1]) * 1000))
 
 
-def main():
+def main(delete_scheduled_posts=False):
     global BASE_DIRECTORY
     processing_times = [("Start", time())]
 
@@ -408,7 +401,9 @@ def main():
     processing_times.append(("Setup output file space", time()))
 
     # Get the info for all pages, sorted by Post Date
-    page_info_list, scheduled_post_count = get_page_info_list(comic_info)
+    if not delete_scheduled_posts and comic_info.has_option("Comic Settings", "Delete scheduled posts"):
+        delete_scheduled_posts = comic_info.getboolean("Comic Settings", "Delete scheduled posts")
+    page_info_list, scheduled_post_count = get_page_info_list(comic_info, delete_scheduled_posts)
     print([p["page_name"] for p in page_info_list])
     processing_times.append(("Get info for all pages", time()))
 
@@ -449,5 +444,14 @@ def main():
     print_processing_times(processing_times)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Manual build of comic_git')
+    parser.add_argument("-d", "--delete-scheduled-posts", action="store_true", help="Deletes scheduled post content "
+                        "when the script is run. USE AT YOUR OWN RISK! You can discard your changes in GitHub Desktop "
+                        "if you accidentally delete important files.")
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(args.delete_scheduled_posts)

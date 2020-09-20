@@ -32,7 +32,7 @@ jobs:
           pip install -r src/scripts/requirements.txt
       - name: Run python build script
         run: |
-          python src/scripts/build_site.py
+          python src/scripts/build_site.py --delete-scheduled-posts
       - name: Commit files
         run: |
           git config --local user.name "Github Action"
