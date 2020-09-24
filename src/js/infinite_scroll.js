@@ -156,7 +156,7 @@ function go_to_anchor() {
         return;
     }
     let anchor = window.location.href.split("#")[1];
-    let top = document.getElementById(anchor).offsetTop;
+    let top = document.getElementById(decodeURI(anchor)).offsetTop;
     window.scrollTo(0, top);
 }
 
