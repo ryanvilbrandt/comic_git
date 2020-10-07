@@ -29,5 +29,5 @@ def get_comic_url(comic_info: RawConfigParser):
     if base_directory:
         base_directory = "/" + base_directory
     comic_url = comic_domain + base_directory
-    print((comic_url, base_directory))
+    print(f"Base URL: {comic_url}, base subdirectory: {base_directory}")
     return comic_url, base_directory
