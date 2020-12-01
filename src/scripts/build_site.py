@@ -242,6 +242,10 @@ def resize(im, size):
 
 def save_image(im, path):
     try:
+        # If saving as JPEG, force convert to RGB first
+        if path.lower().endswith("jpg") or path.lower().endswith("jpeg"):
+            if im.mode != 'RGB':
+                im = im.convert('RGB')
         im.save(path)
     except OSError as e:
         if str(e) == "cannot write mode RGBA as JPEG":
