@@ -18,10 +18,13 @@ jobs:
     steps:
       - name: Checkout master branch and build website
         uses: actions/checkout@v2
+        with:
+          ref: master
       - name: Reset master to point to working's HEAD
         run: |
           git fetch --all --no-tags
           git reset --hard origin/working
+          git status
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -40,7 +43,5 @@ jobs:
           git add --all
           git diff-index --quiet HEAD || git commit -m "Auto-build"
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force: true
+        run: |
+          git push -f
