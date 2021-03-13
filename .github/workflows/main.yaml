@@ -16,10 +16,11 @@ jobs:
         python-version: [3.8]
 
     steps:
-      - name: Checkout master branch and build website
+      - name: Load repository
         uses: actions/checkout@v2
-        with:
-          ref: master
+      - name: Switch to the master branch (or create it if it doesn't exist)
+        run: |
+          git checkout -B master
       - name: Reset master to point to working's HEAD
         run: |
           git fetch --all --no-tags
@@ -44,4 +45,4 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "Auto-build"
       - name: Push changes
         run: |
-          git push -f
+          git push -f --set-upstream origin master
