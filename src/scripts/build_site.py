@@ -56,11 +56,25 @@ def get_links_list(comic_info: RawConfigParser):
     return link_list
 
 
-def get_pages_list(comic_info: RawConfigParser):
+def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
     page_list = []
     for option in comic_info.options("Pages"):
         page_list.append({"template_name": option, "title": web_path(comic_info.get("Pages", option))})
     return page_list
+
+
+def get_extra_comics_list():
+    if not os.path.exists("your_content/extra_comics.ini"):
+        return []
+    extra_comics_list = []
+    comic_info = read_info("your_content/extra_comics.ini")
+    if comic_info.has_section("Extra Comics"):
+        for option in comic_info.options("Extra Comics"):
+            template_name = web_path(comic_info.get("Extra Comics", option))
+            if not template_name:
+                template_name = "comic"
+            extra_comics_list.append({"comic_dir": option, "template_name": template_name})
+    return extra_comics_list
 
 
 def delete_output_file_space(comic_info: RawConfigParser = None):
@@ -79,6 +93,9 @@ def delete_output_file_space(comic_info: RawConfigParser = None):
         else:
             if os.path.exists(page["template_name"]):
                 shutil.rmtree(page["template_name"])
+    for comic in get_extra_comics_list():
+        if os.path.exists(comic["template_name"]):
+            shutil.rmtree(comic["template_name"])
 
 
 def setup_output_file_space(comic_info: RawConfigParser):
@@ -105,14 +122,53 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_page_info_list(comic_info: RawConfigParser, delete_scheduled_posts: bool) -> Tuple[List[Dict], int]:
+def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser, 
+                                  delete_scheduled_posts: bool, processing_times: list):
+    page_info_list, scheduled_post_count = get_page_info_list(comic_folder, comic_info, delete_scheduled_posts)
+    print([p["page_name"] for p in page_info_list])
+    processing_times.append((f"Get info for all pages in '{comic_folder}'", time()))
+
+    # Save page_info_list.json file for use by other pages
+    save_page_info_json_file(comic_folder, page_info_list, scheduled_post_count)
+    processing_times.append((f"Save page_info_list.json file in '{comic_folder}'", time()))
+
+    # Build full comic data dicts, to build templates with
+    comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list)
+    processing_times.append((f"Build full comic data dicts for '{comic_folder}'", time()))
+
+    # Create low-res and thumbnail versions of all the comic pages
+    process_comic_images(comic_info, comic_data_dicts)
+    processing_times.append((f"Process comic images in '{comic_folder}'", time()))
+
+    # Write page info to comic HTML pages
+    global_values = {
+        "autogenerate_warning": AUTOGENERATE_WARNING,
+        "version": VERSION,
+        "comic_title": comic_info.get("Comic Info", "Comic name"),
+        "comic_author": comic_info.get("Comic Info", "Author"),
+        "comic_description": comic_info.get("Comic Info", "Description"),
+        "comic_url": comic_url,
+        "base_dir": BASE_DIRECTORY,
+        "links": get_links_list(comic_info),
+        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
+        "storylines": get_storylines(comic_data_dicts),
+        "google_analytics_id": (comic_info.get("Google Analytics", "Tracking ID")
+                                if comic_info.has_option("Google Analytics", "Tracking ID") else "")
+    }
+    write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
+    processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
+    return comic_data_dicts
+
+
+def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool) \
+        -> Tuple[List[Dict], int]:
     date_format = comic_info.get("Comic Settings", "Date format")
     tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
     local_time = datetime.now(tz=tzinfo)
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
-    for page_path in glob("your_content/comics/*/"):
+    for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
         if post_date > local_time:
@@ -135,12 +191,12 @@ def get_page_info_list(comic_info: RawConfigParser, delete_scheduled_posts: bool
     return page_info_list, scheduled_post_count
 
 
-def save_page_info_json_file(page_info_list: List, scheduled_post_count: int):
+def save_page_info_json_file(comic_folder: str, page_info_list: List, scheduled_post_count: int):
     d = {
         "page_info_list": page_info_list,
         "scheduled_post_count": scheduled_post_count
     }
-    with open("comic/page_info_list.json", "w") as f:
+    with open(f"{comic_folder}comic/page_info_list.json", "w") as f:
         f.write(dumps(d))
 
 
@@ -156,11 +212,11 @@ def get_ids(comic_list: List[Dict], index):
     }
 
 
-def get_transcripts(comic_info: RawConfigParser, page_name: str) -> OrderedDict:
+def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: str) -> OrderedDict:
     if not comic_info.getboolean("Transcripts", "Enable transcripts"):
         return OrderedDict()
     transcripts = OrderedDict()
-    transcripts_dir = "your_content/comics"
+    transcripts_dir = f"your_content/{comic_folder}comics"
     if comic_info.has_option("Transcripts", "Transcripts folder"):
         directory = comic_info.get("Transcripts", "Transcripts folder")
         if directory:
@@ -177,10 +233,10 @@ def get_transcripts(comic_info: RawConfigParser, page_name: str) -> OrderedDict:
     return transcripts
 
 
-def create_comic_data(comic_info: RawConfigParser, page_info: dict,
+def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict,
                       first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
-    page_dir = f"your_content/comics/{page_info['page_name']}/"
+    page_dir = f"your_content/{comic_folder}comics/{page_info['page_name']}/"
     archive_post_date = strftime(comic_info.get("Archive", "Date format"),
                                  strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
     post_html = []
@@ -212,14 +268,14 @@ def create_comic_data(comic_info: RawConfigParser, page_info: dict,
         "characters": page_info["Characters"],
         "tags": page_info["Tags"],
         "post_html": post_html,
-        "transcripts": get_transcripts(comic_info, page_info["page_name"])
+        "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"])
     }
 
 
-def build_comic_data_dicts(comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
+def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
     comic_data_dicts = []
     for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(comic_info, page_info, **get_ids(page_info_list, i))
+        comic_dict = create_comic_data(comic_folder, comic_info, page_info, **get_ids(page_info_list, i))
         comic_data_dicts.append(comic_dict)
     return comic_data_dicts
 
@@ -277,7 +333,7 @@ def process_comic_image(comic_info, comic_page_path, create_thumbnails, create_l
                 save_image(im, low_quality_path)
 
 
-def process_comic_images(comic_info, comic_data_dicts: List[Dict]):
+def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     section = "Image Reprocessing"
     create_thumbnails = comic_info.getboolean(section, "Create thumbnails")
     create_low_quality = comic_info.getboolean(section, "Create low-quality versions of images")
@@ -302,7 +358,7 @@ def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
     return storylines_dict
 
 
-def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
+def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
     # Load Jinja environment
     template_folders = ["src/templates"]
     if comic_info.has_option("Comic Settings", "Theme"):
@@ -312,15 +368,18 @@ def write_html_files(comic_info: RawConfigParser, comic_data_dicts: List[Dict], 
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
-        html_path = f"comic/{comic_data_dict['page_name']}/index.html"
+        html_path = f"{comic_folder}comic/{comic_data_dict['page_name']}/index.html"
         comic_data_dict.update(global_values)
         write_to_template(jinja_environment, "comic.tpl", html_path, comic_data_dict)
-    write_other_pages(jinja_environment, comic_info, comic_data_dicts)
+    write_other_pages(jinja_environment, comic_folder, comic_info, comic_data_dicts)
 
 
-def write_other_pages(jinja_environment, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
+def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     last_comic_page = comic_data_dicts[-1]
-    pages_list = get_pages_list(comic_info)
+    if comic_folder == "":
+        pages_list = get_pages_list(comic_info)
+    else:
+        pages_list = get_pages_list(read_info("your_content/extra_comics.ini"), comic_folder)
     for page in pages_list:
         if page["template_name"] == "tagged":
             write_tagged_pages(jinja_environment, comic_data_dicts)
@@ -407,42 +466,12 @@ def main(delete_scheduled_posts=False):
     setup_output_file_space(comic_info)
     processing_times.append(("Setup output file space", time()))
 
-    # Get the info for all pages, sorted by Post Date
     if not delete_scheduled_posts and comic_info.has_option("Comic Settings", "Delete scheduled posts"):
         delete_scheduled_posts = comic_info.getboolean("Comic Settings", "Delete scheduled posts")
-    page_info_list, scheduled_post_count = get_page_info_list(comic_info, delete_scheduled_posts)
-    print([p["page_name"] for p in page_info_list])
-    processing_times.append(("Get info for all pages", time()))
 
-    # Save page_info_list.json file for use by other pages
-    save_page_info_json_file(page_info_list, scheduled_post_count)
-    processing_times.append(("Save page_info_list.json file", time()))
-
-    # Build full comic data dicts, to build templates with
-    comic_data_dicts = build_comic_data_dicts(comic_info, page_info_list)
-    processing_times.append(("Build full comic data dicts", time()))
-
-    # Create low-res and thumbnail versions of all the comic pages
-    process_comic_images(comic_info, comic_data_dicts)
-    processing_times.append(("Process comic images", time()))
-
-    # Write page info to comic HTML pages
-    global_values = {
-        "autogenerate_warning": AUTOGENERATE_WARNING,
-        "version": VERSION,
-        "comic_title": comic_info.get("Comic Info", "Comic name"),
-        "comic_author": comic_info.get("Comic Info", "Author"),
-        "comic_description": comic_info.get("Comic Info", "Description"),
-        "comic_url": comic_url,
-        "base_dir": BASE_DIRECTORY,
-        "links": get_links_list(comic_info),
-        "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "storylines": get_storylines(comic_data_dicts),
-        "google_analytics_id": (comic_info.get("Google Analytics", "Tracking ID")
-                                if comic_info.has_option("Google Analytics", "Tracking ID") else "")
-    }
-    write_html_files(comic_info, comic_data_dicts, global_values)
-    processing_times.append(("Write HTML files", time()))
+    # Build and publish pages for main comic
+    comic_data_dicts = build_and_publish_comic_pages(comic_url, "", comic_info, delete_scheduled_posts, 
+                                                     processing_times)
 
     # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
