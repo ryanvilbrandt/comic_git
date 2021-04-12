@@ -5,6 +5,7 @@ import re
 import shutil
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
+from copy import deepcopy
 from datetime import datetime
 from glob import glob
 from json import dumps
@@ -58,23 +59,15 @@ def get_links_list(comic_info: RawConfigParser):
 
 def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
     page_list = []
-    for option in comic_info.options("Pages"):
-        page_list.append({"template_name": option, "title": web_path(comic_info.get("Pages", option))})
+    for option in comic_info.options(section_name):
+        page_list.append({"template_name": option, "title": web_path(comic_info.get(section_name, option))})
     return page_list
 
 
-def get_extra_comics_list():
-    if not os.path.exists("your_content/extra_comics.ini"):
-        return []
-    extra_comics_list = []
-    comic_info = read_info("your_content/extra_comics.ini")
-    if comic_info.has_section("Extra Comics"):
-        for option in comic_info.options("Extra Comics"):
-            template_name = web_path(comic_info.get("Extra Comics", option))
-            if not template_name:
-                template_name = "comic"
-            extra_comics_list.append({"comic_dir": option, "template_name": template_name})
-    return extra_comics_list
+def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
+    if comic_info.has_option("Comic Settings", "Extra comics"):
+        return str_to_list(comic_info.get("Comic Settings", "Extra comics"))
+    return []
 
 
 def delete_output_file_space(comic_info: RawConfigParser = None):
@@ -93,16 +86,14 @@ def delete_output_file_space(comic_info: RawConfigParser = None):
         else:
             if os.path.exists(page["template_name"]):
                 shutil.rmtree(page["template_name"])
-    for comic in get_extra_comics_list():
-        if os.path.exists(comic["template_name"]):
-            shutil.rmtree(comic["template_name"])
+    for comic in get_extra_comics_list(comic_info):
+        if os.path.exists(comic):
+            shutil.rmtree(comic)
 
 
 def setup_output_file_space(comic_info: RawConfigParser):
     # Clean workspace, i.e. delete old files
     delete_output_file_space(comic_info)
-    # Create directories if needed
-    os.makedirs("comic", exist_ok=True)
 
 
 def read_info(filepath, to_dict=False):
@@ -149,6 +140,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_description": comic_info.get("Comic Info", "Description"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
+        "comic_base_dir": f"{BASE_DIRECTORY}/{comic_folder}".rstrip("/"),  # e.g. /base_dir/extra_comic
         "links": get_links_list(comic_info),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
@@ -196,6 +188,7 @@ def save_page_info_json_file(comic_folder: str, page_info_list: List, scheduled_
         "page_info_list": page_info_list,
         "scheduled_post_count": scheduled_post_count
     }
+    os.makedirs(f"{comic_folder}comic", exist_ok=True)
     with open(f"{comic_folder}comic/page_info_list.json", "w") as f:
         f.write(dumps(d))
 
@@ -376,10 +369,7 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 
 def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     last_comic_page = comic_data_dicts[-1]
-    if comic_folder == "":
-        pages_list = get_pages_list(comic_info)
-    else:
-        pages_list = get_pages_list(read_info("your_content/extra_comics.ini"), comic_folder)
+    pages_list = get_pages_list(comic_info)
     for page in pages_list:
         if page["template_name"] == "tagged":
             write_tagged_pages(jinja_environment, comic_data_dicts)
@@ -389,6 +379,8 @@ def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfi
             html_path = f"{page['template_name']}.html"
         else:
             html_path = os.path.join(page['template_name'], "index.html")
+        if comic_folder:
+            html_path = os.path.join(comic_folder, html_path)
         data_dict = {}
         data_dict.update(last_comic_page)
         if page["title"]:
@@ -442,6 +434,21 @@ def write_to_template(jinja_environment, template_path, html_path, data_dict=Non
         f.write(bytes(file_contents, "utf-8"))
 
 
+def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
+    # Load the extra comic's comic_info.ini separately so we can make sure to overwrite
+    # the Pages and Links List sections completely
+    extra_comic_info = RawConfigParser()
+    extra_comic_info.read(f"your_content/{folder_name}/comic_info.ini")
+    comic_info = deepcopy(comic_info)
+    # Delete sections from original if the extra comic's info has those sections defined
+    for section_name in ["Pages", "Links Bar"]:
+        if section_name in extra_comic_info:
+            del comic_info[section_name]
+    # Read the extra comic info in again, to merge with the original comic info
+    comic_info.read(f"your_content/{folder_name}/comic_info.ini")
+    return comic_info
+
+
 def print_processing_times(processing_times: List[Tuple[str, float]]):
     last_processed_time = None
     print("")
@@ -470,12 +477,21 @@ def main(delete_scheduled_posts=False):
         delete_scheduled_posts = comic_info.getboolean("Comic Settings", "Delete scheduled posts")
 
     # Build and publish pages for main comic
+    print("Main comic")
     comic_data_dicts = build_and_publish_comic_pages(comic_url, "", comic_info, delete_scheduled_posts, 
                                                      processing_times)
 
     # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
     processing_times.append(("Build RSS feed", time()))
+
+    # Build any extra comics that may be needed
+    for extra_comic in get_extra_comics_list(comic_info):
+        print(extra_comic)
+        extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
+        os.makedirs(extra_comic, exist_ok=True)
+        build_and_publish_comic_pages(comic_url, extra_comic.strip("/") + "/", extra_comic_info, 
+                                      delete_scheduled_posts, processing_times)
 
     print_processing_times(processing_times)
 

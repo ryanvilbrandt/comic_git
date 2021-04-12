@@ -1,5 +1,6 @@
 import os
 from configparser import RawConfigParser
+from typing import List
 
 
 def get_comic_url(comic_info: RawConfigParser):
@@ -31,3 +32,7 @@ def get_comic_url(comic_info: RawConfigParser):
     comic_url = comic_domain + base_directory
     print(f"Base URL: {comic_url}, base subdirectory: {base_directory}")
     return comic_url, base_directory
+
+
+def str_to_list(s: str, delimiter=",") -> List[str]:
+    return [c.strip(" ") for c in s.strip(delimiter + " \n").split(delimiter)]

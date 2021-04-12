@@ -25,7 +25,7 @@
            it runs through list of all the pages in a particular storyline (Chapter 1, Chapter 2, etc) and creates
            a tiny thumbnail image with a title and post date, all of which link to that comic page if clicked. #}
         {%- for page in pages %}
-            <a href="{{ base_dir }}/comic/{{ page.page_name }}/">
+            <a href="{{ comic_base_dir }}/comic/{{ page.page_name }}/">
             <div class="archive-thumbnail">
                 <div class="archive-thumbnail-page"><img src="{{ base_dir }}/{{ page.thumbnail_path }}"></div>
                 <div class="archive-thumbnail-title">{{ page.page_title }}</div>
@@ -45,7 +45,7 @@
             <ul>
             {%- endif %}
             {%- for page in pages %}
-                <li><a href="{{ base_dir }}/comic/{{ page.page_name }}/">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
+                <li><a href="{{ comic_base_dir }}/comic/{{ page.page_name }}/">{{ page.page_title }}</a> -- {{ page.post_date }}</li>
             {%- endfor %}
             {%- if storylines.keys() | list != ["Uncategorized"] %}
             </ul>

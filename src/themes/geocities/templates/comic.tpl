@@ -1,11 +1,11 @@
 {% extends "base.tpl" %}
 {%- block head %}
     {{- super() }}
-    <link rel="next" href="{{ base_dir }}/comic/{{ next_id }}/">
+    <link rel="next" href="{{ comic_base_dir }}/comic/{{ next_id }}/">
 {%- endblock %}
 {%- block content %}
     <div id="comic-page">
-        <a href="{{ base_dir }}/comic/{{ next_id }}/#comic-page">
+        <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
             <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ alt_text }}"/>
         </a>
     </div>
@@ -15,16 +15,16 @@
         <a class="navigation-button-disabled">‹‹ First</a>
         <a class="navigation-button-disabled">‹ Previous</a>
     {% else %}
-        <a class="navigation-button" href="{{ base_dir }}/comic/{{ first_id }}/#comic-page">‹‹ First</a>
-        <a class="navigation-button" href="{{ base_dir }}/comic/{{ previous_id }}/#comic-page">‹ Previous</a>
+        <a class="navigation-button" href="{{ comic_base_dir }}/comic/{{ first_id }}/#comic-page">‹‹ First</a>
+        <a class="navigation-button" href="{{ comic_base_dir }}/comic/{{ previous_id }}/#comic-page">‹ Previous</a>
     {% endif %}
     {# The block below is the same as the one above, except it checks if you're on the last page. #}
     {% if last_id == current_id %}
         <a class="navigation-button-disabled">Next ›</a>
         <a class="navigation-button-disabled">Last ››</a>
     {% else %}
-        <a class="navigation-button" href="{{ base_dir }}/comic/{{ next_id }}/#comic-page">Next ›</a>
-        <a class="navigation-button" href="{{ base_dir }}/latest/#comic-page">Last ››</a>
+        <a class="navigation-button" href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">Next ›</a>
+        <a class="navigation-button" href="{{ comic_base_dir }}/latest/#comic-page">Last ››</a>
     {% endif %}
     </div>
 
@@ -34,7 +34,7 @@
         <div id="storyline">
             {# `| replace(" ", "-")` takes the value in the variable, in this case `storyline`, and replaces all
                spaces with hyphens. This is important when building links to other parts of the site. #}
-            Storyline: <a href="{{ base_dir }}/archive/#{{ storyline | replace(' ', '-') }}">{{ storyline }}</a>
+            Storyline: <a href="{{ comic_base_dir }}/archive/#{{ storyline | replace(' ', '-') }}">{{ storyline }}</a>
         </div>
     {%- endif %}
     {%- if characters %}
@@ -47,7 +47,7 @@
         {%- for character in characters %}
             {# The `if not loop.last` block at the end of the next line means that the ", " string will be added
                after every character link EXCEPT the last one. #}
-            <a href="{{ base_dir }}/tagged/{{ character }}/">{{ character }}</a>{% if not loop.last %}, {% endif %}
+            <a href="{{ comic_base_dir }}/tagged/{{ character }}/">{{ character }}</a>{% if not loop.last %}, {% endif %}
         {%- endfor %}
         </div>
     {%- endif %}
@@ -55,7 +55,7 @@
         <div id="tags">
         Tags:
         {%- for tag in tags %}
-            <a class="tag-link" href="{{ base_dir }}/tagged/{{ tag }}/">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            <a class="tag-link" href="{{ comic_base_dir }}/tagged/{{ tag }}/">{{ tag }}</a>{% if not loop.last %}, {% endif %}
         {%- endfor %}
         </div>
     {%- endif %}
