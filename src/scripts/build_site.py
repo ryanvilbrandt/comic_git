@@ -358,7 +358,7 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
     if comic_info.has_option("Comic Settings", "Theme"):
         theme = comic_info.get("Comic Settings", "Theme")
         if theme:
-            template_folders.insert(0, f"src/themes/{theme}/templates")
+            template_folders.insert(0, f"your_content/themes/{theme}/templates")
     print(f"Template folders: {template_folders}")
     jinja_environment = Environment(loader=FileSystemLoader(template_folders))
     # Write individual comic pages
