@@ -58,10 +58,10 @@ def get_links_list(comic_info: RawConfigParser):
 
 
 def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
-    page_list = []
-    for option in comic_info.options(section_name):
-        page_list.append({"template_name": option, "title": web_path(comic_info.get(section_name, option))})
-    return page_list
+    if comic_info.has_section("Pages"):
+        return [{"template_name": option, "title": web_path(comic_info.get(section_name, option))}
+                for option in comic_info.options(section_name)]
+    return []
 
 
 def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
@@ -355,8 +355,10 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
     # Load Jinja environment
     template_folders = ["src/templates"]
     if comic_info.has_option("Comic Settings", "Theme"):
-        template_folders.insert(0, "src/themes/{}/templates".format(comic_info.get("Comic Settings", "Theme")))
-    print(template_folders)
+        theme = comic_info.get("Comic Settings", "Theme")
+        if theme:
+            template_folders.insert(0, f"src/themes/{theme}/templates")
+    print(f"Template folders: {template_folders}")
     jinja_environment = Environment(loader=FileSystemLoader(template_folders))
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
@@ -424,8 +426,7 @@ def write_to_template(jinja_environment, template_path, html_path, data_dict=Non
             with open(html_file, "rb") as f:
                 file_contents = f.read().decode("utf-8")
         else:
-            print("Template file {} not found".format(template_path))
-            return
+            raise FileNotFoundError(f"Template file {template_path} not found")
 
     dir_name = os.path.dirname(html_path)
     if dir_name:
@@ -440,10 +441,11 @@ def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
     extra_comic_info = RawConfigParser()
     extra_comic_info.read(f"your_content/{folder_name}/comic_info.ini")
     comic_info = deepcopy(comic_info)
-    # Delete sections from original if the extra comic's info has those sections defined
-    for section_name in ["Pages", "Links Bar"]:
-        if section_name in extra_comic_info:
-            del comic_info[section_name]
+    # Always delete existing Pages section; by default, extra comic provides no additional pages
+    del comic_info["Pages"]
+    # Delete "Links Bar" from original if the extra comic's info has those sections defined
+    if "Links Bar" in extra_comic_info:
+        del comic_info["Links Bar"]
     # Read the extra comic info in again, to merge with the original comic info
     comic_info.read(f"your_content/{folder_name}/comic_info.ini")
     return comic_info
