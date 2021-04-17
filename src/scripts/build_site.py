@@ -142,6 +142,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "base_dir": BASE_DIRECTORY,
         "comic_base_dir": f"{BASE_DIRECTORY}/{comic_folder}".rstrip("/"),  # e.g. /base_dir/extra_comic
         "links": get_links_list(comic_info),
+        "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
         "google_analytics_id": (comic_info.get("Google Analytics", "Tracking ID")
