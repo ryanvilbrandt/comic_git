@@ -50,26 +50,6 @@ def str_to_list(s, delimiter=","):
     return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
 
 
-def get_links_list(comic_info: RawConfigParser):
-    link_list = []
-    for option in comic_info.options("Links Bar"):
-        link_list.append({"name": option, "url": web_path(comic_info.get("Links Bar", option))})
-    return link_list
-
-
-def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
-    if comic_info.has_section("Pages"):
-        return [{"template_name": option, "title": web_path(comic_info.get(section_name, option))}
-                for option in comic_info.options(section_name)]
-    return []
-
-
-def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
-    if comic_info.has_option("Comic Settings", "Extra comics"):
-        return str_to_list(comic_info.get("Comic Settings", "Extra comics"))
-    return []
-
-
 def delete_output_file_space(comic_info: RawConfigParser = None):
     shutil.rmtree("comic", ignore_errors=True)
     if os.path.isfile("feed.xml"):
@@ -113,6 +93,40 @@ def read_info(filepath, to_dict=False):
     return info
 
 
+def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: str=None) -> str:
+    if comic_info.has_section(section):
+        if comic_info.has_option(section, option):
+            if option_type == str:
+                return comic_info.get(section, option)
+            if option_type == int:
+                return comic_info.getint(section, option)
+            if option_type == float:
+                return comic_info.getfloat(section, option)
+            if option_type == bool:
+                return comic_info.getboolean(section, option)
+    return default
+
+
+def get_links_list(comic_info: RawConfigParser):
+    link_list = []
+    for option in comic_info.options("Links Bar"):
+        link_list.append({"name": option, "url": web_path(comic_info.get("Links Bar", option))})
+    return link_list
+
+
+def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
+    if comic_info.has_section("Pages"):
+        return [{"template_name": option, "title": web_path(comic_info.get(section_name, option))}
+                for option in comic_info.options(section_name)]
+    return []
+
+
+def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
+    if comic_info.has_option("Comic Settings", "Extra comics"):
+        return str_to_list(comic_info.get("Comic Settings", "Extra comics"))
+    return []
+
+
 def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser, 
                                   delete_scheduled_posts: bool, processing_times: list):
     page_info_list, scheduled_post_count = get_page_info_list(comic_folder, comic_info, delete_scheduled_posts)
@@ -138,6 +152,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_title": comic_info.get("Comic Info", "Comic name"),
         "comic_author": comic_info.get("Comic Info", "Author"),
         "comic_description": comic_info.get("Comic Info", "Description"),
+        "theme": get_option(comic_info, "Comic Settings", "Theme", default="default"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
         "comic_base_dir": f"{BASE_DIRECTORY}/{comic_folder}".rstrip("/"),  # e.g. /base_dir/extra_comic
@@ -145,8 +160,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
-        "google_analytics_id": (comic_info.get("Google Analytics", "Tracking ID")
-                                if comic_info.has_option("Google Analytics", "Tracking ID") else "")
+        "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default="")
     }
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
@@ -210,11 +224,9 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
     if not comic_info.getboolean("Transcripts", "Enable transcripts"):
         return OrderedDict()
     transcripts = OrderedDict()
-    transcripts_dir = f"your_content/{comic_folder}comics"
-    if comic_info.has_option("Transcripts", "Transcripts folder"):
-        directory = comic_info.get("Transcripts", "Transcripts folder")
-        if directory:
-            transcripts_dir = directory
+    transcripts_dir = get_option(
+        comic_info, "Transcripts", "Transcripts folder", default=f"your_content/{comic_folder}comics"
+    )
     for path in glob(os.path.join(transcripts_dir, page_name, "*.txt")):
         if path.endswith("post.txt"):
             continue
@@ -346,10 +358,9 @@ def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
 def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict], global_values: Dict):
     # Load Jinja environment
     template_folders = ["src/templates"]
-    if comic_info.has_option("Comic Settings", "Theme"):
-        theme = comic_info.get("Comic Settings", "Theme")
-        if theme:
-            template_folders.insert(0, f"your_content/themes/{theme}/templates")
+    theme = get_option(comic_info, "Comic Settings", "Theme")
+    if theme:
+        template_folders.insert(0, f"your_content/themes/{theme}/templates")
     print(f"Template folders: {template_folders}")
     jinja_environment = Environment(loader=FileSystemLoader(template_folders))
     # Write individual comic pages
