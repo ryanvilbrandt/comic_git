@@ -34,7 +34,7 @@ def get_comic_url(comic_info: RawConfigParser):
     return comic_url, base_directory
 
 
-def str_to_list(s, delimiter=","):
+def str_to_list(s: str, delimiter: str=",") -> List[str]:
     """
     split(), but with extra stripping of white space and leading/trailing delimiters
     :param s:
