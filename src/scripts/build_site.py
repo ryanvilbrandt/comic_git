@@ -409,14 +409,14 @@ def write_tagged_pages(jinja_environment, comic_data_dicts: List[Dict]):
 
 def write_to_template(jinja_environment, template_path, html_path, data_dict=None):
     try:
-        template = jinja_environment.get_template(template_path + ".tpl")
-        if data_dict is None:
-            data_dict = {}
-        file_contents = template.render(**data_dict)
+        file_contents = jinja_environment.get_template(template_path + ".html").render()
     except TemplateNotFound:
-        # If a matching *.tpl file can't be found, try to find a matching *.html file
+        # If a matching *.html file can't be found, try to find a matching *.tpl file
         try:
-            file_contents = jinja_environment.get_template(template_path + ".html").render()
+            template = jinja_environment.get_template(template_path + ".tpl")
+            if data_dict is None:
+                data_dict = {}
+            file_contents = template.render(**data_dict)
         except TemplateNotFound:
             raise TemplateNotFound(f"Template matching '{template_path}' not found")
 
