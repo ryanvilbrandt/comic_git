@@ -248,7 +248,7 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
         "comic_path": page_dir + page_info["Filename"],
-        "thumbnail_path": page_dir + os.path.splitext(page_info["Filename"])[0] + "_thumbnail.jpg",
+        "thumbnail_path": os.path.join(page_dir, "thumbnail.jpg"),
         "alt_text": html.escape(page_info["Alt text"]),
         "first_id": first_id,
         "previous_id": previous_id,
@@ -307,33 +307,24 @@ def save_image(im, path):
             raise
 
 
-def process_comic_image(comic_info, comic_page_path, create_thumbnails, create_low_quality):
+def process_comic_image(comic_info, comic_page_path):
     section = "Image Reprocessing"
     comic_page_dir = os.path.dirname(comic_page_path)
     comic_page_name, comic_page_ext = os.path.splitext(os.path.basename(comic_page_path))
     with open(comic_page_path, "rb") as f:
         im = Image.open(f)
-        if create_thumbnails:
-            thumbnail_path = os.path.join(comic_page_dir, comic_page_name + "_thumbnail.jpg")
-            if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(thumbnail_path):
-                print(f"Creating thumbnail for {comic_page_name}")
-                thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
-                save_image(thumb_im, thumbnail_path)
-        if create_low_quality:
-            file_type = comic_info.get(section, "Low-quality file type")
-            low_quality_path = os.path.join(comic_page_dir, comic_page_name + "_low_quality." + file_type.lower())
-            if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(low_quality_path):
-                print(f"Creating low quality version of {comic_page_name}")
-                save_image(im, low_quality_path)
+        thumbnail_path = os.path.join(comic_page_dir, "thumbnail.jpg")
+        if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(thumbnail_path):
+            print(f"Creating thumbnail for {comic_page_name}")
+            thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
+            save_image(thumb_im, thumbnail_path)
 
 
 def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     section = "Image Reprocessing"
-    create_thumbnails = comic_info.getboolean(section, "Create thumbnails")
-    create_low_quality = comic_info.getboolean(section, "Create low-quality versions of images")
-    if create_thumbnails or create_low_quality:
+    if comic_info.getboolean(section, "Create thumbnails"):
         for comic_data in comic_data_dicts:
-            process_comic_image(comic_info, comic_data["comic_path"], create_thumbnails, create_low_quality)
+            process_comic_image(comic_info, comic_data["comic_path"])
 
 
 def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
