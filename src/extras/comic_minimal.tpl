@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     {# Style sheet for margins and advanced layout #}
-    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/advanced_stylesheet.css">
     {# Style sheet for colors and fonts #}
-    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/themes/{{ theme }}/css/stylesheet.css">
     <title>{{ page_title }} - {{ comic_title }}</title>
 </head>
 <body>

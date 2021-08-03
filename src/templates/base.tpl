@@ -27,8 +27,8 @@
        name. #}
     {%- block head %}
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/style.css">
-    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/colors_and_layout/your_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/src/css/advanced_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/themes/{{ theme }}/css/stylesheet.css">
     <link rel="icon" href="{{ base_dir }}/favicon.ico" type="image/x-icon" />
     <meta property="og:title" content="{{ comic_title }}" />
     <meta property="og:description" content="{{ comic_description }}" />

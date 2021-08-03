@@ -1,6 +1,6 @@
 /*
 Change these options to customize the color scheme and a few layout options of your website.
-Most layout options are stored in src/css/style.css. I do not recommend messing with those settings
+Most layout options are stored in src/css/advanced_stylesheet.css. I do not recommend messing with those settings
 unless you know what you're doing, or you're willing to spend a lot of time on trial and error.
 
 For any colors, you can represent them in hexadecimal like this (#FF0000 = red)
@@ -11,7 +11,7 @@ body {
     font-family: 'PT Sans', sans-serif;  /* The font of all the text on all pages */
     color: black;  /* The color of the font of most of the text on your website */
     background-color: white;  /* The color of the background behind everything */
-    background-image: url("../images/background_image.png");  /* The pattern on the background. Delete to change to a solid color
+    background-image: url("../../../images/background_image.png");  /* The pattern on the background. Delete to change to a solid color
                                                        or replace with your own image to tile across your background. */
 }
 
