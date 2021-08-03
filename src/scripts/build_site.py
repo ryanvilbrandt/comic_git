@@ -127,7 +127,7 @@ def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
     return []
 
 
-def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser, 
+def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
                                   delete_scheduled_posts: bool, processing_times: list):
     page_info_list, scheduled_post_count = get_page_info_list(comic_folder, comic_info, delete_scheduled_posts)
     print([p["page_name"] for p in page_info_list])
@@ -439,14 +439,12 @@ def write_to_template(jinja_environment, template_path, html_path, data_dict=Non
 
 
 def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
-    # Load the extra comic's comic_info.ini separately so we can make sure to overwrite
-    # the Pages and Links List sections completely
-    extra_comic_info = RawConfigParser()
-    extra_comic_info.read(f"your_content/{folder_name}/comic_info.ini")
     comic_info = deepcopy(comic_info)
     # Always delete existing Pages section; by default, extra comic provides no additional pages
     del comic_info["Pages"]
-    # Delete "Links Bar" from original if the extra comic's info has those sections defined
+    # Delete "Links Bar" from original if the extra comic's info has that section defined
+    extra_comic_info = RawConfigParser()
+    extra_comic_info.read(f"your_content/{folder_name}/comic_info.ini")
     if "Links Bar" in extra_comic_info:
         del comic_info["Links Bar"]
     # Read the extra comic info in again, to merge with the original comic info
@@ -480,8 +478,9 @@ def main(delete_scheduled_posts=False):
 
     # Build and publish pages for main comic
     print("Main comic")
-    comic_data_dicts = build_and_publish_comic_pages(comic_url, "", comic_info, delete_scheduled_posts, 
-                                                     processing_times)
+    comic_data_dicts = build_and_publish_comic_pages(
+        comic_url, "", comic_info, delete_scheduled_posts, processing_times
+    )
 
     # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
@@ -492,8 +491,9 @@ def main(delete_scheduled_posts=False):
         print(extra_comic)
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
         os.makedirs(extra_comic, exist_ok=True)
-        build_and_publish_comic_pages(comic_url, extra_comic.strip("/") + "/", extra_comic_info, 
-                                      delete_scheduled_posts, processing_times)
+        build_and_publish_comic_pages(
+            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, processing_times
+        )
 
     print_processing_times(processing_times)
 
