@@ -18,7 +18,7 @@ from markdown2 import Markdown
 from pytz import timezone
 
 from build_rss_feed import build_rss_feed
-from utils import get_comic_url
+from utils import get_comic_url, str_to_list
 
 VERSION = "0.2.2"
 
@@ -36,18 +36,6 @@ def web_path(rel_path: str):
     if rel_path.startswith("/"):
         return BASE_DIRECTORY + rel_path
     return rel_path
-
-
-def str_to_list(s, delimiter=","):
-    """
-    split(), but with extra stripping of white space and leading/trailing delimiters
-    :param s:
-    :param delimiter:
-    :return:
-    """
-    if not s:
-        return []
-    return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
 
 
 def delete_output_file_space(comic_info: RawConfigParser = None):
