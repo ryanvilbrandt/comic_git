@@ -478,9 +478,6 @@ def main(delete_scheduled_posts=False):
     setup_output_file_space(comic_info)
     processing_times.append(("Setup output file space", time()))
 
-    if not delete_scheduled_posts and comic_info.has_option("Comic Settings", "Delete scheduled posts"):
-        delete_scheduled_posts = comic_info.getboolean("Comic Settings", "Delete scheduled posts")
-
     # Build and publish pages for main comic
     print("Main comic")
     comic_data_dicts = build_and_publish_comic_pages(comic_url, "", comic_info, delete_scheduled_posts, 
