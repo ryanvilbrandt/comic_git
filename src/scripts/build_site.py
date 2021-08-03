@@ -133,6 +133,13 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
     process_comic_images(comic_info, comic_data_dicts)
     processing_times.append((f"Process comic images in '{comic_folder}'", time()))
 
+    # Load home page text
+    if os.path.isfile(f"your_content/{comic_folder}home page.txt"):
+        with open(f"your_content/{comic_folder}home page.txt") as f:
+            home_page_text = f.read()
+    else:
+        home_page_text = ""
+
     # Write page info to comic HTML pages
     global_values = {
         "autogenerate_warning": AUTOGENERATE_WARNING,
@@ -148,6 +155,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts),
+        "home_page_text": home_page_text,
         "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default="")
     }
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
