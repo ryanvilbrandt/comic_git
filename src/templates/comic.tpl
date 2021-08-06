@@ -39,7 +39,7 @@
             <a class="navigation-button-disabled" id="latest-button"><img alt="Latest" src="{{ base_dir }}/your_content/images/navigation_icons/Icon_Latest_Disabled.png"></a>
         {% else %}
             <a class="navigation-button" id="next-button" href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page"><img alt="Next" src="{{ base_dir }}/your_content/images/navigation_icons/Icon_Next.png"></a>
-            <a class="navigation-button" id="last-button" href="{{ comic_base_dir }}/latest/#comic-page"><img alt="Latest" src="{{ base_dir }}/your_content/images/navigation_icons/Icon_Latest.png"></a>
+            <a class="navigation-button" id="last-button" href="{{ comic_base_dir }}/comic/{{ last_id }}/#comic-page"><img alt="Latest" src="{{ base_dir }}/your_content/images/navigation_icons/Icon_Latest.png"></a>
         {% endif %}
     {% else %}
         {% if first_id == current_id %}
@@ -55,7 +55,7 @@
             <a class="navigation-button-disabled" id="last-button">Latest ››</a>
         {% else %}
             <a class="navigation-button" id="next-button" href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">Next ›</a>
-            <a class="navigation-button" id="last-button" href="{{ comic_base_dir }}/latest/#comic-page">Latest ››</a>
+            <a class="navigation-button" id="last-button" href="{{ comic_base_dir }}/comic/{{ last_id }}/#comic-page">Latest ››</a>
         {% endif %}
     {% endif %}
     </div>
