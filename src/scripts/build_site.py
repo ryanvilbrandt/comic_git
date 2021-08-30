@@ -83,7 +83,7 @@ def read_info(filepath, to_dict=False):
 
 def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: str=None) -> str:
     if comic_info.has_section(section):
-        if comic_info.has_option(section, option):
+        if comic_info.has_option(section, option) and comic_info.get(section, option):
             if option_type == str:
                 return comic_info.get(section, option)
             if option_type == int:
