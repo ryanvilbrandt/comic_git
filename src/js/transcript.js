@@ -3,6 +3,13 @@ export function init() {
     let languageList = document.getElementById("language-select");
     let transcriptList = document.getElementById("active-transcript");
     let transcripts = transcriptList.children;
+
+    // don't show language picker if we only have one language
+    if (!languageList) {
+        transcripts[0].style.display = "block";
+        return;
+    }
+
     languageList.selectedIndex = 0;
     transcripts[languageList.selectedIndex].style.display = "block";
 
