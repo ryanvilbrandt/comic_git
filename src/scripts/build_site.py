@@ -29,7 +29,7 @@ If you want to edit any of these files, follow the instructions at https://githu
 -->
 """
 BASE_DIRECTORY = ""
-MARKDOWN = Markdown(extras=["strike"])
+MARKDOWN = Markdown(extras=["strike", "break-on-newline"])
 
 
 def web_path(rel_path: str):
@@ -228,7 +228,8 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
             continue
         language = os.path.splitext(os.path.basename(path))[0]
         with open(path, "rb") as f:
-            transcripts[language] = f.read().decode("utf-8").replace("\n", "<br>\n")
+            transcripts[language] = f.read().decode("utf-8")
+            transcripts[language] = MARKDOWN.convert(transcripts[language])
     default_language = comic_info.get("Transcripts", "Default language")
     if default_language and default_language in transcripts:
         transcripts.move_to_end(default_language, last=False)
