@@ -10,7 +10,7 @@ from datetime import datetime
 from glob import glob
 from json import dumps
 from time import strptime, time, strftime
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -90,7 +90,7 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: str=None) -> str:
+def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) -> str:
     if comic_info.has_section(section):
         if comic_info.has_option(section, option):
             if option_type == str:
@@ -183,6 +183,9 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
+    auto_detect_comic_images = get_option(
+        comic_info, "Comic Settings", "Auto-detect comic images", option_type=bool, default=False
+    )
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
@@ -193,6 +196,23 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
                 print(f"Deleting {page_path}")
                 shutil.rmtree(page_path)
         else:
+            if not page_info.get("Filename", ""):
+                if not auto_detect_comic_images:
+                    raise FileNotFoundError(f"Comic image filename must be provided in {page_path}info.ini")
+                image_files = []
+                for filename in os.listdir(page_path):
+                    if filename == "thumbnail.jpg":
+                        continue
+                    if re.search(r"\.(jpg|jpeg|png|tif|tiff|gif|bmp|webp|webv|svg|eps)$", filename):
+                        image_files.append(filename)
+                if len(image_files) != 1:
+                    raise FileNotFoundError(
+                        f"Found {len(image_files)} images when attempting to auto-detect image files in {page_path}. "
+                        f"({image_files}) When using the 'Auto-detect comic images' option, you must not have any "
+                        f"image file in your comic folder other than your comic page and your archive thumbnail "
+                        f"(thumbnail.jpg)."
+                    )
+                page_info["Filename"] = image_files[0]
             page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
