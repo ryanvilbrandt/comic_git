@@ -156,6 +156,9 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_title": comic_info.get("Comic Info", "Comic name"),
         "comic_author": comic_info.get("Comic Info", "Author"),
         "comic_description": comic_info.get("Comic Info", "Description"),
+        "banner_image": web_path(
+            get_option(comic_info, "Comic Settings", "Banner image", default="/your_content/images/banner.png")
+        ),
         "theme": get_option(comic_info, "Comic Settings", "Theme", default="default"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,

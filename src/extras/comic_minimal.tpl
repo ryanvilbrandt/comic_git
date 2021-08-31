@@ -10,7 +10,7 @@
 <body>
 <div id="container">
     {# Banner Image #}
-    <div id="banner"><img id="banner-img" src="{{ base_dir }}/your_content/images/banner.png"></div>
+    <div id="banner"><img id="banner-img" src="{{ banner_image }}"></div>
     {# Links Bar #}
     <div id="links-bar">
     {%- for link in links %}
