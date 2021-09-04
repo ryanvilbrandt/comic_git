@@ -109,6 +109,7 @@
                     {% endfor %}
                     </div>
                 </td>
+                {% if transcripts|length > 1 %}
                 <td id="language-list">
                     <label for="language-select">Languages</label>
                     <select id="language-select" size="7">
@@ -117,6 +118,7 @@
                         {% endfor %}
                     </select>
                 </td>
+                {% endif %}
             </tr>
         </table>
         {% endif %}

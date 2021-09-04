@@ -10,7 +10,7 @@ from datetime import datetime
 from glob import glob
 from json import dumps
 from time import strptime, time, strftime
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -29,13 +29,22 @@ If you want to edit any of these files, follow the instructions at https://githu
 -->
 """
 BASE_DIRECTORY = ""
-MARKDOWN = Markdown(extras=["strike"])
+MARKDOWN = Markdown(extras=["strike", "break-on-newline"])
 
 
 def web_path(rel_path: str):
     if rel_path.startswith("/"):
         return BASE_DIRECTORY + rel_path
     return rel_path
+
+
+def find_project_root():
+    while not os.path.exists("your_content"):
+        last_cwd = os.getcwd()
+        os.chdir("..")
+        if os.getcwd() == last_cwd:
+            raise FileNotFoundError("Couldn't find a folder in the path matching 'your_content'. Make sure you're "
+                                    "running this script from within the comic_git repository.")
 
 
 def delete_output_file_space(comic_info: RawConfigParser = None):
@@ -81,7 +90,7 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: str=None) -> str:
+def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) -> str:
     if comic_info.has_section(section):
         if comic_info.has_option(section, option):
             if option_type == str:
@@ -147,6 +156,9 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_title": comic_info.get("Comic Info", "Comic name"),
         "comic_author": comic_info.get("Comic Info", "Author"),
         "comic_description": comic_info.get("Comic Info", "Description"),
+        "banner_image": web_path(
+            get_option(comic_info, "Comic Settings", "Banner image", default="/your_content/images/banner.png")
+        ),
         "theme": get_option(comic_info, "Comic Settings", "Theme", default="default"),
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
@@ -171,6 +183,9 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
+    auto_detect_comic_images = get_option(
+        comic_info, "Comic Settings", "Auto-detect comic images", option_type=bool, default=False
+    )
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
@@ -181,6 +196,23 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
                 print(f"Deleting {page_path}")
                 shutil.rmtree(page_path)
         else:
+            if not page_info.get("Filename", ""):
+                if not auto_detect_comic_images:
+                    raise FileNotFoundError(f"Comic image filename must be provided in {page_path}info.ini")
+                image_files = []
+                for filename in os.listdir(page_path):
+                    if filename == "thumbnail.jpg":
+                        continue
+                    if re.search(r"\.(jpg|jpeg|png|tif|tiff|gif|bmp|webp|webv|svg|eps)$", filename):
+                        image_files.append(filename)
+                if len(image_files) != 1:
+                    raise FileNotFoundError(
+                        f"Found {len(image_files)} images when attempting to auto-detect image files in {page_path}. "
+                        f"({image_files}) When using the 'Auto-detect comic images' option, you must not have any "
+                        f"image file in your comic folder other than your comic page and your archive thumbnail "
+                        f"(thumbnail.jpg)."
+                    )
+                page_info["Filename"] = image_files[0]
             page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
@@ -228,7 +260,7 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
             continue
         language = os.path.splitext(os.path.basename(path))[0]
         with open(path, "rb") as f:
-            transcripts[language] = f.read().decode("utf-8").replace("\n", "<br>\n")
+            transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
     default_language = comic_info.get("Transcripts", "Default language")
     if default_language and default_language in transcripts:
         transcripts.move_to_end(default_language, last=False)
@@ -456,6 +488,7 @@ def main(delete_scheduled_posts=False):
     processing_times = [("Start", time())]
 
     # Get site-wide settings for this comic
+    find_project_root()
     comic_info = read_info("your_content/comic_info.ini")
     comic_url, BASE_DIRECTORY = get_comic_url(comic_info)
 
