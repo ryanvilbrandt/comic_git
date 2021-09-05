@@ -125,8 +125,10 @@ def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
 
 
 def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
-                                  delete_scheduled_posts: bool, processing_times: list):
-    page_info_list, scheduled_post_count = get_page_info_list(comic_folder, comic_info, delete_scheduled_posts)
+                                  delete_scheduled_posts: bool, publish_all_comics: bool, processing_times: list):
+    page_info_list, scheduled_post_count = get_page_info_list(
+        comic_folder, comic_info, delete_scheduled_posts, publish_all_comics
+    )
     print([p["page_name"] for p in page_info_list])
     processing_times.append((f"Get info for all pages in '{comic_folder}'", time()))
 
@@ -135,7 +137,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
     processing_times.append((f"Save page_info_list.json file in '{comic_folder}'", time()))
 
     # Build full comic data dicts, to build templates with
-    comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list)
+    comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list, scheduled_post_count)
     processing_times.append((f"Build full comic data dicts for '{comic_folder}'", time()))
 
     # Create low-res and thumbnail versions of all the comic pages
@@ -175,8 +177,8 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
     return comic_data_dicts
 
 
-def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool) \
-        -> Tuple[List[Dict], int]:
+def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool,
+                       publish_all_comics: bool) -> Tuple[List[Dict], int]:
     date_format = comic_info.get("Comic Settings", "Date format")
     tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
     local_time = datetime.now(tz=tzinfo)
@@ -189,7 +191,7 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
         post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
-        if post_date > local_time:
+        if post_date > local_time and not publish_all_comics:
             scheduled_post_count += 1
             # Post date is in the future, so delete the folder with the resources
             if delete_scheduled_posts:
@@ -252,22 +254,23 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
     if not comic_info.getboolean("Transcripts", "Enable transcripts"):
         return OrderedDict()
     transcripts = OrderedDict()
+    # TODO Option to get transcripts from both comic directory and transcript folder?
     transcripts_dir = get_option(
         comic_info, "Transcripts", "Transcripts folder", default=f"your_content/{comic_folder}comics"
     )
-    for path in glob(os.path.join(transcripts_dir, page_name, "*.txt")):
-        if path.endswith("post.txt"):
+    for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, "*.txt"))):
+        if transcript_path.endswith("post.txt"):
             continue
-        language = os.path.splitext(os.path.basename(path))[0]
-        with open(path, "rb") as f:
+        language = os.path.splitext(os.path.basename(transcript_path))[0]
+        with open(transcript_path, "rb") as f:
             transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
-    default_language = comic_info.get("Transcripts", "Default language")
-    if default_language and default_language in transcripts:
+    default_language = get_option(comic_info, "Transcripts", "Default language", default=f"English")
+    if default_language in transcripts:
         transcripts.move_to_end(default_language, last=False)
     return transcripts
 
 
-def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict,
+def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict, scheduled_post_count: int,
                       first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
     page_dir = f"your_content/{comic_folder}comics/{page_info['page_name']}/"
@@ -276,12 +279,14 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     post_html = []
     post_text_paths = [
         "your_content/before post text.txt",
+        "your_content/before post text.html",
         page_dir + "post.txt",
-        "your_content/after post text.txt"
+        "your_content/after post text.txt",
+        "your_content/after post text.html",
     ]
-    for path in post_text_paths:
-        if os.path.exists(path):
-            with open(path, "rb") as f:
+    for post_text_path in post_text_paths:
+        if os.path.exists(post_text_path):
+            with open(post_text_path, "rb") as f:
                 post_html.append(f.read().decode("utf-8"))
     post_html = MARKDOWN.convert("\n\n".join(post_html))
     return {
@@ -302,14 +307,18 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
         "characters": page_info["Characters"],
         "tags": page_info["Tags"],
         "post_html": post_html,
-        "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"])
+        "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"]),
+        "scheduled_post_count": scheduled_post_count,
     }
 
 
-def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
+def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict],
+                           scheduled_post_count: int) -> List[Dict]:
     comic_data_dicts = []
     for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(comic_folder, comic_info, page_info, **get_ids(page_info_list, i))
+        comic_dict = create_comic_data(
+            comic_folder, comic_info, page_info, scheduled_post_count, **get_ids(page_info_list, i)
+        )
         comic_data_dicts.append(comic_dict)
     return comic_data_dicts
 
@@ -325,6 +334,14 @@ def resize(im, size):
         size = size / 100
         x, y = im.size
         new_size = (int(x * size), int(y * size))
+    elif size.endswith("px"):
+        # TODO Make this a more generalized solution
+        size = size[:-2]
+        # Assume number is the requested height
+        im_size = im.size
+        h = int(size.strip())
+        w = int(im_size[0] / im_size[1] * h)
+        new_size = (w, h)
     else:
         raise ValueError("Unknown resize value: {!r}".format(size))
     return im.resize(new_size)
@@ -373,6 +390,7 @@ def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
     storylines_dict = OrderedDict()
     for comic_data in comic_data_dicts:
         storyline = comic_data["storyline"]
+        # TODO Set visibility of Uncategorized in comic info, or put "unarchived" as an option in info.ini, or both
         if not storyline:
             storyline = "Uncategorized"
         if storyline not in storylines_dict.keys():
@@ -483,7 +501,7 @@ def print_processing_times(processing_times: List[Tuple[str, float]]):
     print("{}: {:.2f} ms".format("Total time", (processing_times[-1][1] - processing_times[0][1]) * 1000))
 
 
-def main(delete_scheduled_posts=False):
+def main(delete_scheduled_posts=False, publish_all_comics=False):
     global BASE_DIRECTORY
     processing_times = [("Start", time())]
 
@@ -501,7 +519,7 @@ def main(delete_scheduled_posts=False):
     # Build and publish pages for main comic
     print("Main comic")
     comic_data_dicts = build_and_publish_comic_pages(
-        comic_url, "", comic_info, delete_scheduled_posts, processing_times
+        comic_url, "", comic_info, delete_scheduled_posts, publish_all_comics, processing_times
     )
 
     # Build RSS feed
@@ -514,7 +532,8 @@ def main(delete_scheduled_posts=False):
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
         os.makedirs(extra_comic, exist_ok=True)
         build_and_publish_comic_pages(
-            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, processing_times
+            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, publish_all_comics,
+            processing_times
         )
 
     print_processing_times(processing_times)
@@ -522,12 +541,22 @@ def main(delete_scheduled_posts=False):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Manual build of comic_git')
-    parser.add_argument("-d", "--delete-scheduled-posts", action="store_true", help="Deletes scheduled post content "
-                        "when the script is run. USE AT YOUR OWN RISK! You can discard your changes in GitHub Desktop "
-                        "if you accidentally delete important files.")
+    parser.add_argument(
+        "-d",
+        "--delete-scheduled-posts",
+        action="store_true",
+        help="Deletes scheduled post content when the script is run. USE AT YOUR OWN RISK! You can discard your "
+             "changes in GitHub Desktop if you accidentally delete important files."
+    )
+    parser.add_argument(
+        "-p",
+        "--publish-all-posts",
+        action="store_true",
+        help="Will publish all comics, even ones with a publish date set in the future."
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.delete_scheduled_posts)
+    main(args.delete_scheduled_posts, args.publish_all_posts)
