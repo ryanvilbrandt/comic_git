@@ -325,26 +325,26 @@ def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_
 
 
 def resize(im, size):
+    im_w, im_h = im.size
     if "," in size:
         # Convert a string of the form "100, 36" into a 2-tuple of ints (100, 36)
-        x, y = size.strip().split(",")
-        new_size = (int(x.strip()), int(y.strip()))
+        w, h = size.strip().split(",")
+        new_size = (int(w.strip()), int(h.strip()))
     elif size.endswith("%"):
         # Convert a percentage (50%) into a new size (50, 18)
         size = float(size.strip().strip("%"))
         size = size / 100
-        x, y = im.size
-        new_size = (int(x * size), int(y * size))
-    elif size.endswith("px"):
-        # TODO Make this a more generalized solution
-        size = size[:-2]
-        # Assume number is the requested height
-        im_size = im.size
-        h = int(size.strip())
-        w = int(im_size[0] / im_size[1] * h)
-        new_size = (w, h)
+        new_size = (int(im_w * size), int(im_h * size))
     else:
-        raise ValueError("Unknown resize value: {!r}".format(size))
+        if size.endswith("h"):
+            h = int(size[:-1].strip())
+            w = int(im_w / im_h * h)
+        elif size.endswith("w"):
+            w = int(size[:-1].strip())
+            h = int(im_h / im_w * w)
+        else:
+            raise ValueError("Unknown resize value: {!r}".format(size))
+        new_size = (w, h)
     return im.resize(new_size)
 
 
