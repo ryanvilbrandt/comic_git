@@ -420,7 +420,7 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 
 
 def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    last_comic_page = comic_data_dicts[-1]
+    last_comic_page = comic_data_dicts[-1] if comic_data_dicts else {}
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
         if page["template_name"] == "tagged":
