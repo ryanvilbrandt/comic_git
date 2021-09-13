@@ -12,8 +12,12 @@ let loading_more_pages = false;
 // it counts as being "viewed" for the purposes of determining what the current viewed page is.
 let viewed_page_top_margin_percentage = 0.30;
 let load_next_pages_threshold = 1000;
+let comic_base_dir = null;
+let content_base_dir = null;
 
-export async function load_page() {
+export async function load_page(local_comic_base_dir, local_content_base_dir) {
+    comic_base_dir = local_comic_base_dir;
+    content_base_dir = local_content_base_dir;
     initializing = true;
     await fetch_all_json_data();
     infinite_scroll_div = document.getElementById("infinite-scroll");
@@ -41,7 +45,7 @@ export async function load_page() {
 }
 
 async function fetch_all_json_data() {
-    let response = await fetch("../comic/page_info_list.json");
+    let response = await fetch(`${comic_base_dir}/comic/page_info_list.json`);
     console.log("Fetched page info list");
     let json = await response.json();
     page_info_json = json["page_info_list"];
@@ -82,12 +86,12 @@ function build_comic_div(page) {
     node.id = page["page_name"];
 
     let link_node = document.createElement("a");
-    link_node.href = `../comic/${page["page_name"]}/`;
+    link_node.href = `${comic_base_dir}/comic/${page["page_name"]}/`;
 
     let image_node = document.createElement("img");
     image_node.className = "infinite-page-image";
     console.log("Adding div for page " + page["page_name"]);
-    image_node.src = "../your_content/comics/" + page["page_name"] + "/" + page["Filename"];
+    image_node.src = `${content_base_dir}/comics/${page["page_name"]}/${page["Filename"]}`;
     image_node.title = page["Alt text"];
 
     link_node.appendChild(image_node);

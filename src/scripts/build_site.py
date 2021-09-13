@@ -165,6 +165,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
         "comic_base_dir": f"{BASE_DIRECTORY}/{comic_folder}".rstrip("/"),  # e.g. /base_dir/extra_comic
+        "content_base_dir": f"{BASE_DIRECTORY}/your_content/{comic_folder}".rstrip("/"),  # e.g. /base_dir/your_content/extra_comic
         "links": get_links_list(comic_info),
         "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
