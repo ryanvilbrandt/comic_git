@@ -10,7 +10,7 @@ from datetime import datetime
 from glob import glob
 from json import dumps
 from time import strptime, time, strftime
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Union
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -90,17 +90,20 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) -> str:
+def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) \
+        -> Union[str, int, float, bool]:
     if comic_info.has_section(section):
         if comic_info.has_option(section, option):
             if option_type == str:
                 return comic_info.get(section, option)
-            if option_type == int:
+            elif option_type == int:
                 return comic_info.getint(section, option)
-            if option_type == float:
+            elif option_type == float:
                 return comic_info.getfloat(section, option)
-            if option_type == bool:
+            elif option_type == bool:
                 return comic_info.getboolean(section, option)
+            else:
+                raise ValueError(f"Invalid option type: {option_type}")
     return default
 
 
@@ -182,8 +185,8 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
 def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool,
                        publish_all_comics: bool) -> Tuple[List[Dict], int]:
     date_format = comic_info.get("Comic Settings", "Date format")
-    tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
-    local_time = datetime.now(tz=tzinfo)
+    tz_info = timezone(comic_info.get("Comic Settings", "Timezone"))
+    local_time = datetime.now(tz=tz_info)
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
@@ -192,7 +195,7 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     )
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
-        post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
+        post_date = tz_info.localize(datetime.strptime(page_info["Post date"], date_format))
         if post_date > local_time and not publish_all_comics:
             scheduled_post_count += 1
             # Post date is in the future, so delete the folder with the resources
