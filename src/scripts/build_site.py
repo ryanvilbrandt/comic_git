@@ -255,20 +255,24 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
     if not comic_info.getboolean("Transcripts", "Enable transcripts"):
         return OrderedDict()
     transcripts = OrderedDict()
-    # TODO Option to get transcripts from both comic directory and transcript folder?
-    transcripts_dir = get_option(
-        comic_info, "Transcripts", "Transcripts folder", default=f"your_content/{comic_folder}comics"
-    )
+    if get_option(comic_info, "Transcripts", "Load transcripts from comic folder", option_type=bool, default=True):
+        load_transcripts_from_folder(transcripts, f"your_content/{comic_folder}comics", page_name)
+    transcripts_dir = get_option(comic_info, "Transcripts", "Transcripts folder", default=f"")
+    if transcripts_dir:
+        load_transcripts_from_folder(transcripts, transcripts_dir, page_name)
+    default_language = get_option(comic_info, "Transcripts", "Default language", default=f"English")
+    if default_language in transcripts:
+        transcripts.move_to_end(default_language, last=False)
+    return transcripts
+
+
+def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str, page_name: str):
     for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, "*.txt"))):
         if transcript_path.endswith("post.txt"):
             continue
         language = os.path.splitext(os.path.basename(transcript_path))[0]
         with open(transcript_path, "rb") as f:
             transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
-    default_language = get_option(comic_info, "Transcripts", "Default language", default=f"English")
-    if default_language in transcripts:
-        transcripts.move_to_end(default_language, last=False)
-    return transcripts
 
 
 def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict, scheduled_post_count: int,
