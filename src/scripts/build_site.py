@@ -152,6 +152,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         home_page_text = ""
 
     # Write page info to comic HTML pages
+    show_uncategorized = get_option(comic_info, "Archive", "Show Uncategorized comics", option_type=bool, default=True)
     global_values = {
         "autogenerate_warning": AUTOGENERATE_WARNING,
         "version": VERSION,
@@ -169,7 +170,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "links": get_links_list(comic_info),
         "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "storylines": get_storylines(comic_data_dicts),
+        "storylines": get_storylines(comic_data_dicts, show_uncategorized),
         "home_page_text": home_page_text,
         "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default="")
     }
@@ -389,14 +390,15 @@ def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dic
             process_comic_image(comic_info, comic_data["comic_path"])
 
 
-def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
+def get_storylines(comic_data_dicts: List[Dict], show_uncategorized: bool) -> OrderedDict:
     # Start with an OrderedDict, so we can easily drop the pages we encounter in the proper buckets, while keeping
     # their proper order
     storylines_dict = OrderedDict()
     for comic_data in comic_data_dicts:
         storyline = comic_data["storyline"]
-        # TODO Set visibility of Uncategorized in comic info, or put "unarchived" as an option in info.ini, or both
         if not storyline:
+            if not show_uncategorized:
+                continue
             storyline = "Uncategorized"
         if storyline not in storylines_dict.keys():
             storylines_dict[storyline] = []
