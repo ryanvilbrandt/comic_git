@@ -339,12 +339,12 @@ def resize(im, size):
         w, h = im_w * size, im_h * size
     elif size.endswith("h"):
         # Scale to set height, and adjust width to keep aspect ratio
-        h = int(size[:-1].strip())
-        w = int(im_w / im_h * h)
+        h = size[:-1].strip()
+        w = im_w / im_h * h
     elif size.endswith("w"):
         # Scale to set width, and adjust height to keep aspect ratio
-        w = int(size[:-1].strip())
-        h = int(im_h / im_w * w)
+        w = size[:-1].strip()
+        h = im_h / im_w * w
     else:
         raise ValueError("Unknown resize value: {!r}".format(size))
     return im.resize((int(w), int(h)))
