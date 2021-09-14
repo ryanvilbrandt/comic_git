@@ -10,7 +10,7 @@ from datetime import datetime
 from glob import glob
 from json import dumps
 from time import strptime, time, strftime
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Union
 
 from PIL import Image
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -90,17 +90,20 @@ def read_info(filepath, to_dict=False):
     return info
 
 
-def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) -> str:
+def get_option(comic_info: RawConfigParser, section: str, option: str, option_type: type=str, default: Any=None) \
+        -> Union[str, int, float, bool]:
     if comic_info.has_section(section):
         if comic_info.has_option(section, option):
             if option_type == str:
                 return comic_info.get(section, option)
-            if option_type == int:
+            elif option_type == int:
                 return comic_info.getint(section, option)
-            if option_type == float:
+            elif option_type == float:
                 return comic_info.getfloat(section, option)
-            if option_type == bool:
+            elif option_type == bool:
                 return comic_info.getboolean(section, option)
+            else:
+                raise ValueError(f"Invalid option type: {option_type}")
     return default
 
 
@@ -125,8 +128,10 @@ def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
 
 
 def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
-                                  delete_scheduled_posts: bool, processing_times: list):
-    page_info_list, scheduled_post_count = get_page_info_list(comic_folder, comic_info, delete_scheduled_posts)
+                                  delete_scheduled_posts: bool, publish_all_comics: bool, processing_times: list):
+    page_info_list, scheduled_post_count = get_page_info_list(
+        comic_folder, comic_info, delete_scheduled_posts, publish_all_comics
+    )
     print([p["page_name"] for p in page_info_list])
     processing_times.append((f"Get info for all pages in '{comic_folder}'", time()))
 
@@ -150,6 +155,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         home_page_text = ""
 
     # Write page info to comic HTML pages
+    show_uncategorized = get_option(comic_info, "Archive", "Show Uncategorized comics", option_type=bool, default=True)
     global_values = {
         "autogenerate_warning": AUTOGENERATE_WARNING,
         "version": VERSION,
@@ -163,23 +169,25 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "comic_url": comic_url,
         "base_dir": BASE_DIRECTORY,
         "comic_base_dir": f"{BASE_DIRECTORY}/{comic_folder}".rstrip("/"),  # e.g. /base_dir/extra_comic
+        "content_base_dir": f"{BASE_DIRECTORY}/your_content/{comic_folder}".rstrip("/"),  # e.g. /base_dir/your_content/extra_comic
         "links": get_links_list(comic_info),
         "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
-        "storylines": get_storylines(comic_data_dicts),
+        "storylines": get_storylines(comic_data_dicts, show_uncategorized),
         "home_page_text": home_page_text,
-        "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default="")
+        "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default=""),
+        "scheduled_post_count": scheduled_post_count,
     }
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
     return comic_data_dicts
 
 
-def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool) \
-        -> Tuple[List[Dict], int]:
+def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool,
+                       publish_all_comics: bool) -> Tuple[List[Dict], int]:
     date_format = comic_info.get("Comic Settings", "Date format")
-    tzinfo = timezone(comic_info.get("Comic Settings", "Timezone"))
-    local_time = datetime.now(tz=tzinfo)
+    tz_info = timezone(comic_info.get("Comic Settings", "Timezone"))
+    local_time = datetime.now(tz=tz_info)
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
@@ -188,8 +196,8 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     )
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         page_info = read_info(f"{page_path}info.ini", to_dict=True)
-        post_date = tzinfo.localize(datetime.strptime(page_info["Post date"], date_format))
-        if post_date > local_time:
+        post_date = tz_info.localize(datetime.strptime(page_info["Post date"], date_format))
+        if post_date > local_time and not publish_all_comics:
             scheduled_post_count += 1
             # Post date is in the future, so delete the folder with the resources
             if delete_scheduled_posts:
@@ -237,14 +245,12 @@ def save_page_info_json_file(comic_folder: str, page_info_list: List, scheduled_
 
 
 def get_ids(comic_list: List[Dict], index):
-    first_id = comic_list[0]["page_name"]
-    last_id = comic_list[-1]["page_name"]
     return {
-        "first_id": first_id,
-        "previous_id": first_id if index == 0 else comic_list[index - 1]["page_name"],
+        "first_id": comic_list[0]["page_name"],
+        "previous_id": comic_list[max(0, index - 1)]["page_name"],
         "current_id": comic_list[index]["page_name"],
-        "next_id": last_id if index == (len(comic_list) - 1) else comic_list[index + 1]["page_name"],
-        "last_id": last_id
+        "next_id": comic_list[min(len(comic_list) - 1, index + 1)]["page_name"],
+        "last_id": comic_list[-1]["page_name"]
     }
 
 
@@ -252,19 +258,24 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
     if not comic_info.getboolean("Transcripts", "Enable transcripts"):
         return OrderedDict()
     transcripts = OrderedDict()
-    transcripts_dir = get_option(
-        comic_info, "Transcripts", "Transcripts folder", default=f"your_content/{comic_folder}comics"
-    )
-    for path in glob(os.path.join(transcripts_dir, page_name, "*.txt")):
-        if path.endswith("post.txt"):
-            continue
-        language = os.path.splitext(os.path.basename(path))[0]
-        with open(path, "rb") as f:
-            transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
-    default_language = comic_info.get("Transcripts", "Default language")
-    if default_language and default_language in transcripts:
+    if get_option(comic_info, "Transcripts", "Load transcripts from comic folder", option_type=bool, default=True):
+        load_transcripts_from_folder(transcripts, f"your_content/{comic_folder}comics", page_name)
+    transcripts_dir = get_option(comic_info, "Transcripts", "Transcripts folder", default=f"")
+    if transcripts_dir:
+        load_transcripts_from_folder(transcripts, transcripts_dir, page_name)
+    default_language = get_option(comic_info, "Transcripts", "Default language", default=f"English")
+    if default_language in transcripts:
         transcripts.move_to_end(default_language, last=False)
     return transcripts
+
+
+def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str, page_name: str):
+    for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, "*.txt"))):
+        if transcript_path.endswith("post.txt"):
+            continue
+        language = os.path.splitext(os.path.basename(transcript_path))[0]
+        with open(transcript_path, "rb") as f:
+            transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
 
 
 def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict,
@@ -276,12 +287,14 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     post_html = []
     post_text_paths = [
         "your_content/before post text.txt",
+        "your_content/before post text.html",
         page_dir + "post.txt",
-        "your_content/after post text.txt"
+        "your_content/after post text.txt",
+        "your_content/after post text.html",
     ]
-    for path in post_text_paths:
-        if os.path.exists(path):
-            with open(path, "rb") as f:
+    for post_text_path in post_text_paths:
+        if os.path.exists(post_text_path):
+            with open(post_text_path, "rb") as f:
                 post_html.append(f.read().decode("utf-8"))
     post_html = MARKDOWN.convert("\n\n".join(post_html))
     return {
@@ -302,32 +315,39 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
         "characters": page_info["Characters"],
         "tags": page_info["Tags"],
         "post_html": post_html,
-        "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"])
+        "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"]),
     }
 
 
 def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
-    comic_data_dicts = []
-    for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(comic_folder, comic_info, page_info, **get_ids(page_info_list, i))
-        comic_data_dicts.append(comic_dict)
-    return comic_data_dicts
+    return [
+        create_comic_data(comic_folder, comic_info, page_info, **get_ids(page_info_list, i))
+        for i, page_info in enumerate(page_info_list)
+    ]
 
 
 def resize(im, size):
+    im_w, im_h = im.size
     if "," in size:
         # Convert a string of the form "100, 36" into a 2-tuple of ints (100, 36)
-        x, y = size.strip().split(",")
-        new_size = (int(x.strip()), int(y.strip()))
+        w, h = size.strip().split(",")
+        w, h = w.strip(), h.strip()
     elif size.endswith("%"):
         # Convert a percentage (50%) into a new size (50, 18)
         size = float(size.strip().strip("%"))
         size = size / 100
-        x, y = im.size
-        new_size = (int(x * size), int(y * size))
+        w, h = im_w * size, im_h * size
+    elif size.endswith("h"):
+        # Scale to set height, and adjust width to keep aspect ratio
+        h = int(size[:-1].strip())
+        w = im_w / im_h * h
+    elif size.endswith("w"):
+        # Scale to set width, and adjust height to keep aspect ratio
+        w = int(size[:-1].strip())
+        h = im_h / im_w * w
     else:
         raise ValueError("Unknown resize value: {!r}".format(size))
-    return im.resize(new_size)
+    return im.resize((int(w), int(h)))
 
 
 def save_image(im, path):
@@ -367,13 +387,15 @@ def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dic
             process_comic_image(comic_info, comic_data["comic_path"])
 
 
-def get_storylines(comic_data_dicts: List[Dict]) -> OrderedDict:
+def get_storylines(comic_data_dicts: List[Dict], show_uncategorized: bool) -> OrderedDict:
     # Start with an OrderedDict, so we can easily drop the pages we encounter in the proper buckets, while keeping
     # their proper order
     storylines_dict = OrderedDict()
     for comic_data in comic_data_dicts:
         storyline = comic_data["storyline"]
         if not storyline:
+            if not show_uncategorized:
+                continue
             storyline = "Uncategorized"
         if storyline not in storylines_dict.keys():
             storylines_dict[storyline] = []
@@ -401,7 +423,7 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 
 
 def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    last_comic_page = comic_data_dicts[-1]
+    last_comic_page = comic_data_dicts[-1] if comic_data_dicts else {}
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
         if page["template_name"] == "tagged":
@@ -483,7 +505,7 @@ def print_processing_times(processing_times: List[Tuple[str, float]]):
     print("{}: {:.2f} ms".format("Total time", (processing_times[-1][1] - processing_times[0][1]) * 1000))
 
 
-def main(delete_scheduled_posts=False):
+def main(delete_scheduled_posts=False, publish_all_comics=False):
     global BASE_DIRECTORY
     processing_times = [("Start", time())]
 
@@ -501,7 +523,7 @@ def main(delete_scheduled_posts=False):
     # Build and publish pages for main comic
     print("Main comic")
     comic_data_dicts = build_and_publish_comic_pages(
-        comic_url, "", comic_info, delete_scheduled_posts, processing_times
+        comic_url, "", comic_info, delete_scheduled_posts, publish_all_comics, processing_times
     )
 
     # Build RSS feed
@@ -514,7 +536,8 @@ def main(delete_scheduled_posts=False):
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
         os.makedirs(extra_comic, exist_ok=True)
         build_and_publish_comic_pages(
-            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, processing_times
+            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, publish_all_comics,
+            processing_times
         )
 
     print_processing_times(processing_times)
@@ -522,12 +545,22 @@ def main(delete_scheduled_posts=False):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Manual build of comic_git')
-    parser.add_argument("-d", "--delete-scheduled-posts", action="store_true", help="Deletes scheduled post content "
-                        "when the script is run. USE AT YOUR OWN RISK! You can discard your changes in GitHub Desktop "
-                        "if you accidentally delete important files.")
+    parser.add_argument(
+        "-d",
+        "--delete-scheduled-posts",
+        action="store_true",
+        help="Deletes scheduled post content when the script is run. USE AT YOUR OWN RISK! You can discard your "
+             "changes in GitHub Desktop if you accidentally delete important files."
+    )
+    parser.add_argument(
+        "-p",
+        "--publish-all-posts",
+        action="store_true",
+        help="Will publish all comics, even ones with a publish date set in the future."
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.delete_scheduled_posts)
+    main(args.delete_scheduled_posts, args.publish_all_posts)
