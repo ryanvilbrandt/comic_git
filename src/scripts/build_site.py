@@ -245,14 +245,12 @@ def save_page_info_json_file(comic_folder: str, page_info_list: List, scheduled_
 
 
 def get_ids(comic_list: List[Dict], index):
-    first_id = comic_list[0]["page_name"]
-    last_id = comic_list[-1]["page_name"]
     return {
-        "first_id": first_id,
-        "previous_id": first_id if index == 0 else comic_list[index - 1]["page_name"],
+        "first_id": comic_list[0]["page_name"],
+        "previous_id": comic_list[max(0, index - 1)]["page_name"],
         "current_id": comic_list[index]["page_name"],
-        "next_id": last_id if index == (len(comic_list) - 1) else comic_list[index + 1]["page_name"],
-        "last_id": last_id
+        "next_id": comic_list[min(len(comic_list) - 1, index + 1)]["page_name"],
+        "last_id": comic_list[-1]["page_name"]
     }
 
 
@@ -322,13 +320,10 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
 
 
 def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
-    comic_data_dicts = []
-    for i, page_info in enumerate(page_info_list):
-        comic_dict = create_comic_data(
-            comic_folder, comic_info, page_info, **get_ids(page_info_list, i)
-        )
-        comic_data_dicts.append(comic_dict)
-    return comic_data_dicts
+    return [
+        create_comic_data(comic_folder, comic_info, page_info, **get_ids(page_info_list, i))
+        for i, page_info in enumerate(page_info_list)
+    ]
 
 
 def resize(im, size):
@@ -336,23 +331,23 @@ def resize(im, size):
     if "," in size:
         # Convert a string of the form "100, 36" into a 2-tuple of ints (100, 36)
         w, h = size.strip().split(",")
-        new_size = (int(w.strip()), int(h.strip()))
+        w, h = w.strip(), h.strip()
     elif size.endswith("%"):
         # Convert a percentage (50%) into a new size (50, 18)
         size = float(size.strip().strip("%"))
         size = size / 100
-        new_size = (int(im_w * size), int(im_h * size))
+        w, h = im_w * size, im_h * size
+    elif size.endswith("h"):
+        # Scale to set height, and adjust width to keep image ratio
+        h = int(size[:-1].strip())
+        w = int(im_w / im_h * h)
+    elif size.endswith("w"):
+        # Scale to set width, and adjust width to keep image ratio
+        w = int(size[:-1].strip())
+        h = int(im_h / im_w * w)
     else:
-        if size.endswith("h"):
-            h = int(size[:-1].strip())
-            w = int(im_w / im_h * h)
-        elif size.endswith("w"):
-            w = int(size[:-1].strip())
-            h = int(im_h / im_w * w)
-        else:
-            raise ValueError("Unknown resize value: {!r}".format(size))
-        new_size = (w, h)
-    return im.resize(new_size)
+        raise ValueError("Unknown resize value: {!r}".format(size))
+    return im.resize((int(w), int(h)))
 
 
 def save_image(im, path):
