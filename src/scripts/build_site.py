@@ -140,7 +140,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
     processing_times.append((f"Save page_info_list.json file in '{comic_folder}'", time()))
 
     # Build full comic data dicts, to build templates with
-    comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list, scheduled_post_count)
+    comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list)
     processing_times.append((f"Build full comic data dicts for '{comic_folder}'", time()))
 
     # Create low-res and thumbnail versions of all the comic pages
@@ -175,7 +175,8 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_data_dicts, show_uncategorized),
         "home_page_text": home_page_text,
-        "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default="")
+        "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default=""),
+        "scheduled_post_count": scheduled_post_count,
     }
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
@@ -279,7 +280,7 @@ def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str,
             transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
 
 
-def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict, scheduled_post_count: int,
+def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict,
                       first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
     print("Building page {}...".format(page_info["page_name"]))
     page_dir = f"your_content/{comic_folder}comics/{page_info['page_name']}/"
@@ -317,16 +318,14 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
         "tags": page_info["Tags"],
         "post_html": post_html,
         "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"]),
-        "scheduled_post_count": scheduled_post_count,
     }
 
 
-def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict],
-                           scheduled_post_count: int) -> List[Dict]:
+def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
     comic_data_dicts = []
     for i, page_info in enumerate(page_info_list):
         comic_dict = create_comic_data(
-            comic_folder, comic_info, page_info, scheduled_post_count, **get_ids(page_info_list, i)
+            comic_folder, comic_info, page_info, **get_ids(page_info_list, i)
         )
         comic_data_dicts.append(comic_dict)
     return comic_data_dicts
