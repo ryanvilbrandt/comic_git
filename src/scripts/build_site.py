@@ -197,11 +197,13 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "scheduled_post_count": scheduled_post_count,
     }
     # Update the global values with any custom values returned by the hook.py file's extra_global_value's function
-    global_values.update(run_hook(
+    extra_global_variables = run_hook(
         global_values["theme"],
         "extra_global_values",
         [comic_folder, comic_info, comic_data_dicts]
-    ))
+    )
+    if extra_global_variables:
+        global_values.update(extra_global_variables)
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
     return comic_data_dicts
