@@ -8,17 +8,18 @@ from configparser import RawConfigParser
 from copy import deepcopy
 from datetime import datetime
 from glob import glob
+from importlib import import_module
 from json import dumps
 from time import strptime, time, strftime
 from typing import Dict, List, Tuple, Any, Union
 
 from PIL import Image
-from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import Environment, FileSystemLoader
 from markdown2 import Markdown
 from pytz import timezone
 
+import utils
 from build_rss_feed import build_rss_feed
-from utils import get_comic_url, str_to_list
 
 VERSION = "0.3.2"
 
@@ -123,8 +124,25 @@ def get_pages_list(comic_info: RawConfigParser, section_name="Pages"):
 
 def get_extra_comics_list(comic_info: RawConfigParser) -> List[str]:
     if comic_info.has_option("Comic Settings", "Extra comics"):
-        return str_to_list(comic_info.get("Comic Settings", "Extra comics"))
+        return utils.str_to_list(comic_info.get("Comic Settings", "Extra comics"))
     return []
+
+
+def run_hook(theme: str, func: str, args: List[Any]) -> Any:
+    """
+    Determines if the hooks.py file has been added to the given theme, and if that file contains the given function.
+    If so, it will call that function with the given args.
+    :param theme: Name of the theme to check in for the hooks.py file
+    :param func: Function name to call
+    :param args: Args list to pass to the function
+    :return: The return value of the function called, if one was found. Otherwise, None.
+    """
+    if os.path.exists(f"your_content/themes/{theme}/scripts/hooks.py"):
+        hooks = import_module(f"your_content.themes.{theme}.scripts.hooks")
+        if hasattr(hooks, func):
+            method = getattr(hooks, func)
+            return method(*args)
+    return None
 
 
 def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
@@ -178,6 +196,12 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "google_analytics_id": get_option(comic_info, "Google Analytics", "Tracking ID", default=""),
         "scheduled_post_count": scheduled_post_count,
     }
+    # Update the global values with any custom values returned by the hook.py file's extra_global_value's function
+    global_values.update(run_hook(
+        global_values["theme"],
+        "extra_global_values",
+        [comic_folder, comic_info, comic_data_dicts]
+    ))
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
     return comic_data_dicts
@@ -223,8 +247,8 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
                 page_info["Filename"] = image_files[0]
             page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
             page_info["Storyline"] = page_info.get("Storyline", "")
-            page_info["Characters"] = str_to_list(page_info.get("Characters", ""))
-            page_info["Tags"] = str_to_list(page_info.get("Tags", ""))
+            page_info["Characters"] = utils.str_to_list(page_info.get("Characters", ""))
+            page_info["Tags"] = utils.str_to_list(page_info.get("Tags", ""))
             page_info_list.append(page_info)
 
     page_info_list = sorted(
@@ -412,22 +436,23 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
     if theme:
         template_folders.insert(0, f"your_content/themes/{theme}/templates")
     print(f"Template folders: {template_folders}")
-    jinja_environment = Environment(loader=FileSystemLoader(template_folders))
+    utils.jinja_environment = Environment(loader=FileSystemLoader(template_folders))
     # Write individual comic pages
     print("Writing {} comic pages...".format(len(comic_data_dicts)))
     for comic_data_dict in comic_data_dicts:
         html_path = f"{comic_folder}comic/{comic_data_dict['page_name']}/index.html"
         comic_data_dict.update(global_values)
-        write_to_template(jinja_environment, "comic", html_path, comic_data_dict)
-    write_other_pages(jinja_environment, comic_folder, comic_info, comic_data_dicts)
+        utils.write_to_template("comic", html_path, comic_data_dict)
+    write_other_pages(comic_folder, comic_info, comic_data_dicts)
+    run_hook(global_values["theme"], "build_other_pages", [comic_folder, comic_info, comic_data_dicts])
 
 
-def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
+def write_other_pages(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
     last_comic_page = comic_data_dicts[-1] if comic_data_dicts else {}
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
         if page["template_name"] == "tagged":
-            write_tagged_pages(jinja_environment, comic_data_dicts)
+            write_tagged_pages(comic_data_dicts)
             continue
         if page["template_name"].lower() in ("index", "404"):
             html_path = f"{page['template_name']}.html"
@@ -439,11 +464,10 @@ def write_other_pages(jinja_environment, comic_folder: str, comic_info: RawConfi
         data_dict.update(last_comic_page)
         if page["title"]:
             data_dict["page_title"] = page["title"]
-        print("Writing {}...".format(html_path))
-        write_to_template(jinja_environment, page["template_name"], html_path, data_dict)
+        utils.write_to_template(page["template_name"], html_path, data_dict)
 
 
-def write_tagged_pages(jinja_environment, comic_data_dicts: List[Dict]):
+def write_tagged_pages(comic_data_dicts: List[Dict]):
     last_comic_page = comic_data_dicts[-1]
     tags = defaultdict(list)
     for page in comic_data_dicts:
@@ -452,33 +476,12 @@ def write_tagged_pages(jinja_environment, comic_data_dicts: List[Dict]):
         for tag in page["tags"]:
             tags[tag].append(page)
     for tag, pages in tags.items():
-        print("Writing tagged page for {}...".format(tag))
         data_dict = {
             "tag": tag,
             "tagged_pages": pages
         }
         data_dict.update(last_comic_page)
-        write_to_template(jinja_environment, "tagged", f"tagged/{tag}/index.html", data_dict)
-
-
-def write_to_template(jinja_environment, template_path, html_path, data_dict=None):
-    try:
-        file_contents = jinja_environment.get_template(template_path + ".html").render()
-    except TemplateNotFound:
-        # If a matching *.html file can't be found, try to find a matching *.tpl file
-        try:
-            template = jinja_environment.get_template(template_path + ".tpl")
-            if data_dict is None:
-                data_dict = {}
-            file_contents = template.render(**data_dict)
-        except TemplateNotFound:
-            raise TemplateNotFound(f"Template matching '{template_path}' not found")
-
-    dir_name = os.path.dirname(html_path)
-    if dir_name:
-        os.makedirs(dir_name, exist_ok=True)
-    with open(html_path, "wb") as f:
-        f.write(bytes(file_contents, "utf-8"))
+        utils.write_to_template("tagged", f"tagged/{tag}/index.html", data_dict)
 
 
 def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
@@ -512,7 +515,7 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
     # Get site-wide settings for this comic
     find_project_root()
     comic_info = read_info("your_content/comic_info.ini")
-    comic_url, BASE_DIRECTORY = get_comic_url(comic_info)
+    comic_url, BASE_DIRECTORY = utils.get_comic_url(comic_info)
 
     processing_times.append(("Get comic settings", time()))
 

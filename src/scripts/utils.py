@@ -1,6 +1,10 @@
 import os
 from configparser import RawConfigParser
-from typing import List
+from typing import List, Dict
+
+from jinja2 import TemplateNotFound
+
+jinja_environment = None
 
 
 def get_comic_url(comic_info: RawConfigParser):
@@ -44,3 +48,36 @@ def str_to_list(s: str, delimiter: str=",") -> List[str]:
     if not s:
         return []
     return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
+
+
+def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) -> None:
+    """
+    Searches for either an HTML or a TPL file named <template_name> in first the "templates" folder of your
+    theme directory, or the /src/templates directory. It then builds that template at the specified <html_path> using
+    the given <data_dict> as a list of variables to pass into the template when it's rendered.
+ 
+    :param template_name: The name of the template file or HTML file you wish to load
+    :param html_path: The path to write the HTML file, relative to the repository root. If you want it to write to a 
+    directory (e.g. ...github.io/comic_git/cool_stuff/), then add index.html file at the end.
+    (e.g. "cool_stuff/index.html")
+    :param data_dict: The dictionary of values to pass to the template when it's rendered.
+    :return: None
+    """
+    try:
+        file_contents = jinja_environment.get_template(template_name + ".html").render()
+    except TemplateNotFound:
+        # If a matching *.html file can't be found, try to find a matching *.tpl file
+        try:
+            template = jinja_environment.get_template(template_name + ".tpl")
+            if data_dict is None:
+                data_dict = {}
+            file_contents = template.render(**data_dict)
+        except TemplateNotFound:
+            raise TemplateNotFound(f"Template matching '{template_name}' not found")
+
+    dir_name = os.path.dirname(html_path)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
+    print(f"Writing {html_path}")
+    with open(html_path, "wb") as f:
+        f.write(bytes(file_contents, "utf-8"))
