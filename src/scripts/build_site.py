@@ -3,6 +3,7 @@ import html
 import os
 import re
 import shutil
+import sys
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from copy import deepcopy
@@ -129,6 +130,10 @@ def run_hook(theme: str, func: str, args: List[Any]) -> Any:
     :return: The return value of the function called, if one was found. Otherwise, None.
     """
     if os.path.exists(f"your_content/themes/{theme}/scripts/hooks.py"):
+        current_path = os.path.abspath(".")
+        if current_path not in sys.path:
+            sys.path.append(current_path)
+            print(f"Path updated: {sys.path}")
         hooks = import_module(f"your_content.themes.{theme}.scripts.hooks")
         if hasattr(hooks, func):
             method = getattr(hooks, func)
