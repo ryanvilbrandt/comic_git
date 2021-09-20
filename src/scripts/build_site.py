@@ -39,15 +39,6 @@ def web_path(rel_path: str):
     return rel_path
 
 
-def find_project_root():
-    while not os.path.exists("your_content"):
-        last_cwd = os.getcwd()
-        os.chdir("..")
-        if os.getcwd() == last_cwd:
-            raise FileNotFoundError("Couldn't find a folder in the path matching 'your_content'. Make sure you're "
-                                    "running this script from within the comic_git repository.")
-
-
 def delete_output_file_space(comic_info: RawConfigParser = None):
     shutil.rmtree("comic", ignore_errors=True)
     if os.path.isfile("feed.xml"):
@@ -515,7 +506,7 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
     processing_times = [("Start", time())]
 
     # Get site-wide settings for this comic
-    find_project_root()
+    utils.find_project_root()
     comic_info = read_info("your_content/comic_info.ini")
     comic_url, BASE_DIRECTORY = utils.get_comic_url(comic_info)
 
