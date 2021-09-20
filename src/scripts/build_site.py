@@ -514,8 +514,13 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
     utils.find_project_root()
     comic_info = read_info("your_content/comic_info.ini")
     comic_url, BASE_DIRECTORY = utils.get_comic_url(comic_info)
+    theme = get_option(comic_info, "Comic Settings", "Theme", default="default")
 
     processing_times.append(("Get comic settings", time()))
+
+    run_hook(theme, "preprocess", [comic_info])
+
+    processing_times.append(("Preprocessing hook", time()))
 
     # Setup output file space
     setup_output_file_space(comic_info)
@@ -540,6 +545,10 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
             comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, publish_all_comics,
             processing_times
         )
+
+    run_hook(theme, "postprocess", [comic_info])
+
+    processing_times.append(("Postprocessing hook", time()))
 
     print_processing_times(processing_times)
 
