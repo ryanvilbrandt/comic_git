@@ -50,6 +50,15 @@ def str_to_list(s: str, delimiter: str=",") -> List[str]:
     return [item.strip(" ") for item in s.strip(delimiter + " ").split(delimiter)]
 
 
+def find_project_root():
+    while not os.path.exists("your_content"):
+        last_cwd = os.getcwd()
+        os.chdir("..")
+        if os.getcwd() == last_cwd:
+            raise FileNotFoundError("Couldn't find a folder in the path matching 'your_content'. Make sure you're "
+                                    "running this script from within the comic_git repository.")
+
+
 def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) -> None:
     """
     Searches for either an HTML or a TPL file named <template_name> in first the "templates" folder of your
@@ -63,6 +72,8 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     :param data_dict: The dictionary of values to pass to the template when it's rendered.
     :return: None
     """
+    if jinja_environment is None:
+        raise RuntimeError("Jinja environment was not initialized before write_to_template was called.")
     try:
         file_contents = jinja_environment.get_template(template_name + ".html").render()
     except TemplateNotFound:

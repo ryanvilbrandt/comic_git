@@ -3,6 +3,7 @@ import html
 import os
 import re
 import shutil
+import sys
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from copy import deepcopy
@@ -37,15 +38,6 @@ def web_path(rel_path: str):
     if rel_path.startswith("/"):
         return BASE_DIRECTORY + rel_path
     return rel_path
-
-
-def find_project_root():
-    while not os.path.exists("your_content"):
-        last_cwd = os.getcwd()
-        os.chdir("..")
-        if os.getcwd() == last_cwd:
-            raise FileNotFoundError("Couldn't find a folder in the path matching 'your_content'. Make sure you're "
-                                    "running this script from within the comic_git repository.")
 
 
 def delete_output_file_space(comic_info: RawConfigParser = None):
@@ -138,6 +130,10 @@ def run_hook(theme: str, func: str, args: List[Any]) -> Any:
     :return: The return value of the function called, if one was found. Otherwise, None.
     """
     if os.path.exists(f"your_content/themes/{theme}/scripts/hooks.py"):
+        current_path = os.path.abspath(".")
+        if current_path not in sys.path:
+            sys.path.append(current_path)
+            print(f"Path updated: {sys.path}")
         hooks = import_module(f"your_content.themes.{theme}.scripts.hooks")
         if hasattr(hooks, func):
             method = getattr(hooks, func)
@@ -515,11 +511,16 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
     processing_times = [("Start", time())]
 
     # Get site-wide settings for this comic
-    find_project_root()
+    utils.find_project_root()
     comic_info = read_info("your_content/comic_info.ini")
     comic_url, BASE_DIRECTORY = utils.get_comic_url(comic_info)
+    theme = get_option(comic_info, "Comic Settings", "Theme", default="default")
 
     processing_times.append(("Get comic settings", time()))
+
+    run_hook(theme, "preprocess", [comic_info])
+
+    processing_times.append(("Preprocessing hook", time()))
 
     # Setup output file space
     setup_output_file_space(comic_info)
@@ -544,6 +545,10 @@ def main(delete_scheduled_posts=False, publish_all_comics=False):
             comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts, publish_all_comics,
             processing_times
         )
+
+    run_hook(theme, "postprocess", [comic_info])
+
+    processing_times.append(("Postprocessing hook", time()))
 
     print_processing_times(processing_times)
 

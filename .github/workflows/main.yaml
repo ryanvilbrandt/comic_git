@@ -34,6 +34,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r src/scripts/requirements.txt
+          python src/scripts/make_requirements_hooks_file.py
+          pip install -r src/scripts/requirements_hooks.txt
       - name: Run python build script
         run: |
           python src/scripts/build_site.py --delete-scheduled-posts
