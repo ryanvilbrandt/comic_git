@@ -72,6 +72,8 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     :param data_dict: The dictionary of values to pass to the template when it's rendered.
     :return: None
     """
+    if jinja_environment is None:
+        raise RuntimeError("Jinja environment was not initialized before write_to_template was called.")
     try:
         file_contents = jinja_environment.get_template(template_name + ".html").render()
     except TemplateNotFound:
