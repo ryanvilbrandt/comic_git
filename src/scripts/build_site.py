@@ -318,11 +318,11 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
                                  strptime(page_info["Post date"], comic_info.get("Comic Settings", "Date format")))
     post_html = []
     post_text_paths = [
-        "your_content/before post text.txt",
-        "your_content/before post text.html",
+        f"your_content/{comic_folder}before post text.txt",
+        f"your_content/{comic_folder}before post text.html",
         page_dir + "post.txt",
-        "your_content/after post text.txt",
-        "your_content/after post text.html",
+        f"your_content/{comic_folder}after post text.txt",
+        f"your_content/{comic_folder}after post text.html",
     ]
     for post_text_path in post_text_paths:
         if os.path.exists(post_text_path):
