@@ -216,6 +216,7 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     auto_detect_comic_images = get_option(
         comic_info, "Comic Settings", "Auto-detect comic images", option_type=bool, default=False
     )
+    theme = get_option(comic_info, "Comic Settings", "Theme", default="default")
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         filepath = f"{page_path}info.ini"
         if not os.path.exists(f"{page_path}info.ini"):
@@ -251,6 +252,11 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = utils.str_to_list(page_info.get("Characters", ""))
             page_info["Tags"] = utils.str_to_list(page_info.get("Tags", ""))
+            hook_result = run_hook(theme, "extra_page_info_processing",
+                                   [comic_folder, comic_info, page_path, page_info])
+            if hook_result:
+                page_info = hook_result
+            print(page_info)
             page_info_list.append(page_info)
 
     page_info_list = sorted(
@@ -323,7 +329,7 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
             with open(post_text_path, "rb") as f:
                 post_html.append(f.read().decode("utf-8"))
     post_html = MARKDOWN.convert("\n\n".join(post_html))
-    return {
+    d = {
         "page_name": page_info["page_name"],
         "filename": page_info["Filename"],
         "comic_path": page_dir + page_info["Filename"],
@@ -343,6 +349,12 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
         "post_html": post_html,
         "transcripts": get_transcripts(comic_folder, comic_info, page_info["page_name"]),
     }
+    theme = get_option(comic_info, "Comic Settings", "Theme", default="default")
+    hook_result = run_hook(theme, "extra_comic_dict_processing", [comic_folder, comic_info, d])
+    if hook_result:
+        d = hook_result
+    print(d)
+    return d
 
 
 def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_info_list: List[Dict]) -> List[Dict]:
