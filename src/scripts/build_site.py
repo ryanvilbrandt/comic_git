@@ -217,7 +217,11 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
         comic_info, "Comic Settings", "Auto-detect comic images", option_type=bool, default=False
     )
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
-        page_info = read_info(f"{page_path}info.ini", to_dict=True)
+        filepath = f"{page_path}info.ini"
+        if not os.path.exists(f"{page_path}info.ini"):
+            print(f"{page_path} is missing its info.ini file. Skipping")
+            continue
+        page_info = read_info(filepath, to_dict=True)
         post_date = tz_info.localize(datetime.strptime(page_info["Post date"], date_format))
         if post_date > local_time and not publish_all_comics:
             scheduled_post_count += 1
