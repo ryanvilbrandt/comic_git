@@ -20,6 +20,13 @@ export async function load_page(local_comic_base_dir, local_content_base_dir) {
     content_base_dir = local_content_base_dir;
     initializing = true;
     await fetch_all_json_data();
+    // If no pages to load, end early.
+    if (page_info_json.length === 0) {
+        document.getElementById("loading-infinite-scroll").innerHTML = "<h2>No comics have been published yet.</h2>";
+        document.getElementById("jump-to").hidden = true;
+        document.getElementById("load-newer").hidden = true;
+        return;
+    }
     infinite_scroll_div = document.getElementById("infinite-scroll");
     load_and_go_to_page();
     document.getElementById("load-older-button").onclick = load_older_pages;
