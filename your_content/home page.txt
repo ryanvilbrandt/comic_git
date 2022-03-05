@@ -1,11 +1,37 @@
-<h1>Welcome to comic_git!</h1>
+<!-- Anything in brackets that start with an exclamation mark, like this, is called a comment! It will not affect the HTML of your page. It's just a note from me to you! -->
+<!-- There's a little extra HTML I've added here to jazz up the front page, but you don't need it! If you just want basic HTML with p tags and h1 tags and such, that will also work just fine. -->
 
-<p>What you're seeing is the default website created by comic_git, a static-site generator hosted FOR FREE on GitHub Pages, that YOU can use to publish your own web comic easily and quickly!</p>
+<!-- The front page uses a responsive 2-column layout. This is done by first defining what content is going to be in the column layout, like so. -->
+<div class="right-column-layout">
+<!-- For this page, I've used a layout where the right column is wider than the left. If you want the left column to be wider than the right, change the class to "left-column-layout"! -->
 
-<p>Click <a href="comic/197/#comic-page">here</a> to go to the first page of the sample comic to see how it looks out-of-the-box.<br>
-    You can also click <a href="latest/#comic-page">here</a> to go to the latest page, which will always point to the most recently published comic.</p>
+<!-- Next, we separate what we want into the left and right columns. -->
+    <div class="left-column">
+        <a href="https://github.com/ryanvilbrandt/comic_git/wiki">
+            <img src="your_content/images/logo.png" alt="comic_git logo: if you can draw it, you can build it!" title="Click here to go to the comic_git wiki!">
+        </a>
+    </div>
 
-<p>For instructions on how to use comic_git, check out the <a href="https://github.com/ryanvilbrandt/comic_git/wiki">wiki</a>.<br>
-    If you'd like to jump right into creating your own webcomic with comic_git, check out the <a href="https://github.com/ryanvilbrandt/comic_git/wiki/Getting-Started">Getting Started</a> section.</p>
+    <div class="right-column">
+        <h1>Welcome to comic_git!</h1>
 
-<p>(To edit this page when you're setting up your own website, edit the file <code>/your_content/home page.txt</code>)</p> 
+        <p>What you're seeing is the default website created by comic_git, a static-site generator hosted FOR FREE on GitHub Pages, that YOU can use to publish your own web comic easily and quickly!</p>
+
+        <!-- If you want to make your link look like a button, add class="button" to your 'a' tag like so: -->
+        <a class="button" href="comic/197/#comic-page">First Page</a>
+
+        <a class="button" href="latest/#comic-page">Latest Page</a>
+
+        <p>Click <a href="comic/197/#comic-page">here</a> to go to the first page of the sample comic to see how it looks out-of-the-box.<br>
+            You can also click <a href="latest/#comic-page">here</a> to go to the latest page, which will always point to the most recently published comic.</p>
+    </div>
+</div>
+<!-- That's the end of the column layout! Everything below this is just normal HTML. -->
+
+<h2>Instructions</h2>
+
+<p>To learn how to use comic_git, check out the <a href="https://github.com/ryanvilbrandt/comic_git/wiki">wiki</a>.<br>
+    If you'd like to jump right into creating your own webcomic with comic_git, read the <a href="https://github.com/ryanvilbrandt/comic_git/wiki/Getting-Started">Getting Started</a> section.</p>
+
+<!-- If you want to set some information apart, you can set the class as "infobox"! That will put your content in a different block of color, which can be defined in stylesheet.css. -->
+<p class="infobox">(To edit this page when you're setting up your own website, edit the file <code>/your_content/home page.txt</code>)</p>

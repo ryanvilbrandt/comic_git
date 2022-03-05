@@ -28,7 +28,7 @@
     {% endif %}
     </div>
 
-    <h1 id="page-title">{{ page_title }}</h1>
+    <h1 id="post-title">{{ page_title }}</h1>
     <h3 id="post-date">Posted on: {{ post_date }}</h3>
     {%- if storyline %}
         <div id="storyline">

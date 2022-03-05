@@ -20,7 +20,7 @@
             {%- if name != "Uncategorized" %}
             {# `| replace(" ", "-")` takes the value in the variable, in this case `name`, and replaces all
                spaces with hyphens. This is important when building links to other parts of the site. #}
-            <a class="chapter-links" href="#{{ pages[0].page_name }}" id="infinite-scroll-{{ name | replace(' ', '-') }}">{{ name }}</a>
+            <a class="button chapter-links" href="#{{ pages[0].page_name }}" id="infinite-scroll-{{ name | replace(' ', '-') }}">{{ name }}</a>
             {%- endif %}
         {%- endfor %}
     </div>

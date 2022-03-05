@@ -58,7 +58,7 @@ div#blurb {
     border-right: 3px dotted lightslategray;
 }
 
-h1#page-title {
+h1#post-title {
     color: black;  /* Color of the page title */
     font-size: 3em;  /* Font size of the post title */
 }

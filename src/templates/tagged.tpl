@@ -8,7 +8,7 @@
        the Python script that generates the HTML file. That value is dropped into the existing HTML with no changes.
        For example, if the value passed in to `tag` is `Avery`, then `Posts tagged with "{{ tag }}"` becomes
        `Posts tagged with "Avery"` #}
-    <h1 id="page-title">Posts tagged with "{{ tag }}"</h1>
+    <h1 id="post-title">Posts tagged with "{{ tag }}"</h1>
 
     <div id="blurb">
         <div id="tagged">

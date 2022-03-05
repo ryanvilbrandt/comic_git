@@ -4,7 +4,7 @@
 {# This is the start of the `content` block. It's part of the <body> of the page. This is where all the visible
    parts of the website after the links bar and before the "Powered by comic_git" footer go. #}
 {% block content %}
-    <h1 id="page-title">Archive</h1>
+    <h1 id="post-title">Archive</h1>
 
     <div id="blurb">
     {# If blocks let you check the value of a variable and then generate different HTML depending on that variable.
