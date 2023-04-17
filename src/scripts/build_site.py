@@ -594,7 +594,8 @@ def parse_args():
         "-p",
         "--publish-all-posts",
         action="store_true",
-        help="Will publish all comics, even ones with a publish date set in the future."
+        help="Will publish all comics, even ones with a publish date set in the future.",
+        default=False
     )
     return parser.parse_args()
 
