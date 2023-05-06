@@ -1,6 +1,6 @@
 {# This template is the base for all other templates, meaning that all other templates will be adding to the blocks
    in this template, before they're used to create HTML files. #}
-{{ autogenerate_warning }}
+{{ autogenerate_warning|safe }}
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns#">
 <head>

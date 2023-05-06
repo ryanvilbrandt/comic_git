@@ -5,6 +5,6 @@
    parts of the website after the links bar and before the "Powered by comic_git" footer go. #}
 {%- block content %}
 
-{{ home_page_text }}
+{{ home_page_text|safe }}
 
 {%- endblock %}
