@@ -592,7 +592,7 @@ def parse_args():
     )
     parser.add_argument(
         "-p",
-        "--publish-all-posts",
+        "--publish-all-comics",
         action="store_true",
         help="Will publish all comics, even ones with a publish date set in the future.",
         default=False
