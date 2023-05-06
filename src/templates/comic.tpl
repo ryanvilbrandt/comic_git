@@ -94,7 +94,7 @@
         {%- endif %}
         <hr id="post-body-break">
         <div id="post-body">
-{{ post_html }}
+{{ post_html|safe }}
         </div>
         {% if transcripts %}
         <table id="transcripts-container" border>
@@ -104,7 +104,7 @@
                     <div id="active-transcript">
                     {% for language, transcript in transcripts.items() %}
                         <div class="transcript" id='{{ language }}-transcript'>
-                        {{ transcript }}
+                        {{ transcript|safe }}
                         </div>
                     {% endfor %}
                     </div>
