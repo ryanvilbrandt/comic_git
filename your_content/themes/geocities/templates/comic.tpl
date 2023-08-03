@@ -61,14 +61,6 @@
     {%- endif %}
     <hr id="post-body-break">
     <div id="post-body">
-{{ post_html }}
+{{ post_html|safe }}
     </div>
-{%- endblock %}
-{%- block script %}
-{% if transcripts %}
-<script type="module">
-    import { init } from "{{ base_dir }}/src/js/transcript.js";
-    init();
-</script>
-{% endif %}
 {%- endblock %}
