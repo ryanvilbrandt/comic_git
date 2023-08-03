@@ -1,4 +1,4 @@
-{{ autogenerate_warning }}
+{{ autogenerate_warning|safe }}
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
