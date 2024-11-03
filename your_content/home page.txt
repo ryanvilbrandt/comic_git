@@ -1,5 +1,15 @@
 <h1>Welcome to comic_git!</h1>
 
+<div id="comic-git-dev-banner">
+    <p><b>This version of comic_git is obsolete. You can find the recommended version <a href="https://ryanvilbrandt.github.io/comic_git_dev/">here</a>, but read below for important info.</b>
+
+    <p>I've been working on a major revamp of comic_git for a while. This new version has a major overhaul in the underlying system for how the website is built, which gives the benefit that I can provide bug fixes and updates to existing users automatically. It also contains many small but needed improvements, like an improved default theme.
+
+    <p>However, although that revamp is completely code-ready, and is already actively being used by at least two active webcomics, it is not yet "ready" for a full release. Mainly, the documentation has not been updated as needed to cover all the changes in the new version, due mostly to a lack of motivation on my part. Despite that, the documentation is still correct and useful enough that I feel comfortable recommending this "new" version of comic_git to anyone who wants to use it.</p>
+
+    <p>If you run into any issues using this "new" version, please don't hesitate to ask for help on our <a href="https://discord.gg/zmdHGXB">Discord server</a>.</p>
+</div>
+
 <p>What you're seeing is the default website created by comic_git, a static-site generator hosted FOR FREE on GitHub Pages, that YOU can use to publish your own web comic easily and quickly!</p>
 
 <p>Click <a href="comic/197/#comic-page">here</a> to go to the first page of the sample comic to see how it looks out-of-the-box.<br>

@@ -276,3 +276,9 @@ div#post-date {
 div#storyline, div#characters, div#tags {
     font-style: italic;  /* Delete this to unitalicize the tags */
 }
+
+div#comic-git-dev-banner {
+    background-color: palegoldenrod;
+    outline: 1px gold dashed;
+    padding: 0.5em;
+}
