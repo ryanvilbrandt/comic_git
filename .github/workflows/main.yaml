@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Load repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Switch to the master branch (or create it if it doesn't exist)
         run: |
           git checkout -B master
