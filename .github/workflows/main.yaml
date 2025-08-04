@@ -1,17 +1,17 @@
 name: Auto-build HTML files
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 on:
   push:
     branches:
       - master
   schedule:
     - cron: '0 8 * * *'  # Runs at 8:00 AM UTC every day
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   call-build-site:
