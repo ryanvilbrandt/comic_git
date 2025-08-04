@@ -5,7 +5,7 @@
     HTML with p tags and h1 tags and such, that will also work just fine.
 -->
 
-<h1>Congratulations on your new comic_git site! 🎉🎊🥳 yahoo</h1>
+<h1>Congratulations on your new comic_git site! 🎉🎊🥳 yatta</h1>
 
 <!-- The front page uses a responsive 2-column layout. This is done by first defining what content is going to be in
      the column layout, like so. -->
