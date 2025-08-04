@@ -1,21 +1,49 @@
-<h1>Welcome to comic_git!</h1>
+<!--
+    Anything in brackets that start with an exclamation mark, like this, is called a comment! It will not affect the HTML
+    of your page. It's just a note from me to you!
+    There's a little extra HTML I've added here to jazz up the front page, but you don't need it! If you just want basic
+    HTML with p tags and h1 tags and such, that will also work just fine.
+-->
 
-<div id="comic-git-dev-banner">
-    <p><b>This version of comic_git is obsolete. You can find the recommended version <a href="https://ryanvilbrandt.github.io/comic_git_dev/">here</a>, but read below for important info.</b>
+<h1>Congratulations on your new comic_git site! 🎉🎊🥳 yahoo</h1>
 
-    <p>I've been working on a major revamp of comic_git for a while. This new version has a major overhaul in the underlying system for how the website is built, which gives the benefit that I can provide bug fixes and updates to existing users automatically. It also contains many small but needed improvements, like an improved default theme.
+<!-- The front page uses a responsive 2-column layout. This is done by first defining what content is going to be in
+     the column layout, like so. -->
+<div class="right-column-layout">
+<!-- For this page, I've used a layout where the right column is wider than the left. If you want the left column to be
+     wider than the right, change the class to "left-column-layout"! -->
 
-    <p>However, although that revamp is completely code-ready, and is already actively being used by at least two active webcomics, it is not yet "ready" for a full release. Mainly, the documentation has not been updated as needed to cover all the changes in the new version, due mostly to a lack of motivation on my part. Despite that, the documentation is still correct and useful enough that I feel comfortable recommending this "new" version of comic_git to anyone who wants to use it.</p>
+<!-- Next, we separate what we want into the left and right columns. -->
+    <div class="left-column">
+        <a href="https://comic-git.gitbook.io/documentation">
+            <img src="your_content/images/logo.png"
+                 alt="comic_git logo: if you can draw it, you can build it!"
+                 title="Click here to go to the comic_git help docs!">
+        </a>
+    </div>
 
-    <p>If you run into any issues using this "new" version, please don't hesitate to ask for help on our <a href="https://discord.gg/zmdHGXB">Discord server</a>.</p>
+    <div class="right-column">
+        <p>This is your home page! It's the main landing page for anyone visiting your website, so make sure it looks good!</p>
+
+        <p>You can change what's on this page by editing the file found at <code>/your_content/home page.txt</code>.
+            I've even included comments in that file to help you out, if you're new to HTML.</p>
+
+        <p>You'll probably want to have links like these to your <a href="comic/001/#comic-page">first</a> and
+            <a href="latest/#comic-page">last</a> comic pages on your homepage. Or you can use buttons like those below!</p>
+
+        <!-- If you want to make your link look like a button, add class="button" to your 'a' tag like so: -->
+        <a class="button" href="comic/001/#comic-page">First Page</a>
+        <a class="button" href="latest/#comic-page">Latest Page</a>
+
+        <!--
+        If you want to set some information apart, you can set the class as "infobox"! That will put your content in a
+        different block of color, which can be defined in stylesheet.css.
+        -->
+        <p class="infobox">(You will need to manually update the link to your first comic page yourself, but the
+            <code>latest</code> page will always point to your newest comic!)</p>
+    </div>
 </div>
+<!-- That's the end of the column layout! Everything below this is just normal HTML. -->
 
-<p>What you're seeing is the default website created by comic_git, a static-site generator hosted FOR FREE on GitHub Pages, that YOU can use to publish your own web comic easily and quickly!</p>
-
-<p>Click <a href="comic/197/#comic-page">here</a> to go to the first page of the sample comic to see how it looks out-of-the-box.<br>
-    You can also click <a href="latest/#comic-page">here</a> to go to the latest page, which will always point to the most recently published comic.</p>
-
-<p>For instructions on how to use comic_git, check out the <a href="https://github.com/ryanvilbrandt/comic_git/wiki">wiki</a>.<br>
-    If you'd like to jump right into creating your own webcomic with comic_git, check out the <a href="https://github.com/ryanvilbrandt/comic_git/wiki/Getting-Started">Getting Started</a> section.</p>
-
-<p>(To edit this page when you're setting up your own website, edit the file <code>/your_content/home page.txt</code>)</p> 
+<h2>Need some hints on where to go next?</h2>
+<p>Check out your <a href="comic/001/#comic-page">First Page</a> for some ideas of what you can do with comic_git!</p>

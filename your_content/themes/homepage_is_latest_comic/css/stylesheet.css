@@ -1,32 +1,43 @@
 /*
 Change these options to customize the color scheme and a few layout options of your website.
-Most layout options are stored in src/css/advanced_stylesheet.css. I do not recommend messing with those settings
-unless you know what you're doing, or you're willing to spend a lot of time on trial and error.
+Most layout options are provided by the comic_git_engine by files in the `css/` directory.
+I do not recommend messing with those settings unless you know what you're doing, or you're
+willing to spend a lot of time on trial and error.
 
 For any colors, you can represent them in hexadecimal like this (#FF0000 = red)
 or use this list of available color names: https://www.w3schools.com/cssref/css_colors.asp
  */
 
+/* Global values */
 body {
     font-family: 'PT Sans', sans-serif;  /* The font of all the text on all pages */
-    color: black;  /* The color of the font of most of the text on your website */
+    color: black;  /* The color of the font of all of the text on your whole website, except links.
+                      If you want to change the color of text in certain parts of the page, and not the whole site,
+                      you can define `color` in other blocks and it will only apply to that element and all
+                      of the elements it contains. */
     background-color: white;  /* The color of the background behind everything */
     background-image: url("../../../images/background_image.png");  /* The pattern on the background. Delete to change to a solid color
-                                                       or replace with your own image to tile across your background. */
+                                                                       or replace with your own image to tile across your background. */
+}
+
+h1, h2, h3 {
+    font-family: 'Roboto Slab', cursive;
 }
 
 a {
-    color: maroon;  /* The color of the hyperlinks */
+    color: #2E9BC7;  /* The color of the hyperlinks */
 }
 
-div#container {
+#container {
     max-width: 1000px;  /* The width of the main box that contains all content on the pages */
     background-color: white;  /* The background color of the main box */
-    box-shadow: 5px 5px 10px lightgray;  /* If you change the background color of website, play with this or else it will look bad. */
+    box-shadow: 5px 5px 10px lightgray;  /* This is the drop shadow of the main box. If you change the background color
+                                            of your website, play with this or else it will look bad. */
 }
 
-div#links-bar {
-    background-color: indianred;  /* The background color of your links bar */
+/* Top navigation links bar */
+#links-bar {
+    background-color: #2E9BC7;  /* The background color of your links bar */
 }
 
 a.link-bar-link {
@@ -39,8 +50,9 @@ a.link-bar-link:hover {
     color: black;  /* The color of the links in your links bar while the cursor is hovering over them */
 }
 
+/* Comic navigation buttons */
 a.navigation-button {
-    color: maroon;  /* Color of the navigation bar hyperlinks */
+    color: #2E9BC7;  /* Color of the navigation bar hyperlinks */
     font-size: 2em;  /* Size of the navigation bar hyperlinks */
     text-decoration: none;  /* Delete this if you want your navigation links to be underlined */
 }
@@ -51,22 +63,46 @@ a.navigation-button-disabled {
     text-decoration: none;  /* Delete this if you want your disabled navigation links to be underlined */
 }
 
-div#blurb {
-    background-color: lightgray;  /* The color of the "blurb" box that contains post title, post date, tags, etc. */
+/* Buttons: turn any link into a button by adding class="button" within the <a> tag */
+.button {
+    background-color: #2E9BC7;  /* Color of button hyperlinks */
+    color: white;  /* Color of the words in button hyperlinks */
+}
+
+.button:hover {
+    background-color: #62C5E8;  /* Color of button hyperlinks when the mouse hovers over it */
+    color: white;    /* Color of the words in button hyperlinks when the mouse hovers over it */
+}
+
+/* The blue background with the dotted borders that shows up on most pages. */
+#blurb {
+    background-color: #F6FBFE;  /* The color of the "blurb" box that contains post title, post date, tags, etc. */
     width: 75%;  /* The maximum width of the blurb box. */
-    border-left: 3px dotted lightslategray;  /* If you change the background color of the blurb, play with these two lines or else it will look bad */
-    border-right: 3px dotted lightslategray;
+    border-left: 3px dotted #62C5E8;  /* If you change the background color of the blurb, play with these two lines or else it will look bad */
+    border-right: 3px dotted #62C5E8; /* You can also just delete these two lines if you don't want a dotted border on the blurb box */
 }
 
-h1#page-title {
-    color: black;  /* Color of the page title */
+/* This is just some code to make monospaced text a little more readable */
+code {
+    font-size: 120%;  /* Make the text a little bigger */
+    background-color: #F0F0F0;  /* Give it a very light gray background */
+    border: 1px solid gray;  /* Give it a gray border... */
+    border-radius: 5px;  /* ... with rounded corners. */
+    padding-left: 5px;  /* A little padding between the text and the border on the left... */
+    padding-right: 5px;  /* ... and the right. */
+    white-space: pre; /* Prevents code blocks from being word-wrapped */
+}
+
+#post-title {
+    color: black;  /* Color of the post title */
     font-size: 3em;  /* Font size of the post title */
+    font-family: 'Roboto Slab', cursive;
 }
 
-div#post-date {
+#post-date {
     font-weight: bold;  /* Delete this to unbold the post date */
 }
 
-div#storyline, div#characters, div#tags {
+#storyline, #characters, #tags {
     font-style: italic;  /* Delete this to unitalicize the tags */
 }

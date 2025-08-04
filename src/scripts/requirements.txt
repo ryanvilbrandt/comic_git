@@ -1,4 +1,0 @@
-Jinja2
-Pillow
-markdown2
-pytz

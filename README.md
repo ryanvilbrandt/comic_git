@@ -4,7 +4,7 @@
 
 A statically-hosted web comic server core intended to be hosted on github.io
 
-To see an example of how a webpage looks, go to https://ryanvilbrandt.github.io/comic_git/
+To see an example of how a webpage looks, go to https://www.comic-git.com
 
 ## Quickstart
 
@@ -14,7 +14,7 @@ To see an example of how a webpage looks, go to https://ryanvilbrandt.github.io/
 4. Add folders in `your_content/comics` for each comic page you want to upload.
 5. Commit your changes and push to GitHub.
 
-More detailed setup instructions can be found on the [wiki](https://github.com/ryanvilbrandt/comic_git/wiki).
+More detailed setup instructions can be found at the [comic_git documentation](https://comic-git.gitbook.io/documentation).
 
 If you have questions, comments, or difficulties with comic_git, please join our discord at <https://discord.gg/zmdHGXB> and we'll be happy to help you out!
 
@@ -25,6 +25,12 @@ If you have questions, comments, or difficulties with comic_git, please join our
 * @ryanvilbrandt
 * @cvilbrandt
 
-### Wiki
+### Documentation
 
+* @ryanvilbrandt
 * @JacobWG
+
+### Art and Site Design
+
+* @ryanvilbrandt
+* @cvilbrandt

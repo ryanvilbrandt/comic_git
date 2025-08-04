@@ -1,0 +1,3 @@
+NARRATOR: This is an English transcript.
+
+NARRATOR: See [the documentation](https://comic-git.gitbook.io/documentation/advanced-editing/extra-features#transcripts) for more information on how to use this feature.

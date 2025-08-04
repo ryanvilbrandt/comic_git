@@ -3,48 +3,10 @@ name: Auto-build HTML files
 on:
   push:
     branches:
-      - working
+      - master
   schedule:
     - cron: '0 8 * * *'  # Runs at 8:00 AM UTC every day
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.12]
-
-    steps:
-      - name: Load repository
-        uses: actions/checkout@v4
-      - name: Switch to the master branch (or create it if it doesn't exist)
-        run: |
-          git checkout -B master
-      - name: Reset master to point to working's HEAD
-        run: |
-          git fetch --all --no-tags
-          git reset --hard origin/working
-          git status
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r src/scripts/requirements.txt
-          python src/scripts/make_requirements_hooks_file.py
-          pip install -r src/scripts/requirements_hooks.txt
-      - name: Run python build script
-        run: |
-          python src/scripts/build_site.py --delete-scheduled-posts
-      - name: Commit files
-        run: |
-          git config --local user.name "Github Action"
-          git config --local user.email "action@github.com"
-          git add --all
-          git diff-index --quiet HEAD || git commit -m "Auto-build"
-      - name: Push changes
-        run: |
-          git push -f --set-upstream origin master
+  call-build-site:
+    uses: ryanvilbrandt/comic_git_engine/.github/workflows/build_site.yaml@v1

@@ -1,0 +1,15 @@
+If you'd like some ideas on what you can do next with comic_git...
+
+* Replace the image on this page with your own comic image by replacing the `Page 1.png` file at `your_content/comics/001/`
+* Update this page's Post Date, Tags, or other details by updating the `info.ini` file at `your_content/comics/001/`
+* Replace the text you're reading right now by updating the `post.txt` file at `your_content/comics/001/`
+* Change the English transcript below by updating the `English.txt` file at `your_content/comics/001/`
+* Read through [Adding Comic Pages](https://comic-git.gitbook.io/documentation/basic-editing/adding-comic-pages) for more information on uploading comic pages to your site.
+
+For more helpful tips on how best to use comic_git:
+
+* If you want your home page to be your latest comic, [set your Theme](https://comic-git.gitbook.io/documentation/advanced-editing/themes#using-existing-themes) to `homepage_is_latest_comic`.
+* To make basic aesthetic changes to your new website, like changing colors and fonts, update the `fonts.css` and `stylesheet.css` files located in the `your_content/themes/<theme>/css/` folder.
+* Make sure you read through and understand the [Basic Editing](https://comic-git.gitbook.io/documentation/basic-editing/editing-your-website) section of the documentation.
+* Once you're comfortable with the basic comic_git usage, make sure to check out [Advanced Editing](https://comic-git.gitbook.io/documentation/advanced-editing/advanced-editing-and-the-comic_git-engine) or even [Expert Editing](https://comic-git.gitbook.io/documentation/expert-editing/expert-editing)!
+* If you ever have troubles, or your website doesn't build properly, make sure to check out the [Troubleshooting](https://comic-git.gitbook.io/documentation/additional-information/troubleshooting) page.
