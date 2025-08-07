@@ -15,4 +15,4 @@ permissions:
 
 jobs:
   call-build-site:
-    uses: ryanvilbrandt/comic_git_engine/.github/workflows/build_site.yaml@v1
+    uses: comic-git/comic_git_engine/.github/workflows/build_site.yaml@v1
